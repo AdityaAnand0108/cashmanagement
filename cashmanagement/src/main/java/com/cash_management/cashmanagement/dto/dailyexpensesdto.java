@@ -1,11 +1,13 @@
 package com.cash_management.cashmanagement.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
-public class dailyexpenses {
+@AllArgsConstructor
+public class dailyexpensesdto {
 
     private String expenseName;
     private double amount;

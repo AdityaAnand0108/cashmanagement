@@ -8,4 +8,6 @@ public interface DailyexpensesService {
 
     List<DailyexpensesDTO> getAllExpenses();
     DailyexpensesDTO addExpense(DailyexpensesDTO dailyexpensesDTO);
+    void deleteExpense(Long id);
+    DailyexpensesDTO updateExpense(Long id, DailyexpensesDTO dailyexpensesDTO);
 }

@@ -32,4 +32,20 @@ public class DailyexpensesServiceImpl implements DailyexpensesService {
         Dailyexpenses dailyexpenses = dailyexpensesRepository.save(newExpense);
         return modelMapper.map(dailyexpenses, DailyexpensesDTO.class);
     }
+
+    @Override
+    public void deleteExpense(Long id) {
+        dailyexpensesRepository.deleteById(id);
+    }
+
+    @Override
+    public DailyexpensesDTO updateExpense(Long id, DailyexpensesDTO dailyexpensesDTO) {
+        Dailyexpenses currentDailyexpenses = dailyexpensesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
+
+        Dailyexpenses updatedExpense = modelMapper.map(dailyexpensesDTO, Dailyexpenses.class);
+        updatedExpense.setDailyexpensesId(currentDailyexpenses.getDailyexpensesId()); // Ensure the ID remains the same
+        Dailyexpenses savedExpense = dailyexpensesRepository.save(updatedExpense);
+        return modelMapper.map(savedExpense, DailyexpensesDTO.class);
+    }
 }

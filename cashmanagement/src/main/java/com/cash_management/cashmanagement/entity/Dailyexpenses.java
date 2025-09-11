@@ -9,9 +9,9 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name = "dailyexpenses")
 @Getter
 @Setter
+@Table(name = "dailyexpenses")
 public class Dailyexpenses {
 
     @Id

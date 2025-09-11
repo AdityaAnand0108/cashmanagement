@@ -7,4 +7,5 @@ import java.util.List;
 public interface DailyexpensesService {
 
     List<DailyexpensesDTO> getAllExpenses();
+    DailyexpensesDTO addExpense(DailyexpensesDTO dailyexpensesDTO);
 }

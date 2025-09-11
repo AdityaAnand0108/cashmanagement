@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-public class dailyexpensesdto {
+public class DailyexpensesDTO {
 
     private String expenseName;
     private double amount;

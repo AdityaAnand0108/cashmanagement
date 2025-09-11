@@ -25,6 +25,16 @@ public class ExpenseController {
     }
 
     /*
+     * Get expenses by category
+     * @param category
+     * @return List of DailyexpensesDTO
+     */
+    @GetMapping("/by-category/{category}")
+    public ResponseEntity<List<DailyexpensesDTO>> getExpensesByCategory(@PathVariable String category) {
+        return ResponseEntity.ok(dailyexpensesService.getExpensesByCategory(category));
+    }
+
+    /*
      * Add a new expense
      * @param dailyexpensesDTO
      * @return DailyexpensesDTO

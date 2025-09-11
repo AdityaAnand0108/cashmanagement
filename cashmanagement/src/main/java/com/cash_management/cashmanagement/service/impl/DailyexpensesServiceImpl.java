@@ -48,4 +48,13 @@ public class DailyexpensesServiceImpl implements DailyexpensesService {
         Dailyexpenses savedExpense = dailyexpensesRepository.save(updatedExpense);
         return modelMapper.map(savedExpense, DailyexpensesDTO.class);
     }
+
+    @Override
+    public List<DailyexpensesDTO> getExpensesByCategory(String category) {
+        List<Dailyexpenses> dailyexpensesList = dailyexpensesRepository.findAll().stream()
+                .filter(expense -> expense.getCategory().name().equalsIgnoreCase(category))
+                .toList();
+        return dailyexpensesList.stream().map(expense -> modelMapper.map(expense, DailyexpensesDTO.class)).toList();
+
+    }
 }

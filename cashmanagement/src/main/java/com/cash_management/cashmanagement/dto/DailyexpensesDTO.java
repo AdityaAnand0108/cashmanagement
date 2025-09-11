@@ -1,5 +1,6 @@
 package com.cash_management.cashmanagement.dto;
 
+import com.cash_management.cashmanagement.enums.ExpenseCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ public class DailyexpensesDTO {
     private double amount;
     private LocalDate date;
     private String description;
-    private String category;
+    private ExpenseCategory category;
     private String paymentMethod;
     private boolean recurring;
 

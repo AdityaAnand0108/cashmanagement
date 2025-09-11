@@ -1,5 +1,6 @@
 package com.cash_management.cashmanagement.entity;
 
+import com.cash_management.cashmanagement.enums.ExpenseCategory;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -29,7 +30,8 @@ public class Dailyexpenses {
 
     private String description;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private ExpenseCategory category;
 
     private String paymentMethod;
 

@@ -45,7 +45,6 @@ Spring Boot 3.x
 Spring Data JPA
 
 MapStruct (for DTO mapping)
-
 H2 / MySQL / PostgreSQL (configurable)
 
 Maven

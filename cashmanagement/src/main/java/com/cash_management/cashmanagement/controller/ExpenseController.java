@@ -2,6 +2,7 @@ package com.cash_management.cashmanagement.controller;
 
 import com.cash_management.cashmanagement.dto.DailyexpensesDTO;
 import com.cash_management.cashmanagement.service.DailyexpensesService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,13 @@ public class ExpenseController {
      */
     @GetMapping("/by-category/{category}")
     public ResponseEntity<List<DailyexpensesDTO>> getExpensesByCategory(@PathVariable String category) {
-        return ResponseEntity.ok(dailyexpensesService.getExpensesByCategory(category));
+        List<DailyexpensesDTO> expenses = dailyexpensesService.getExpensesByCategory(category);
+        if (expenses == null || expenses.isEmpty()) {
+            throw new EntityNotFoundException("No expenses found for category: " + category);
+        }
+        return ResponseEntity.ok(expenses);
     }
+
 
     /*
      * Add a new expense

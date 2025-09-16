@@ -30,6 +30,7 @@ public class DailyexpensesServiceImpl implements DailyexpensesService {
     }
 
     @Override
+    @Transactional
     public DailyexpensesDTO addExpense(DailyexpensesDTO dailyexpensesDTO) {
         Dailyexpenses newExpense = modelMapper.map(dailyexpensesDTO, Dailyexpenses.class);
         Dailyexpenses saved = dailyexpensesRepository.save(newExpense);

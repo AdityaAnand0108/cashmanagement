@@ -1,7 +1,7 @@
 package com.cash_management.cashmanagement.controller;
 
-import com.cash_management.cashmanagement.dto.DailyexpensesDTO;
-import com.cash_management.cashmanagement.service.DailyexpensesService;
+import com.cash_management.cashmanagement.dtos.DailyExpenseDTO;
+import com.cash_management.cashmanagement.services.DailyExpenseService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,14 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExpenseController {
 
-    private final DailyexpensesService dailyexpensesService;
+    private final DailyExpenseService dailyexpensesService;
 
     /*
      * Get all expenses
      * @return List of DailyexpensesDTO
      */
     @GetMapping("/all-expenses")
-    public  ResponseEntity<List<DailyexpensesDTO>> getAllExpenses() {
+    public  ResponseEntity<List<DailyExpenseDTO>> getAllExpenses() {
         return ResponseEntity.ok(dailyexpensesService.getAllExpenses());
     }
 
@@ -31,8 +31,8 @@ public class ExpenseController {
      * @return List of DailyexpensesDTO
      */
     @GetMapping("/by-category/{category}")
-    public ResponseEntity<List<DailyexpensesDTO>> getExpensesByCategory(@PathVariable String category) {
-        List<DailyexpensesDTO> expenses = dailyexpensesService.getExpensesByCategory(category);
+    public ResponseEntity<List<DailyExpenseDTO>> getExpensesByCategory(@PathVariable String category) {
+        List<DailyExpenseDTO> expenses = dailyexpensesService.getExpensesByCategory(category);
         if (expenses == null || expenses.isEmpty()) {
             throw new EntityNotFoundException("No expenses found for category: " + category);
         }
@@ -46,8 +46,8 @@ public class ExpenseController {
      * @return DailyexpensesDTO
      */
     @PostMapping("/add-expense")
-    public ResponseEntity<DailyexpensesDTO> addExpense(@RequestBody DailyexpensesDTO dailyexpensesDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(dailyexpensesService.addExpense(dailyexpensesDTO));
+    public ResponseEntity<DailyExpenseDTO> addExpense(@RequestBody DailyExpenseDTO dailyExpenseDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(dailyexpensesService.addExpense(dailyExpenseDTO));
     }
 
     /*
@@ -57,8 +57,8 @@ public class ExpenseController {
      * @return DailyexpensesDTO
      */
     @PutMapping("/update-expense/{id}")
-    public ResponseEntity<DailyexpensesDTO> updateExpense(@PathVariable Long id, @RequestBody DailyexpensesDTO dailyexpensesDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(dailyexpensesService.updateExpense(id, dailyexpensesDTO));
+    public ResponseEntity<DailyExpenseDTO> updateExpense(@PathVariable Long id, @RequestBody DailyExpenseDTO dailyExpenseDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(dailyexpensesService.updateExpense(id, dailyExpenseDTO));
     }
 
     /*

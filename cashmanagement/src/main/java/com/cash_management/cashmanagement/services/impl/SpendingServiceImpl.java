@@ -1,18 +1,19 @@
-package com.cash_management.cashmanagement.service.impl;
+package com.cash_management.cashmanagement.services.impl;
 
-import com.cash_management.cashmanagement.entity.Dailyexpenses;
-import com.cash_management.cashmanagement.entity.Spending;
-import com.cash_management.cashmanagement.repository.DailyexpensesRepository;
-import com.cash_management.cashmanagement.repository.SpendingRepository;
-import com.cash_management.cashmanagement.service.SpendingService;
+import com.cash_management.cashmanagement.dtos.SpendingResponseDTO;
+import com.cash_management.cashmanagement.entities.DailyExpense;
+import com.cash_management.cashmanagement.entities.Spending;
+import com.cash_management.cashmanagement.repositories.DailyexpensesRepository;
+import com.cash_management.cashmanagement.repositories.SpendingRepository;
+import com.cash_management.cashmanagement.services.SpendingService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class SpendingServiceImpl implements SpendingService {
 
     private final DailyexpensesRepository dailyexpensesRepository;
     private final SpendingRepository spendingRepository;
+    private final ModelMapper modelMapper;
 
     /**
      * Input expected examples:
@@ -44,14 +46,9 @@ public class SpendingServiceImpl implements SpendingService {
      * If parsing fails, throws DateTimeParseException.
      */
     @Override
-    public Double getTotalSpendingForDay(String day) {
-        LocalDate date = parseToLocalDate(day);
+    public SpendingResponseDTO getTotalSpendingForDay(LocalDate day) {
         // Sum directly from Dailyexpenses repository (safer and up-to-date)
-        double total = dailyexpensesRepository.findAllByDate(date)
-                .stream()
-                .mapToDouble(Dailyexpenses::getAmount)
-                .sum();
-        return total;
+        return modelMapper.map(spendingRepository.findByDate(day), SpendingResponseDTO.class);
     }
 
     /**
@@ -62,40 +59,13 @@ public class SpendingServiceImpl implements SpendingService {
         double total = dailyexpensesRepository
                 .findAllByDate(date)
                 .stream()
-                .mapToDouble(Dailyexpenses::getAmount)
+                .mapToDouble(DailyExpense::getAmount)
                 .sum();
 
-        Spending spending = spendingRepository.findByDate(date)
-                .orElseGet(() -> {
-                    Spending s = new Spending();
-                    s.setDate(date);
-                    return s;
-                });
+        Spending spending = spendingRepository.findByDate(date);
 
         spending.setTotalSpending(total);
         spendingRepository.save(spending);
-    }
-
-    /**
-     * Recalculate for date range (useful for month recalculation).
-     * Will update/create Spending entry for each date found.
-     */
-    public void recalcAndSaveForDateRange(LocalDate start, LocalDate end) {
-        Map<LocalDate, Double> totalsByDate = dailyexpensesRepository.findAllByDateBetween(start, end)
-                .stream()
-                .collect(Collectors.groupingBy(Dailyexpenses::getDate,
-                        Collectors.summingDouble(Dailyexpenses::getAmount)));
-
-        totalsByDate.forEach((date, total) -> {
-            Spending s = spendingRepository.findByDate(date)
-                    .orElseGet(() -> {
-                        Spending sp = new Spending();
-                        sp.setDate(date);
-                        return sp;
-                    });
-            s.setTotalSpending(total);
-            spendingRepository.save(s);
-        });
     }
 
     // --------------------------
@@ -139,34 +109,4 @@ public class SpendingServiceImpl implements SpendingService {
         throw new DateTimeParseException("Unable to parse month: " + input, input, 0);
     }
 
-    private LocalDate parseToLocalDate(String input) {
-        Objects.requireNonNull(input, "date input cannot be null");
-        String trimmed = input.trim();
-
-        // Try ISO local date first: yyyy-MM-dd
-        try {
-            return LocalDate.parse(trimmed, DateTimeFormatter.ISO_LOCAL_DATE);
-        } catch (DateTimeParseException ignored) { }
-
-        // Try common patterns like dd-MM-yyyy or dd/MM/yyyy
-        List<DateTimeFormatter> fmts = List.of(
-                DateTimeFormatter.ofPattern("dd-MM-yyyy"),
-                DateTimeFormatter.ofPattern("dd/MM/yyyy"),
-                DateTimeFormatter.ofPattern("d-M-yyyy")
-        );
-
-        for (DateTimeFormatter fmt : fmts) {
-            try {
-                return LocalDate.parse(trimmed, fmt);
-            } catch (DateTimeParseException ignored) { }
-        }
-
-        // If user passed e.g., "2025-09" -> treat as first day of that month
-        try {
-            YearMonth ym = YearMonth.parse(trimmed, DateTimeFormatter.ISO_DATE_TIME);
-            return ym.atDay(1);
-        } catch (DateTimeParseException ignored) { }
-
-        throw new DateTimeParseException("Unable to parse date: " + input, input, 0);
-    }
 }

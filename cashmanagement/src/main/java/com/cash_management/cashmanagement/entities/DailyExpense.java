@@ -1,7 +1,7 @@
-package com.cash_management.cashmanagement.entity;
+package com.cash_management.cashmanagement.entities;
 
 import com.cash_management.cashmanagement.enums.ExpenseCategory;
-import com.cash_management.cashmanagement.enums.PaymentMethods;
+import com.cash_management.cashmanagement.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Table(name = "dailyexpenses")
-public class Dailyexpenses {
+public class DailyExpense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +35,7 @@ public class Dailyexpenses {
     private ExpenseCategory category;
 
     @Enumerated(EnumType.STRING)
-    private PaymentMethods paymentMethod;
+    private PaymentMethod paymentMethod;
 
     private boolean recurring;
 

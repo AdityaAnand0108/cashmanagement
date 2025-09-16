@@ -3,7 +3,7 @@ package com.cash_management.cashmanagement.enums;
 import lombok.Getter;
 
 @Getter
-public enum PaymentMethods {
+public enum PaymentMethod {
     CASH("Cash"),
     CREDIT_CARD_AXIS("Credit Card Axis"),
     CREDIT_CARD_HDFC("Credit Card HDFC"),
@@ -18,7 +18,7 @@ public enum PaymentMethods {
 
     private final String displayName;
 
-    PaymentMethods(String displayName) {
+    PaymentMethod(String displayName) {
         this.displayName = displayName;
     }
 

@@ -1,4 +1,4 @@
-package com.cash_management.cashmanagement.entity;
+package com.cash_management.cashmanagement.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class Spending {
 
     @OneToMany
     @JoinColumn(name = "date", referencedColumnName = "date")
-    private List<Dailyexpenses> dailyexpenses;
+    private List<DailyExpense> dailyexpens;
 
     private Double totalSpending;
 }

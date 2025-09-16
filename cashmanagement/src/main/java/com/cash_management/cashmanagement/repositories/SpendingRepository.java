@@ -1,12 +1,11 @@
-package com.cash_management.cashmanagement.repository;
+package com.cash_management.cashmanagement.repositories;
 
-import com.cash_management.cashmanagement.entity.Spending;
+import com.cash_management.cashmanagement.entities.Spending;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 public interface SpendingRepository extends JpaRepository<Spending, Long> {
 
@@ -21,5 +20,5 @@ public interface SpendingRepository extends JpaRepository<Spending, Long> {
     /**
      * Finds a Spending record by exact date (one record per date assumption).
      */
-    Optional<Spending> findByDate(LocalDate date);
+    Spending findByDate(LocalDate date);
 }

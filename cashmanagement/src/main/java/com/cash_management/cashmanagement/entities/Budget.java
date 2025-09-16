@@ -1,4 +1,4 @@
-package com.cash_management.cashmanagement.entity;
+package com.cash_management.cashmanagement.entities;
 
 import com.cash_management.cashmanagement.enums.ExpenseCategory;
 import jakarta.persistence.*;

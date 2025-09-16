@@ -39,4 +39,8 @@ public class Dailyexpenses {
 
     private boolean recurring;
 
+    @ManyToOne
+    @JoinColumn(name = "date", referencedColumnName = "date", insertable = false, updatable = false)
+    private Spending spending;
+
 }

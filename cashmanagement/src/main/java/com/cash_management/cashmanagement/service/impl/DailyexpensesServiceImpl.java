@@ -4,10 +4,12 @@ import com.cash_management.cashmanagement.dto.DailyexpensesDTO;
 import com.cash_management.cashmanagement.entity.Dailyexpenses;
 import com.cash_management.cashmanagement.repository.DailyexpensesRepository;
 import com.cash_management.cashmanagement.service.DailyexpensesService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -15,6 +17,7 @@ import java.util.List;
 public class DailyexpensesServiceImpl implements DailyexpensesService {
 
     private final DailyexpensesRepository dailyexpensesRepository;
+    private final SpendingServiceImpl spendingService; // or SpendingService interface
     private final ModelMapper modelMapper;
 
     @Override
@@ -29,24 +32,32 @@ public class DailyexpensesServiceImpl implements DailyexpensesService {
     @Override
     public DailyexpensesDTO addExpense(DailyexpensesDTO dailyexpensesDTO) {
         Dailyexpenses newExpense = modelMapper.map(dailyexpensesDTO, Dailyexpenses.class);
-        Dailyexpenses dailyexpenses = dailyexpensesRepository.save(newExpense);
-        return modelMapper.map(dailyexpenses, DailyexpensesDTO.class);
+        Dailyexpenses saved = dailyexpensesRepository.save(newExpense);
+        // recalc for the saved date
+        spendingService.recalcAndSaveForDate(saved.getDate());
+        return modelMapper.map(saved, DailyexpensesDTO.class);
     }
 
     @Override
-    public void deleteExpense(Long id) {
-        dailyexpensesRepository.deleteById(id);
-    }
-
-    @Override
+    @Transactional
     public DailyexpensesDTO updateExpense(Long id, DailyexpensesDTO dailyexpensesDTO) {
-        Dailyexpenses currentDailyexpenses = dailyexpensesRepository.findById(id)
+        Dailyexpenses existing = dailyexpensesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
 
-        Dailyexpenses updatedExpense = modelMapper.map(dailyexpensesDTO, Dailyexpenses.class);
-        updatedExpense.setDailyexpensesId(currentDailyexpenses.getDailyexpensesId()); // Ensure the ID remains the same
-        Dailyexpenses savedExpense = dailyexpensesRepository.save(updatedExpense);
-        return modelMapper.map(savedExpense, DailyexpensesDTO.class);
+        LocalDate oldDate = existing.getDate();
+
+        // map DTO to entity but preserve id
+        Dailyexpenses updated = modelMapper.map(dailyexpensesDTO, Dailyexpenses.class);
+        updated.setDailyexpensesId(existing.getDailyexpensesId());
+        Dailyexpenses saved = dailyexpensesRepository.save(updated);
+
+        // Recalculate for old date (if changed) and for new date
+        if (!oldDate.equals(saved.getDate())) {
+            spendingService.recalcAndSaveForDate(oldDate);
+        }
+        spendingService.recalcAndSaveForDate(saved.getDate());
+
+        return modelMapper.map(saved, DailyexpensesDTO.class);
     }
 
     @Override
@@ -56,5 +67,14 @@ public class DailyexpensesServiceImpl implements DailyexpensesService {
                 .toList();
         return dailyexpensesList.stream().map(expense -> modelMapper.map(expense, DailyexpensesDTO.class)).toList();
 
+    @Override
+    @Transactional
+    public void deleteExpense(Long id) {
+        Dailyexpenses existing = dailyexpensesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
+        LocalDate date = existing.getDate();
+        dailyexpensesRepository.deleteById(id);
+        // recalc for that date
+        spendingService.recalcAndSaveForDate(date);
     }
 }

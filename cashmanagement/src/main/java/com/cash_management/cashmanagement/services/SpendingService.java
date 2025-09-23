@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Service
 public interface SpendingService {
 
-    Double getTotalSpendingForMonth(String month);
+    Double getTotalSpendingForMonth(int year, int month);
 
     SpendingResponseDTO getTotalSpendingForDay(LocalDate day);
 }

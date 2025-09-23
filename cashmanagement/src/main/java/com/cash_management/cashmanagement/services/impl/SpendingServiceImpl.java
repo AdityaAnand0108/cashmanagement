@@ -32,13 +32,17 @@ public class SpendingServiceImpl implements SpendingService {
      * If parsing fails, it will throw DateTimeParseException.
      */
     @Override
-    public Double getTotalSpendingForMonth(String month) {
-        YearMonth ym = parseToYearMonth(month);
-        LocalDate start = ym.atDay(1);
-        LocalDate end = ym.atEndOfMonth();
+    public Double getTotalSpendingForMonth(int year, int month) {
+        YearMonth ym = YearMonth.of(year, month);
+        LocalDate startDate = ym.atDay(1);
+        LocalDate endDate = ym.atEndOfMonth();
 
-        Double total = spendingRepository.getTotalSpendingForMonth(start, end);
-        return total != null ? total : 0.0;
+        // Sum directly from Dailyexpenses repository (safer and up-to-date)
+        return dailyexpensesRepository
+                .findAllByDateBetween(startDate, endDate)
+                .stream()
+                .mapToDouble(DailyExpense::getAmount)
+                .sum();
     }
 
     /**

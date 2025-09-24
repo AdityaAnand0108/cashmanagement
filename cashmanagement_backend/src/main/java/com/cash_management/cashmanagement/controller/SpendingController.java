@@ -15,7 +15,9 @@ public class SpendingController {
 
     private final SpendingService spendingService;
 
-
+    /* Endpoint to get total spending for a specific day
+     * Example: GET /spending?date=2023-10-15
+     */
     @GetMapping("/spending")
     public ResponseEntity<SpendingResponseDTO> getTotalSpendingForDay(
             @RequestParam("date")
@@ -23,6 +25,9 @@ public class SpendingController {
         return ResponseEntity.ok(spendingService.getTotalSpendingForDay(date));
     }
 
+    /* Endpoint to get total spending for a specific month
+     * Example: GET /spending/monthly?year=2023&month=10
+     */
     @GetMapping("/spending/monthly")
     public ResponseEntity<Double> getTotalSpendingForMonth(
             @RequestParam("year") int year,

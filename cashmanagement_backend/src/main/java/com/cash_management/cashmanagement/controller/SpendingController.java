@@ -1,5 +1,6 @@
 package com.cash_management.cashmanagement.controller;
 
+import com.cash_management.cashmanagement.dtos.SpendingOverviewDTO;
 import com.cash_management.cashmanagement.dtos.SpendingResponseDTO;
 import com.cash_management.cashmanagement.services.SpendingService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+@CrossOrigin(origins = "http://localhost:5174")
 @RestController
 @RequiredArgsConstructor
 public class SpendingController {
@@ -33,6 +35,18 @@ public class SpendingController {
             @RequestParam("year") int year,
             @RequestParam("month") int month) {
         return ResponseEntity.ok(spendingService.getTotalSpendingForMonth(year, month));
+    }
+
+    /* Endpoint to get spending overview for today and current month
+     * Example: GET /spending/overview
+     */
+    @GetMapping("/spending/overview")
+    public ResponseEntity<SpendingOverviewDTO> getSpendingOverview() {
+        double todayTotal = spendingService.getTotalSpendingForDay(LocalDate.now()).getTotalSpending();
+        java.time.LocalDate now = java.time.LocalDate.now();
+        double monthTotal = spendingService.getTotalSpendingForMonth(now.getYear(), now.getMonthValue());
+        SpendingOverviewDTO overview = new SpendingOverviewDTO(todayTotal, monthTotal);
+        return ResponseEntity.ok(overview);
     }
 
 }

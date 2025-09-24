@@ -11,9 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -50,9 +47,14 @@ public class SpendingServiceImpl implements SpendingService {
      * If parsing fails, throws DateTimeParseException.
      */
     @Override
-    public SpendingResponseDTO getTotalSpendingForDay(LocalDate day) {
-        // Sum directly from Dailyexpenses repository (safer and up-to-date)
-        return modelMapper.map(spendingRepository.findByDate(day), SpendingResponseDTO.class);
+    public SpendingResponseDTO getTotalSpendingForDay(LocalDate date) {
+        Spending entity = spendingRepository.findByDate(date);
+        if (entity == null) {
+            SpendingResponseDTO dto = new SpendingResponseDTO();
+            dto.setTotalSpending(0.0);
+            return dto;
+        }
+        return modelMapper.map(entity, SpendingResponseDTO.class);
     }
 
     /**
@@ -67,50 +69,13 @@ public class SpendingServiceImpl implements SpendingService {
                 .sum();
 
         Spending spending = spendingRepository.findByDate(date);
-
+        if (spending == null) {
+            spending = new Spending();
+            spending.setDate(date);
+        }
         spending.setTotalSpending(total);
         spendingRepository.save(spending);
     }
 
-    // --------------------------
-    // Helper parsing utilities
-    // --------------------------
-    private YearMonth parseToYearMonth(String input) {
-        Objects.requireNonNull(input, "month input cannot be null");
-        String trimmed = input.trim();
-
-        // 1) Try ISO YearMonth: "yyyy-MM"
-        try {
-            return YearMonth.parse(trimmed, DateTimeFormatter.ISO_DATE_TIME);
-        } catch (DateTimeParseException ignored) { }
-
-        // 2) Try "MMMM yyyy" and "MMM yyyy"
-        List<DateTimeFormatter> fmts = List.of(
-                DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH),
-                DateTimeFormatter.ofPattern("MMM yyyy", Locale.ENGLISH)
-        );
-
-        for (DateTimeFormatter fmt : fmts) {
-            try {
-                return YearMonth.parse(trimmed, fmt);
-            } catch (DateTimeParseException ignored) { }
-        }
-
-        // 3) If input is single number like "9" or "09", treat as month of current year
-        try {
-            int monthNum = Integer.parseInt(trimmed);
-            if (monthNum >= 1 && monthNum <= 12) {
-                return YearMonth.of(Year.now().getValue(), monthNum);
-            }
-        } catch (NumberFormatException ignored) { }
-
-        // 4) As a last resort, try parse Month name only (e.g., "September") with current year
-        try {
-            Month m = Month.valueOf(trimmed.toUpperCase(Locale.ENGLISH));
-            return YearMonth.of(Year.now().getValue(), m);
-        } catch (IllegalArgumentException ignored) { }
-
-        throw new DateTimeParseException("Unable to parse month: " + input, input, 0);
-    }
 
 }

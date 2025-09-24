@@ -1,84 +1,147 @@
-💰 Cash Management Application
+# 💰 Cash Management
 
-A simple Spring Boot application to track daily expenses. This project is designed for learning purposes and demonstrates a layered architecture with Controller → Service → Repository → Entity → DTO pattern.
+A **Spring Boot + React.js** based application to manage personal finances by tracking **daily income and expenses**. The system helps users maintain budgets, analyze spending habits, and improve financial planning.
 
-🚀 Features
+---
 
-Add and manage daily expenses
+## 🚀 Features
 
-Categorize expenses (Food, Transport, Rent, Utilities, Entertainment, Other) using Enums
+* **Daily Expense Tracking**
 
-Retrieve and display all expenses
+  * Add, update, and delete expenses.
+  * Track cash flow for a specific date.
 
-RESTful API design with Spring Web
+* **Budget Management**
 
-Layered architecture for maintainability
+  * Set monthly budgets.
+  * Compare actual vs. planned spending.
 
-DTO + Entity mapping with MapStruct
+* **Analytics & Reports**
 
-🏗️ Project Structure
-cashmanagement
- ├── src/main/java/com/cash_management/cashmanagement
- │    ├── config          # Config classes (e.g., MapperConfig for MapStruct)
- │    ├── controller      # REST controllers (ExpenseController)
- │    ├── dto             # Data Transfer Objects (DailyexpensesDTO)
- │    ├── entity          # JPA Entities (Dailyexpenses)
- │    ├── enums           # Enums (ExpenseCategory)
- │    ├── repository      # JPA Repositories (DailyexpensesRepository)
- │    ├── service         # Service interfaces & implementations
- │    └── CashmanagementApplication.java  # Main Spring Boot app
- │
- ├── src/main/resources
- │    ├── application.properties   # DB and project configuration
- │    ├── static                   # Static resources (if any)
- │    └── templates                # Thymeleaf templates (optional)
- │
- ├── test   # Unit & integration tests
- └── README.md
+  * Get daily, weekly, and monthly spending summaries.
+  * Visualize data with charts and tables.
 
-⚙️ Tech Stack
+* **User-Friendly UI**
 
-Java 17+
+  * Built with **React.js + Material UI** for a responsive and clean interface.
 
-Spring Boot 3.x
+---
 
-Spring Data JPA
+## 🛠️ Tech Stack
 
-MapStruct (for DTO mapping)
-H2 / MySQL / PostgreSQL (configurable)
+**Backend (API Layer):**
 
-Maven
+* Java 17
+* Spring Boot
+* Spring Data JPA (Hibernate)
+* MySQL (or PostgreSQL)
 
-📦 Installation & Setup
-1️⃣ Clone the repository
-git clone https://github.com/your-username/cashmanagement.git
-cd cashmanagement
+**Frontend:**
 
-2️⃣ Configure Database (application.properties)
-spring.datasource.url=jdbc:mysql://localhost:3306/cash_management
-spring.datasource.username=root
-spring.datasource.password=yourpassword
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+* React.js
+* Material UI
+* Axios (for API calls)
 
-3️⃣ Run the application
-mvn spring-boot:run
+**Build & Tools:**
 
+* Maven (Backend)
+* npm / yarn (Frontend)
 
-The app will start at:
-👉 http://localhost:8080
+---
 
+## 📂 Project Structure
 
-🔮 Future Enhancements
+```
+cash-management/
+│── backend/                # Spring Boot backend
+│   ├── src/main/java/com/cash_management
+│   │   ├── entity/         # JPA entities
+│   │   ├── repository/     # JPA repositories
+│   │   ├── service/        # Business logic
+│   │   ├── controller/     # REST controllers
+│   │   └── dto/            # Data transfer objects
+│   └── resources/          # application.properties / YAML
+│
+│── frontend/               # React frontend
+│   ├── src/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/          # Screens (Dashboard, ExpenseForm, etc.)
+│   │   ├── services/       # Axios API calls
+│   │   └── App.js          # Main app entry
+│   └── public/
+│
+└── README.md
+```
 
-Add authentication with Spring Security + JWT
+---
 
-Generate monthly expense reports
+## ⚙️ Setup Instructions
 
-Export data to PDF/Excel
+### Backend Setup
 
-Add React frontend for visualization
+1. Navigate to the backend folder:
 
-👨‍💻 Author
+   ```bash
+   cd backend
+   ```
+2. Configure **application.properties**:
 
-Aditya Anand Mishra
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/cashdb
+   spring.datasource.username=root
+   spring.datasource.password=yourpassword
+   spring.jpa.hibernate.ddl-auto=update
+   ```
+3. Run the backend:
+
+   ```bash
+   mvn spring-boot:run
+   ```
+
+### Frontend Setup
+
+1. Navigate to the frontend folder:
+
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+3. Start the React app:
+
+   ```bash
+   npm start
+   ```
+
+---
+
+## 📌 API Endpoints
+
+### Expense Management
+
+| Method | Endpoint                        | Description                  |
+| ------ | ------------------------------- | ---------------------------- |
+| GET    | `/api/spending?date=yyyy-MM-dd` | Get total spending for a day |
+| POST   | `/api/spending`                 | Add new expense              |
+| PUT    | `/api/spending/{id}`            | Update an expense            |
+| DELETE | `/api/spending/{id}`            | Delete an expense            |
+
+---
+
+## 📊 Future Enhancements
+
+* ✅ Multi-user authentication (JWT)
+* ✅ Category-based spending analytics
+* ✅ Export reports to Excel/PDF
+* ✅ Mobile-friendly PWA support
+
+---
+
+## 👨‍💻 Author
+
+**Aditya Anand Mishra**
+
+---

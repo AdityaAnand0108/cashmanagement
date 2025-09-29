@@ -10,43 +10,52 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+/**
+ * REST controller for managing spending-related endpoints.
+ */
 @CrossOrigin(origins = "http://localhost:5173")
-@RestController
+@RestController // Add versioning and a base path
 @RequiredArgsConstructor
 public class SpendingController {
 
     private final SpendingService spendingService;
 
-    /* Endpoint to get total spending for a specific day
-     * Example: GET /spending?date=2023-10-15
+    /**
+     * Get total spending for a specific day.
+     * Example: GET /api/v1/spending?date=2023-10-15
      */
     @GetMapping("/spending")
     public ResponseEntity<SpendingResponseDTO> getTotalSpendingForDay(
             @RequestParam("date")
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
-        return ResponseEntity.ok(spendingService.getTotalSpendingForDay(date));
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        SpendingResponseDTO response = spendingService.getTotalSpendingForDay(date);
+        return ResponseEntity.ok(response);
     }
 
-    /* Endpoint to get total spending for a specific month
-     * Example: GET /spending/monthly?year=2023&month=10
+    /**
+     * Get total spending for a specific month.
+     * Example: GET /api/v1/spending/monthly?year=2023&month=10
      */
-    @GetMapping("/spending/monthly")
+    @GetMapping("/monthly")
     public ResponseEntity<Double> getTotalSpendingForMonth(
             @RequestParam("year") int year,
             @RequestParam("month") int month) {
-        return ResponseEntity.ok(spendingService.getTotalSpendingForMonth(year, month));
+
+        double total = spendingService.getTotalSpendingForMonth(year, month);
+        return ResponseEntity.ok(total);
     }
 
-    /* Endpoint to get spending overview for today and current month
-     * Example: GET /spending/overview
+    /**
+     * Get spending overview for today and the current month.
+     * Example: GET /api/v1/spending/overview
      */
-    @GetMapping("/spending/overview")
+    @GetMapping("/overview")
     public ResponseEntity<SpendingOverviewDTO> getSpendingOverview() {
-        double todayTotal = spendingService.getTotalSpendingForDay(LocalDate.now()).getTotalSpending();
-        java.time.LocalDate now = java.time.LocalDate.now();
-        double monthTotal = spendingService.getTotalSpendingForMonth(now.getYear(), now.getMonthValue());
+        LocalDate today = LocalDate.now();
+        double todayTotal = spendingService.getTotalSpendingForDay(today).getTotalSpending();
+        double monthTotal = spendingService.getTotalSpendingForMonth(today.getYear(), today.getMonthValue());
         SpendingOverviewDTO overview = new SpendingOverviewDTO(todayTotal, monthTotal);
         return ResponseEntity.ok(overview);
     }
-
 }

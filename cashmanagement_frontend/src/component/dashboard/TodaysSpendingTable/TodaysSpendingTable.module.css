@@ -1,0 +1,216 @@
+:root{
+  /* design tokens — adjust once in one place */
+  --surface-bg: #ffffff;
+  --muted: #6b7280;          /* neutral text */
+  --accent: #2563eb;         /* blue-600 */
+  --danger: #dc2626;
+  --card-shadow: 0 6px 18px rgba(16,24,40,0.06);
+  --radius: 12px;
+  --gap: clamp(8px, 1.2vw, 16px);
+  --pad: clamp(12px, 1.4vw, 20px);
+  --z-sticky: 5;
+  --stripe: rgba(0,0,0,0.02);
+}
+
+/* dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root{
+    --surface-bg: #0f1724;
+    --muted: #9ca3af;
+    --accent: #60a5fa;
+    --card-shadow: 0 8px 22px rgba(2,6,23,0.6);
+    --stripe: rgba(255,255,255,0.02);
+  }
+}
+
+/* respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+}
+
+/* Base wrapper */
+.wrapper{
+  display: block;
+  margin-top: var(--gap);
+  width: 100%;
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--gap);
+}
+
+/* Card */
+.card{
+  background: var(--surface-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: var(--pad);
+  overflow: hidden;
+  transition: box-shadow 200ms ease, transform 160ms ease;
+}
+
+/* Header */
+.header{
+  display:flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+  margin-bottom: 8px;
+}
+
+.title{
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+/* Table container with responsive overflow */
+.tableContainer{
+  width: 100%;
+  overflow: auto;
+  border-radius: calc(var(--radius) - 4px);
+}
+
+/* Table basics */
+.table{
+  min-width: 680px; /* allows horizontal scrolling on small screens */
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  table-layout: auto;
+}
+
+/* Sticky header for easier scanning */
+.tableHead th, .tableHead td {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.85));
+  backdrop-filter: blur(2px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* make sticky head adapt to dark mode */
+@media (prefers-color-scheme: dark) {
+  .tableHead th, .tableHead td {
+    background: linear-gradient(180deg, rgba(15,23,36,0.9), rgba(15,23,36,0.85));
+  }
+}
+
+/* Row styles */
+.row{
+  transition: background-color 160ms ease, transform 120ms ease;
+}
+
+/* zebra striping for readability */
+.row:nth-child(even) {
+  background: var(--stripe);
+}
+
+/* cells */
+.table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+/* small responsive adjustments */
+@media (max-width: 680px) {
+  .tableHead th, .table td {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+  .table { min-width: 560px; }
+}
+
+/* Highlight row on hover/focus for keyboard users */
+.row:hover,
+.row:focus-within {
+  background: rgba(37,99,235,0.04);
+  box-shadow: inset 0 0 0 1px rgba(37,99,235,0.04);
+  transform: translateY(-1px);
+}
+
+/* Focus ring for keyboard accessibility */
+.row:focus {
+  outline: 3px solid rgba(37,99,235,0.12);
+  outline-offset: 2px;
+}
+
+/* specific columns sizing */
+.colDescription { width: 40%; min-width: 160px; }
+.colCategory { width: 20%; min-width: 120px; color: var(--muted); }
+.colTime { width: 15%; min-width: 110px; color: var(--muted); }
+.colAmount { width: 15%; min-width: 120px; font-variant-numeric: tabular-nums; }
+.colActions { width: 10%; min-width: 80px; }
+
+/* amount cell—align and emphasis */
+.amountCell {
+  font-weight: 600;
+}
+
+/* description cell text overflow */
+.descriptionCell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* empty and error states */
+.empty {
+  color: var(--muted);
+  padding: 20px;
+}
+.error {
+  color: var(--danger);
+  padding: 20px;
+  font-weight: 600;
+}
+
+/* small note under the table */
+.smallNote {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+/* Icon button spacing (keeps small and consistent) */
+button[aria-label] {
+  padding: 6px;
+}
+
+/* Utility: visually hidden (for accessibility) */
+.visuallyHidden{
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px,1px,1px,1px);
+  white-space: nowrap;
+}
+
+.menuItemIcon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.menuItemIcon svg {
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.MuiMenuItem-root:hover svg {
+  color: var(--accent);
+}

@@ -1,5 +1,6 @@
 package com.cash_management.cashmanagement.services.impl;
 
+import com.cash_management.cashmanagement.dtos.DailyExpenseDTO;
 import com.cash_management.cashmanagement.dtos.SpendingResponseDTO;
 import com.cash_management.cashmanagement.entities.DailyExpense;
 import com.cash_management.cashmanagement.entities.Spending;
@@ -11,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +43,20 @@ public class SpendingServiceImpl implements SpendingService {
                 .mapToDouble(DailyExpense::getAmount)
                 .sum();
     }
+
+    /**
+     * Returns list of total spending for each day in the month of the given day.
+     * E.g. if input is "2023-10-15", returns totals for all days in October 2023.
+     */
+
+    @Override
+    public List<DailyExpenseDTO> getDailyExpensesForDate(LocalDate date) {
+        List<DailyExpense> expenses = dailyexpensesRepository.findAllByDate(date);
+        return expenses.stream()
+                .map(expense -> modelMapper.map(expense, DailyExpenseDTO.class))
+                .toList();
+    }
+
 
     /**
      * Accepts day in ISO format "yyyy-MM-dd" or "dd-MM-yyyy" or similar.

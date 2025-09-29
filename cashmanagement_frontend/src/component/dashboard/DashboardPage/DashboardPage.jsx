@@ -5,6 +5,7 @@ import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import "./DashboardPage.css";
 import AddExpenseSheet from "../AddExpenseSheet/AddExpenseSheet";
 import SpendingOverview from "../SpendingOverview/SpendingOverview";
+import TodaysSpendingTable from "../TodaysSpendingTable/TodaysSpendingTable";
 
 const StatCard = ({ label, amount }) => (
   <Card className="stat-card">
@@ -25,7 +26,7 @@ const StatCard = ({ label, amount }) => (
   </Card>
 );
 
-export default function DashboardHeader({ monthAmount = "41,162.4", dayAmount = "653" }) {
+export default function DashboardHeader() {
   const [open, setOpen] = useState(false);
 
   return (
@@ -34,11 +35,7 @@ export default function DashboardHeader({ monthAmount = "41,162.4", dayAmount = 
         <Grid container spacing={2} justifyContent="center" alignItems="center">
           <SpendingOverview />
         </Grid>
-
-        {/* Placeholder for chart */}
-        <Box className="dashboard-chart-placeholder">
-          <Typography variant="body1">Chart / Recent transactions area</Typography>
-        </Box>
+        <TodaysSpendingTable />
       </Box>
 
       {/* Floating Add Expense Button */}

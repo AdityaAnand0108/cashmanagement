@@ -2,6 +2,7 @@ package com.cash_management.cashmanagement.controller;
 
 import com.cash_management.cashmanagement.dtos.SpendingOverviewDTO;
 import com.cash_management.cashmanagement.dtos.SpendingResponseDTO;
+import com.cash_management.cashmanagement.dtos.DailyExpenseDTO;
 import com.cash_management.cashmanagement.services.SpendingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * REST controller for managing spending-related endpoints.
@@ -25,13 +27,14 @@ public class SpendingController {
      * Example: GET /api/v1/spending?date=2023-10-15
      */
     @GetMapping("/spending")
-    public ResponseEntity<SpendingResponseDTO> getTotalSpendingForDay(
+    public ResponseEntity<List<DailyExpenseDTO>> getDailyExpensesForDay(
             @RequestParam("date")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-        SpendingResponseDTO response = spendingService.getTotalSpendingForDay(date);
+        List<DailyExpenseDTO> response = spendingService.getDailyExpensesForDate(date);
         return ResponseEntity.ok(response);
     }
+
 
     /**
      * Get total spending for a specific month.
@@ -50,7 +53,7 @@ public class SpendingController {
      * Get spending overview for today and the current month.
      * Example: GET /api/v1/spending/overview
      */
-    @GetMapping("/overview")
+    @GetMapping("/spending/overview")
     public ResponseEntity<SpendingOverviewDTO> getSpendingOverview() {
         LocalDate today = LocalDate.now();
         double todayTotal = spendingService.getTotalSpendingForDay(today).getTotalSpending();

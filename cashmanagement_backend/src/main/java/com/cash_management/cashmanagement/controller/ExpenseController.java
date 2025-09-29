@@ -26,6 +26,8 @@ public class ExpenseController {
         return ResponseEntity.ok(dailyexpensesService.getAllExpenses());
     }
 
+
+
     /*
      * Get expenses by category
      * @param category

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface SpendingRepository extends JpaRepository<Spending, Long> {
 
@@ -21,4 +22,6 @@ public interface SpendingRepository extends JpaRepository<Spending, Long> {
      * Finds a Spending record by exact date (one record per date assumption).
      */
     Spending findByDate(LocalDate date);
+
+    List<Spending> findAllByDateBetween(LocalDate startDate, LocalDate endDate);
 }

@@ -1,0 +1,76 @@
+.dashboard-container {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 24px;
+  background: linear-gradient(120deg, #f8d776 0%, #f4a98f 50%, #f7a18b 100%);
+}
+
+.dashboard-content {
+  width: 100%;
+  max-width: 980px;
+}
+
+.stat-card {
+  min-width: 220px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.12);
+}
+
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.stat-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 110, 253, 0.06);
+}
+
+.calendar-icon {
+  color: #0d6efd;
+  font-size: 18px;
+}
+
+.stat-label {
+  color: #666;
+}
+
+.stat-amount {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+  color: #0b66d0;
+}
+
+.dashboard-chart-placeholder {
+  margin-top: 32px;
+  height: 220px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.54);
+  backdrop-filter: blur(4px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.add-expense-btn {
+  position: fixed !important;
+  right: 28px;
+  bottom: 28px;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 18px rgba(13, 110, 253, 0.24);
+  text-transform: uppercase;
+  font-weight: 700;
+}

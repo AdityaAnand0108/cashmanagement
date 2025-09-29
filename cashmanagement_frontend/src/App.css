@@ -1,14 +1,25 @@
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: #f9fafb;
+  color: #111827;
+}
 
+* {
+  box-sizing: border-box;
+}
+
+/* reset + full-height root */
 html, body, #root {
-	height: 100%;
-	margin: 0;
-	padding: 0;
-	font-family: 'Montserrat', 'Roboto', Arial, Helvetica, sans-serif;
-	background: #e0eafc;
+  height: 100%;
+  margin: 0;
 }
 
-.dashboard-container {
-	box-sizing: border-box;
-	padding: 0 !important;
+/* global app background */
+.app-bg {
+  min-height: 100dvh; /* better for mobile than 100vh */
+  background: linear-gradient(120deg, #f8d776 0%, #f4a98f 50%, #f7a18b 100%);
+  background-attachment: fixed; /* optional */
+  background-size: cover;       /* optional */
+  box-sizing: border-box;
 }
-

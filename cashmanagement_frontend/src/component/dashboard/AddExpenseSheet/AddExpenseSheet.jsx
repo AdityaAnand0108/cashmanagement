@@ -11,65 +11,64 @@ import {
   FormControlLabel,
   Snackbar,
   Alert,
+  CircularProgress,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { categories } from '../../../enum/categories';
 import { paymentMethods } from '../../../enum/paymentMethods';
-import CloseIcon from '@mui/icons-material/Close';
-import axios from 'axios';
+import { addExpense } from "../../../api/expenseApi";
+import './AddExpenseSheet.css';
+
+const initialFormState = {
+  expenseName: '',
+  amount: '',
+  category: '',
+  description: '',
+  date: '',
+  paymentMethod: '',
+  recurring: false,
+};
 
 const AddExpenseSheet = ({ open, onClose }) => {
-  const [form, setForm] = useState({
-    expenseName: '',
-    amount: '',
-    category: '',
-    description: '',
-    date: '',
-    paymentMethod: '',
-    recurring: false,
-  });
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [form, setForm] = useState(initialFormState);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
+    setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
+
+  const resetForm = () => setForm(initialFormState);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      await axios.post('http://localhost:8080/cashmanagement/add-expense', {
-        ...form,
-        amount: parseFloat(form.amount),
-      });
-      setSnackbarOpen(true);
-      setForm({
-        expenseName: '',
-        amount: '',
-        category: '',
-        description: '',
-        date: '',
-        paymentMethod: '',
-        recurring: false,
-      });
+      await addExpense(form);
+      setSnackbar({ open: true, message: 'Expense saved successfully', severity: 'success' });
+      resetForm();
       onClose();
-    } catch (error) {
-      // Handle error
+    } catch {
+      setSnackbar({ open: true, message: 'Failed to save expense', severity: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      <Drawer anchor="right" open={open} onClose={onClose}>
-        <Box sx={{ width: 380, p: 3, bgcolor: "#f6f9fb", height: "100%" }}>
-          <Box display="flex" alignItems="center" mb={2}>
-            <Typography variant="h6" flexGrow={1}>
+      <>
+        <Box className="expenseDrawer">
+          <Box className="expenseDrawerHeader">
+            <Typography variant="h6" className="expenseDrawerTitle">
               Add Expense
             </Typography>
             <IconButton onClick={onClose}>
               <CloseIcon />
             </IconButton>
           </Box>
-          <form onSubmit={handleSubmit}>
+
+          <form onSubmit={handleSubmit} className="expenseForm">
             <TextField
               label="Expense Name"
               name="expenseName"
@@ -152,27 +151,37 @@ const AddExpenseSheet = ({ open, onClose }) => {
                 />
               }
               label="Recurring"
+              className="expenseCheckbox"
             />
             <Box mt={3}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
-                Add Expense
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                disabled={loading}
+                startIcon={loading ? <CircularProgress size={18} /> : null}
+              >
+                {loading ? 'Saving...' : 'Add Expense'}
               </Button>
             </Box>
           </form>
-
         </Box>
-      </Drawer>
       <Snackbar
-        open={snackbarOpen}
+        open={snackbar.open}
         autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
+        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
-          Expense saved successfully
+        <Alert
+          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
         </Alert>
       </Snackbar>
-    </>
+      </>
   );
 };
 

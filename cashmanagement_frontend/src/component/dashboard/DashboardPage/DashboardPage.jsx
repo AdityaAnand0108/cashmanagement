@@ -1,8 +1,9 @@
-import React from "react";
-import { Box, Card, CardContent, Typography, Grid, Fab } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Card, CardContent, Typography, Grid, Fab, Drawer } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import "./DashboardPage.css";
+import AddExpenseSheet from "../AddExpenseSheet/AddExpenseSheet";
 
 const StatCard = ({ label, amount }) => (
   <Card className="stat-card">
@@ -24,6 +25,8 @@ const StatCard = ({ label, amount }) => (
 );
 
 export default function DashboardHeader({ monthAmount = "41,162.4", dayAmount = "653" }) {
+  const [open, setOpen] = useState(false);
+
   return (
     <Box className="dashboard-container">
       <Box className="dashboard-content">
@@ -42,16 +45,22 @@ export default function DashboardHeader({ monthAmount = "41,162.4", dayAmount = 
         </Box>
       </Box>
 
+      {/* Floating Add Expense Button */}
       <Fab
         variant="extended"
         color="primary"
         aria-label="add-expense"
         className="add-expense-btn"
-        onClick={() => console.log("Add expense clicked")}
+        onClick={() => setOpen(true)}
       >
         <AddIcon sx={{ mr: 1 }} />
         Add Expense
       </Fab>
+
+      {/* Side Sheet Drawer */}
+      <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
+        <AddExpenseSheet onClose={() => setOpen(false)} />
+      </Drawer>
     </Box>
   );
 }

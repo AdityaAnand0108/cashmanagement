@@ -4,6 +4,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import "./DashboardPage.css";
 import AddExpenseSheet from "../AddExpenseSheet/AddExpenseSheet";
+import SpendingOverview from "../SpendingOverview/SpendingOverview";
 
 const StatCard = ({ label, amount }) => (
   <Card className="stat-card">
@@ -31,12 +32,7 @@ export default function DashboardHeader({ monthAmount = "41,162.4", dayAmount = 
     <Box className="dashboard-container">
       <Box className="dashboard-content">
         <Grid container spacing={2} justifyContent="center" alignItems="center">
-          <Grid item xs={12} sm="auto">
-            <StatCard label="This Month" amount={monthAmount} />
-          </Grid>
-          <Grid item xs={12} sm="auto">
-            <StatCard label="This Day Spent" amount={dayAmount} />
-          </Grid>
+          <SpendingOverview />
         </Grid>
 
         {/* Placeholder for chart */}

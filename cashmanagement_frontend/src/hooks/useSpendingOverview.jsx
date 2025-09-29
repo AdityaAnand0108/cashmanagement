@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-import { SpendingOverview } from '../types/spendingOverview';
-import { fetchSpendingOverview } from '../api/spendingOverviewApi';
+import { useEffect, useState } from "react";
+import { fetchSpendingOverview } from "../api/spendingOverviewApi";
 
 export const useSpendingOverview = () => {
-  const [data, setData] = useState<SpendingOverview | null>(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchSpendingOverview()

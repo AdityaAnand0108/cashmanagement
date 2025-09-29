@@ -10,11 +10,11 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import { useSpendingOverview } from "../../hooks/useSpendingOverview";
+import { useSpendingOverview } from "../../../hooks/useSpendingOverview";
 
 import "./SpendingOverview.css";
 
-const SpendingOverview: React.FC = () => {
+const SpendingOverview = () => {
   const { data, loading, error } = useSpendingOverview();
 
   if (loading) {

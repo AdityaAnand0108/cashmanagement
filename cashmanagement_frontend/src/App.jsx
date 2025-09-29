@@ -1,11 +1,11 @@
 import React from 'react'
-import SpendingOverview from './component/dashboard/Spending_overview';
+import DashboardPage from './component/dashboard/DashboardPage'
 
 function App() {
 
   return (
     <>
-        <SpendingOverview monthAmount="$2,450" daySpent="$150" />
+    <DashboardPage />
     </>
   )
 }

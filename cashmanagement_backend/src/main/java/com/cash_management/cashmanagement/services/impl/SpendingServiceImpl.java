@@ -27,7 +27,6 @@ public class SpendingServiceImpl implements SpendingService {
      * - "2025-09" (ISO YearMonth)
      * - "September 2025" or "Sep 2025"
      * - "9" or "09" -> treated as month-of-current-year
-     *
      * If parsing fails, it will throw DateTimeParseException.
      */
     @Override

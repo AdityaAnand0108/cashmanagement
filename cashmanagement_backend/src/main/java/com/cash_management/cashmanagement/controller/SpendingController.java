@@ -24,7 +24,7 @@ public class SpendingController {
 
     /**
      * Get total spending for a specific day.
-     * Example: GET /api/v1/spending?date=2023-10-15
+     * Example: GET /spending?date=2023-10-15
      */
     @GetMapping("/spending")
     public ResponseEntity<List<DailyExpenseDTO>> getDailyExpensesForDay(
@@ -38,7 +38,7 @@ public class SpendingController {
 
     /**
      * Get total spending for a specific month.
-     * Example: GET /api/v1/spending/monthly?year=2023&month=10
+     * Example: GET /spending/monthly?year=2023&month=10
      */
     @GetMapping("/monthly")
     public ResponseEntity<Double> getTotalSpendingForMonth(
@@ -51,7 +51,7 @@ public class SpendingController {
 
     /**
      * Get spending overview for today and the current month.
-     * Example: GET /api/v1/spending/overview
+     * Example: GET /spending/overview
      */
     @GetMapping("/spending/overview")
     public ResponseEntity<SpendingOverviewDTO> getSpendingOverview() {

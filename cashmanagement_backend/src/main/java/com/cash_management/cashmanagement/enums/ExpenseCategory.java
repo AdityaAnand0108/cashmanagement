@@ -1,13 +1,17 @@
 package com.cash_management.cashmanagement.enums;
 
 public enum ExpenseCategory {
-    FOOD,
-    FUEL,
-    TRANSPORTATION,
-    UTILITIES,
-    ENTERTAINMENT,
-    HEALTHCARE,
-    EDUCATION,
+    MAINTENANCE,
     PERSONAL_CARE,
-    MISCELLANEOUS
+    SUBSCRIPTION,
+    BILLS,
+    MEDICINES,
+    FUEL,
+    FRUITS_VEGETABLES,
+    ONLINE_SHOPPING,
+    DOCTOR_VISIT,
+    OUTING,
+    MISCELLANEOUS,
+    NECESSARIES_GROCERIES,
+    SIP_INVESTMENT;
 }

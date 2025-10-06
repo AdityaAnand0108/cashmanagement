@@ -11,7 +11,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 
 /**
- * TodaysSpendingTable
+ *   TodaysSpendingTable
  * - Externalized CSS to CSS module for maintainability
  * - Improved loading UX (skeleton), formatting, accessibility
  * - Responsive overflow and sticky header

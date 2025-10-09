@@ -22,7 +22,6 @@ public class ExpenseCategoryRestriction {
 
     private double remainingAmount;
 
-    @Transient
     private Double minAmount;
 
     public Double getMinAmount() {

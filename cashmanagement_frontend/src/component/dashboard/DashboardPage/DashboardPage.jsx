@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Card, CardContent, Typography, Grid, Fab, Drawer } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Fab,
+  Drawer,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 import "./DashboardPage.css";
@@ -31,12 +39,21 @@ export default function DashboardHeader() {
 
   return (
     <Box className="dashboard-container">
-      <Box className="dashboard-content">
-        <Grid container spacing={2} justifyContent="center" alignItems="center">
+      {/* Main layout: sidebar + main */}
+      <div className="dashboard-main">
+        <div className="dashboard-sidebar">
+          {/* SpendingOverview should render the stacked stat cards.
+        If SpendingOverview already renders multiple cards, they'll stack here. */}
           <SpendingOverview />
-        </Grid>
-        <TodaysSpendingTable />
-      </Box>
+          {/* You can add another small widget here if needed */}
+        </div>
+        <div className="dashboard-main-area">
+          {/* Today's spending table */}
+          <div className="todays-spending-wrapper">
+            <TodaysSpendingTable />
+          </div>
+        </div>
+      </div>
 
       {/* Floating Add Expense Button */}
       <Fab

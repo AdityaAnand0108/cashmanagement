@@ -16,6 +16,9 @@ import "./SpendingOverview.css";
 
 const SpendingOverview = () => {
   const { data, loading, error } = useSpendingOverview();
+  const today = new Date();
+  const month = today.toLocaleString("default", { month: "long" });
+  const day = today.getDate();
 
   if (loading) {
     return (
@@ -37,7 +40,7 @@ const SpendingOverview = () => {
             <Box className="sp-card-header">
               <CalendarMonthIcon className="sp-icon" />
               <Typography variant="subtitle1" className="sp-label">
-                This Month
+                {month} Spent
               </Typography>
             </Box>
 
@@ -54,7 +57,7 @@ const SpendingOverview = () => {
             <Box className="sp-card-header">
               <TodayIcon className="sp-icon" />
               <Typography variant="subtitle1" className="sp-label">
-                This Day Spent
+                {day}th Today Spent
               </Typography>
             </Box>
 

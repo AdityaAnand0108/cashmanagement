@@ -1,3 +1,5 @@
+import { Padding } from "@mui/icons-material";
+
 export const headerSx = {
   appBar: {
     backgroundColor: "background.paper", // follows theme
@@ -25,6 +27,7 @@ export const headerSx = {
     display: "flex",
     alignItems: "center",
     gap: 1,
+    Padding: 5,
   },
   iconButton: {
     ml: 1,

@@ -13,6 +13,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { headerSx } from "./headerStyles";
 import logo from "../../assets/data-analysis.png";
+import { Logout } from "@mui/icons-material";
 
 // default export a single React component (ready to import)
 export default function Header({
@@ -98,8 +99,7 @@ export default function Header({
                 handleClose();
                 onLogout();
               }}
-            >
-              Logout
+            > <Logout sx={{ mr: 1 }} /> Logout
             </MenuItem>
           </Menu>
         </Box>

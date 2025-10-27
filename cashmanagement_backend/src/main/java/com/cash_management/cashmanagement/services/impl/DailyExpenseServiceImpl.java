@@ -33,9 +33,16 @@ public class DailyExpenseServiceImpl implements DailyExpenseService {
     @Transactional
     public DailyExpenseDTO addExpense(DailyExpenseDTO dailyExpenseDTO) {
         DailyExpense newExpense = modelMapper.map(dailyExpenseDTO, DailyExpense.class);
+        LocalDate date = newExpense.getDate();
+
+        // ensure parent record exists (create if necessary) before inserting the child
+        spendingService.recalcAndSaveForDate(date);
+
         DailyExpense saved = dailyexpensesRepository.save(newExpense);
-        // recalc for the saved date
+
+        // recalc totals now that the child exists
         spendingService.recalcAndSaveForDate(saved.getDate());
+
         return modelMapper.map(saved, DailyExpenseDTO.class);
     }
 

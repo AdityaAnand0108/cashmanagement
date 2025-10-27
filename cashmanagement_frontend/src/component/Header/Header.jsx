@@ -13,7 +13,10 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { headerSx } from "./headerStyles";
 import logo from "../../assets/data-analysis.png";
-import { Logout } from "@mui/icons-material";
+import { Home, Info, Logout } from "@mui/icons-material";
+import { NavLink } from "react-router";
+import { Button } from "@mui/material";
+import About from "../About/About";
 
 // default export a single React component (ready to import)
 export default function Header({
@@ -44,23 +47,79 @@ export default function Header({
         >
           <MenuIcon />
         </IconButton>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1 }}>
-            <Box
-                component="img"
-                src={logo}
-                alt="Cash Management Logo"
-                sx={{
-                    height: 40,
-                    width: "auto",
-                    cursor: "pointer",
-                    borderRadius: 1,
-          }}
-        />
-        <Typography variant="h6" component="div" sx={headerSx.title}>
-          {title}
-        </Typography>
-        </Box>    
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1 }}
+        >
+          <Box
+            component="img"
+            src={logo}
+            alt="Cash Management Logo"
+            sx={{
+              height: 40,
+              width: "auto",
+              cursor: "pointer",
+              borderRadius: 1,
+            }}
+          />
+          <Typography variant="h6" component="div" sx={headerSx.title}>
+            {title}
+          </Typography>
+        </Box>
         <Box sx={headerSx.actions}>
+          < NavLink
+            to="/"
+            style={({ isActive }) => ({
+              textDecorationColor: isActive ? "Orange" : "none",
+              fontWeight: isActive ? "bold" : "normal",
+            })}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Home />}
+              sx={{
+                borderRadius: 2,
+                textTransform: "none",
+                fontWeight: 500,
+                px: 2,
+                "&.MuiButton-contained": {
+                  backgroundColor: "#1976d2",
+                },
+                "&:hover": {
+                  backgroundColor: "#1565c0",
+                },
+              }}
+            >
+              Home
+            </Button>
+          </NavLink>
+           < NavLink
+            to="/about"
+             style={({ isActive }) => ({
+              textDecorationColor: isActive ? "Orange" : "none",
+              fontWeight: isActive ? "bold" : "normal",
+            })}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Info />}
+              sx={{
+                borderRadius: 2,
+                textTransform: "none",
+                fontWeight: 500,
+                px: 2,
+                "&.MuiButton-contained": {
+                  backgroundColor: "#1976d2",
+                },
+                "&:hover": {
+                  backgroundColor: "#1565c0",
+                },
+              }}
+            >
+              About
+            </Button>
+          </NavLink>
           <IconButton aria-label="notifications" sx={headerSx.iconButton}>
             <Badge badgeContent={notificationCount} color="error">
               <NotificationsIcon />
@@ -99,7 +158,9 @@ export default function Header({
                 handleClose();
                 onLogout();
               }}
-            > <Logout sx={{ mr: 1 }} /> Logout
+            >
+              {" "}
+              <Logout sx={{ mr: 1 }} /> Logout
             </MenuItem>
           </Menu>
         </Box>

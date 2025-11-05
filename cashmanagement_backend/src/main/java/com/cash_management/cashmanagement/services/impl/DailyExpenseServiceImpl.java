@@ -29,6 +29,12 @@ public class DailyExpenseServiceImpl implements DailyExpenseService {
         return dailyExpenseDTOList;
     }
 
+    public DailyExpenseDTO getExpenseById(Long id){
+        DailyExpense expenseID = dailyexpensesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
+        return 
+    }
+
     @Override
     @Transactional
     public DailyExpenseDTO addExpense(DailyExpenseDTO dailyExpenseDTO) {

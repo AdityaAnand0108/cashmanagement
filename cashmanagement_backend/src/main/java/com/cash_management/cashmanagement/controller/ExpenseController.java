@@ -44,6 +44,21 @@ public class ExpenseController {
 
 
     /*
+     * Get expenses by id
+     * @param id
+     * @return List of DailyexpensesDTO
+     */
+    @GetMapping("/expence-by-id/{id}")
+    public ResponseEntity<DailyExpenseDTO> getExpenseById(@PathVariable Long id){
+        DailyExpenseDTO expenceById=dailyexpensesService.getExpenseById(id);
+        if(expenceById==null){
+            throw new EntityNotFoundException("No expense found for ID: " + id);
+        }
+        return ResponseEntity.ok(expenceById);
+    }
+
+
+    /*
      * Add a new expense
      * @param dailyexpensesDTO
      * @return DailyexpensesDTO
@@ -74,6 +89,5 @@ public class ExpenseController {
         dailyexpensesService.deleteExpense(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }

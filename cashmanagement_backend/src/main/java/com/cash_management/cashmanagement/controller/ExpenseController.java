@@ -48,7 +48,7 @@ public class ExpenseController {
      * @param id
      * @return List of DailyexpensesDTO
      */
-    @GetMapping("/expence-by-id/{id}")
+    @GetMapping("/expense-by-id/{id}")
     public ResponseEntity<DailyExpenseDTO> getExpenseById(@PathVariable Long id){
         DailyExpenseDTO expenceById=dailyexpensesService.getExpenseById(id);
         if(expenceById==null){

@@ -45,7 +45,7 @@ const About = () => {
                 Boot)
               </Typography>
               <Typography variant="body2">
-                <strong>Company:</strong> Cognizant Technology Solutions (4 years) , LTIMindtree (0.2 years)
+                <strong>Company:</strong> Cognizant Technology Solutions (4 years) , LTIMindtree (0.3 years)
               </Typography>
             </div>
 

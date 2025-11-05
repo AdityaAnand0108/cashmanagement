@@ -3,12 +3,17 @@ import PropTypes from "prop-types";
 import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Typography, IconButton,
-  Menu, MenuItem, Skeleton, Box
+  Menu, MenuItem, Skeleton, Box, Stack, FormControl, InputLabel, Select, Button, TextField
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import styles from "./TodaysSpendingTable.module.css";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
+
+// OPTIONAL: if you already have categories exported, import them.
+// Example shape expected: ["FOOD", "RENT", "GROCERIES", "UTILITIES", ...]
+// import { categories } from "../../enum/categories";
+const categories = ["FOOD","MAINTENANCE","PERSONAL_CARE","SUBSCRIPTION","BILLS","MEDICINES","FUEL","UTILITIES","FRUITS_VEGETABLES","ONLINE_SHOPPING","DOCTOR_VISIT","OUTING","MISCELLANEOUS","NECESSARIES_GROCERIES","SIP_INVESTMENT"];
 
 /**
  *   TodaysSpendingTable
@@ -16,32 +21,69 @@ import EditIcon from "@mui/icons-material/Edit";
  * - Improved loading UX (skeleton), formatting, accessibility
  * - Responsive overflow and sticky header
  */
-export default function TodaysSpendingTable({ endpoint = "http://localhost:8080/cashmanagement/spending" }) {
+export default function TodaysSpendingTable({ endpoint = "http://localhost:8080/cashmanagement/spending",
+      byCategoryUrl = "http://localhost:8080/cashmanagement/by-category"}) {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-    setLoading(true);
-    setError(null);
+   // search UI state
+    const [category, setCategory] = useState("");
 
-    fetch(`${endpoint}?date=${today}`, { cache: "no-store" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setExpenses(Array.isArray(data) ? data : []);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch spending data:", err);
-        setError("Failed to load spending.");
-      })
-      .finally(() => setLoading(false));
-  }, [endpoint]);
+  function getLocalISODate() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`; // local YYYY-MM-DD
+  }
+
+ const loadToday = () => {
+   const today = getLocalISODate();
+   setLoading(true);
+   setError(null);
+
+   fetch(`${endpoint}?date=${today}`, { cache: "no-store" })
+     .then((res) => {
+       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+       return res.json();
+     })
+     .then((data) => setExpenses(Array.isArray(data) ? data : []))
+     .catch((err) => {
+       console.error("Failed to fetch spending data:", err);
+       setError("Failed to load spending.");
+       setExpenses([]); // show empty table on failure
+     })
+     .finally(() => setLoading(false));
+ };
+
+useEffect(() => {
+  loadToday();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [endpoint]);
+
+  //loadByCategory
+  const loadByCategory = () => {
+      if (!category) return;
+      setLoading(true);
+      setError(null);
+      // ensure single slash; byCategoryUrl should be like .../by-category
+      fetch(`${byCategoryUrl}/${encodeURIComponent(category)}`, { cache: "no-store" })
+        .then((res) => {
+          if (res.status === 404) return []; // empty if not found
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data) => setExpenses(Array.isArray(data) ? data : []))
+        .catch((err) => {
+          console.error("Failed to fetch by category:", err);
+          setError(`No expenses found for category: ${category}`);
+          setExpenses([]);
+        })
+        .finally(() => setLoading(false));
+    };
 
   // memoize formatted rows to avoid recalculation on renders
   const formattedExpenses = useMemo(() => {
@@ -83,6 +125,12 @@ export default function TodaysSpendingTable({ endpoint = "http://localhost:8080/
     alert(`Editing: ${selectedRow?.description ?? "—"}`);
     handleMenuClose();
   };
+  //
+   const handleClear = () => {
+      setCategory("");
+      setError(null);
+      loadToday();
+    };
 
   return (
     <section className={styles.wrapper} aria-labelledby="todays-spending-title">
@@ -91,6 +139,43 @@ export default function TodaysSpendingTable({ endpoint = "http://localhost:8080/
           <Typography id="todays-spending-title" variant="h6" component="h2" className={styles.title}>
             Today's Spending
           </Typography>
+
+           {/* --- Search toolbar --- */}
+                    <Stack
+                      direction={{ xs: "column", sm: "row" }}
+                      spacing={1.5}
+                      alignItems="center"
+                      className={styles.toolbar}
+                    >
+                      <FormControl size="small" sx={{ minWidth: 160 }}>
+                        <InputLabel id="category-label">Category</InputLabel>
+                        <Select
+                          labelId="category-label"
+                          label="Category"
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                        >
+                          <MenuItem value=""><em>None</em></MenuItem>
+                          {categories.map((c) => (
+                            <MenuItem key={c} value={c}>{c}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={loadByCategory}
+                        disabled={!category || loading}
+                      >
+                        Search by Category
+                      </Button>
+
+                      <Button variant="text" size="small" onClick={handleClear} disabled={loading}>
+                        Clear
+                      </Button>
+                    </Stack>
+                 {/* --- Search toolbar --- */}
         </Box>
 
         <TableContainer className={styles.tableContainer} component="div" role="region" aria-label="Today's spending table">
@@ -180,4 +265,6 @@ export default function TodaysSpendingTable({ endpoint = "http://localhost:8080/
 TodaysSpendingTable.propTypes = {
   /** Base endpoint for fetching today's spending. Default mirrors existing backend. */
   endpoint: PropTypes.string,
+    /** Base URL for GET by category: should be .../by-category (no trailing slash) */
+    byCategoryUrl: PropTypes.string,
 };

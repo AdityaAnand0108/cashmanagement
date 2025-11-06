@@ -30,6 +30,13 @@ public class DailyExpenseServiceImpl implements DailyExpenseService {
     }
 
     @Override
+    public DailyExpenseDTO getExpenseById(Long id){
+        DailyExpense expense = dailyexpensesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Expense not found with id: " + id));
+        return modelMapper.map(expense, DailyExpenseDTO.class);
+    }
+
+    @Override
     @Transactional
     public DailyExpenseDTO addExpense(DailyExpenseDTO dailyExpenseDTO) {
         DailyExpense newExpense = modelMapper.map(dailyExpenseDTO, DailyExpense.class);

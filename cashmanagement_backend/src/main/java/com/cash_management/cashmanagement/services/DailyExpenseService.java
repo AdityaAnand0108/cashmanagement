@@ -9,6 +9,9 @@ public interface DailyExpenseService {
     /* Retrieve all daily expenses */
     List<DailyExpenseDTO> getAllExpenses();
 
+    /* Retrieve  daily expenses by ID */
+    DailyExpenseDTO getExpenseById(Long id);
+
     /* Add a new daily expense */
     DailyExpenseDTO addExpense(DailyExpenseDTO dailyExpenseDTO);
 
@@ -20,4 +23,5 @@ public interface DailyExpenseService {
 
     /* Retrieve expenses by category */
     List<DailyExpenseDTO> getExpensesByCategory(String category);
+
 }

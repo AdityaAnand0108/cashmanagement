@@ -7,6 +7,7 @@ public enum ExpenseCategory {
     BILLS,
     MEDICINES,
     FUEL,
+    UTILITIES,
     FRUITS_VEGETABLES,
     ONLINE_SHOPPING,
     DOCTOR_VISIT,

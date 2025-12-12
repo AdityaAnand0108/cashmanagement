@@ -2,63 +2,102 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f8f9fa; /* Light background similar to wireframe */
+  min-height: 85vh; /* Adjusted to fit better with header/footer */
+  background-color: transparent; /* Rely on body background */
+  padding: 40px 20px;
 }
 
 .signup-box {
   width: 100%;
-  max-width: 450px;
-  padding: 40px;
-  border-radius: 8px; /* Rounded corners as per wireframe */
+  max-width: 480px; /* Slightly wider */
+  padding: 60px 50px; /* More breathable padding */
+  border-radius: 16px; /* Smooth corners */
   background-color: #ffffff;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.08); /* Soft, deep shadow for premium feel */
   text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.02);
 }
 
 .signup-logo {
-  font-weight: 700;
-  color: #1976d2; /* Primary blue color */
-  margin-bottom: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-weight: 800 !important;
+  color: #1976d2; 
+  margin-bottom: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
+  letter-spacing: -0.5px;
 }
 
 .signup-title {
-  margin-bottom: 30px !important;
-  color: #333;
-  font-weight: 500 !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  margin-bottom: 40px !important;
+  color: #2d3748;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
 }
 
 .signup-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px; /* Increased gap between fields */
+}
+
+/* Material UI TextField Overrides */
+.signup-box .MuiTextField-root .MuiOutlinedInput-root {
+  border-radius: 8px;
+  background-color: #f8fafc;
+  transition: all 0.2s ease-in-out;
+}
+
+.signup-box .MuiTextField-root .MuiOutlinedInput-notchedOutline {
+  border-color: #e2e8f0;
+}
+
+.signup-box .MuiTextField-root .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #cbd5e1;
+}
+
+.signup-box .MuiTextField-root .MuiOutlinedInput-root.Mui-focused {
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
+}
+
+.signup-box .MuiInputLabel-root {
+  color: #64748b;
+  font-size: 0.95rem;
 }
 
 .signup-button {
-  margin-top: 10px !important;
-  padding: 10px !important;
+  margin-top: 20px !important;
+  padding: 14px !important;
   text-transform: none !important;
-  font-size: 1rem !important;
+  font-size: 1.05rem !important;
   font-weight: 600 !important;
-  box-shadow: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px -1px rgba(25, 118, 210, 0.2), 0 2px 4px -1px rgba(25, 118, 210, 0.1) !important;
+  background: linear-gradient(to right, #1976d2, #1565c0) !important;
+}
+
+.signup-button:hover {
+  box-shadow: 0 10px 15px -3px rgba(25, 118, 210, 0.2), 0 4px 6px -2px rgba(25, 118, 210, 0.1) !important;
+  transform: translateY(-1px);
 }
 
 .signup-footer {
-  margin-top: 20px;
-  font-size: 0.9rem;
-  color: #666;
+  margin-top: 32px;
+  font-size: 0.95rem;
+  color: #64748b;
 }
 
 .signup-link {
-  text-decoration: none;
+  text-decoration: none !important;
   font-weight: 600;
   color: #1976d2;
+  transition: color 0.2s;
 }
 
 .signup-link:hover {
-  text-decoration: underline;
+  color: #1565c0;
 }

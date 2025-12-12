@@ -1,48 +1,55 @@
 .header-appbar {
   background-color: #ffffff !important;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05) !important;
-  border-bottom: 2px solid #1976d2; /* Accent line from wireframe */
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important; /* Extremely subtle shadow */
+  border-bottom: 1px solid #e2e8f0; /* Use border instead of shadow for separation */
 }
 
 .header-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 700 !important;
-  color: #333;
+  gap: 10px;
   text-decoration: none;
   cursor: pointer;
+  padding: 5px 0;
 }
 
 .header-logo-icon {
   color: #1976d2;
-  font-size: 1.8rem !important;
+  font-size: 2rem !important;
 }
 
 .header-nav-link {
-  color: #555 !important;
+  color: #64748b !important;
   font-weight: 500 !important;
   text-transform: none !important;
-  font-size: 1rem !important;
-  margin: 0 10px !important;
+  font-size: 0.95rem !important;
+  margin: 0 8px !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
 }
 
 .header-nav-link:hover {
   color: #1976d2 !important;
-  background-color: transparent !important;
+  background-color: #f0f9ff !important;
 }
 
 .header-actions {
   display: flex;
-  gap: 15px;
-  color: #555;
+  gap: 12px;
+  align-items: center;
 }
 
 .header-action-icon {
   cursor: pointer;
-  color: #666;
+  color: #64748b;
+  transition: color 0.2s ease;
 }
 
 .header-action-icon:hover {
   color: #1976d2;
+}
+
+.header-appbar .MuiToolbar-root {
+  min-height: 72px !important; /* Taller header for more breathing room */
 }

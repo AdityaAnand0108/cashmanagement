@@ -2,18 +2,26 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import HexagonIcon from '@mui/icons-material/Hexagon'; // Using Hexagon as a placeholder for the logo icon
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'; // Money related icon
 import './Header.css';
 
 const Header: React.FC = () => {
   return (
     <AppBar position="static" className="header-appbar" elevation={0}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {/* Logo Section */}
         <Box className="header-logo">
-          <HexagonIcon className="header-logo-icon" />
-          <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
-            CashIQ
+          <AccountBalanceWalletIcon className="header-logo-icon" />
+          <Typography 
+            variant="h5" 
+            component="div" 
+            sx={{ 
+              fontWeight: 800, 
+              fontFamily: '"Plus Jakarta Sans", sans-serif',
+              color: '#1976d2', // Brand Blue
+              letterSpacing: '-0.5px'
+            }}
+          >
+            CashIQ <span style={{ fontSize: '0.8em' }}>➔</span>
           </Typography>
         </Box>
 

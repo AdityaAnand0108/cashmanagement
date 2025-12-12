@@ -3,13 +3,19 @@ import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/mater
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'; // Money related icon
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <AppBar position="static" className="header-appbar" elevation={0}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Box className="header-logo">
+        <Box 
+          className="header-logo" 
+          onClick={() => navigate('/')}
+        >
           <AccountBalanceWalletIcon className="header-logo-icon" />
           <Typography 
             variant="h5" 
@@ -27,7 +33,7 @@ const Header: React.FC = () => {
 
         {/* Navigation Links */}
         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-          <Button className="header-nav-link">Home</Button>
+          <Button className="header-nav-link" onClick={() => navigate('/')}>Home</Button>
           <Button className="header-nav-link">About</Button>
           <Button className="header-nav-link">Services</Button>
           <Button className="header-nav-link">Contact</Button>

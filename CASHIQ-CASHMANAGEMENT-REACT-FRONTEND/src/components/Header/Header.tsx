@@ -44,7 +44,12 @@ const Header: React.FC = () => {
           <IconButton size="large" edge="end" color="inherit">
             <SearchIcon className="header-action-icon" />
           </IconButton>
-          <IconButton size="large" edge="end" color="inherit">
+          <IconButton 
+            size="large" 
+            edge="end" 
+            color="inherit"
+            onClick={() => navigate('/login')}
+          >
             <AccountCircleIcon className="header-action-icon" />
           </IconButton>
         </Box>

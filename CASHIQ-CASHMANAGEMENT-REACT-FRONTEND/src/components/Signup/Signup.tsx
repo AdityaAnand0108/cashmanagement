@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Link, Alert } from "@mui/material";
+import { Box, Button, TextField, Typography, Link } from "@mui/material";
+import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import AuthService from "../../services/AuthService";
 import "./Signup.css";
@@ -13,25 +14,21 @@ const Signup: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(null); // Clear error on typing
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
     // Basic Validation
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
     if (!formData.username || !formData.email || !formData.password || !formData.phone) {
-      setError("Please fill in all fields");
+      toast.error("Please fill in all fields");
       return;
     }
 
@@ -45,13 +42,14 @@ const Signup: React.FC = () => {
       });
       
       // On success, redirect or show success message
-      alert("Registration successful! Please log in.");
+      // On success, redirect or show success message
+      toast.success("Registration successful! Please log in.");
       navigate("/"); // Redirect to landing or login (placeholder)
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message);
+        toast.error(err.message);
       } else {
-        setError("Registration failed. Please try again.");
+        toast.error("Registration failed. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -70,8 +68,8 @@ const Signup: React.FC = () => {
           Create your account.
         </Typography>
 
+
         <form className="signup-form" noValidate autoComplete="off" onSubmit={handleSubmit}>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           
           <TextField
             fullWidth
@@ -151,7 +149,7 @@ const Signup: React.FC = () => {
 
         <Box className="signup-footer">
           Already have an account?{" "}
-          <Link href="#" className="signup-link">
+          <Link onClick={() => navigate('/login')} className="signup-link">
             Log in.
           </Link>
         </Box>

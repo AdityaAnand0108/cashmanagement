@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Link, Alert } from "@mui/material";
+import { Box, Button, TextField, Typography, Link } from "@mui/material";
+import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import AuthService from "../../services/AuthService";
 import "./Login.css";
@@ -10,18 +11,16 @@ const Login: React.FC = () => {
     username: "",
     password: "",
   });
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.username || !formData.password) {
-      setError("Please enter both username and password");
+      toast.error("Please enter both username and password");
       return;
     }
 
@@ -32,14 +31,14 @@ const Login: React.FC = () => {
         password: formData.password,
       });
 
-      alert("Login successful!");
+      toast.success("Login successful!");
       // Here you might store the token if/when backend sends one
       navigate("/"); // Redirect to dashboard or home
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message);
+        toast.error(err.message);
       } else {
-        setError("Login failed. Please check your credentials.");
+        toast.error("Login failed. Please check your credentials.");
       }
     } finally {
       setLoading(false);
@@ -59,7 +58,6 @@ const Login: React.FC = () => {
         </Typography>
 
         <form className="login-form" noValidate autoComplete="off" onSubmit={handleSubmit}>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           
           <TextField
             fullWidth

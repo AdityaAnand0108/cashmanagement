@@ -14,9 +14,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 
+/**
+ * @author - Aditya
+ * @version - 1.0
+ * @Description - This class is used to store the user details
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -27,6 +31,12 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
+    /**
+     * @method - registerUser
+     * @param - userDTO
+     * @return - String
+     * @Description - This method is used to register the user
+     */
     @Override
     public String registerUser(UserDTO userDTO) {
         if (userRepository.findByUsername(userDTO.getUsername()).isPresent()) {
@@ -42,6 +52,12 @@ public class AuthServiceImpl implements AuthService {
         return "User registered successfully with ID : " + user.getId();
     }
 
+    /**
+     * @method - login
+     * @param - authDTO
+     * @return - String
+     * @Description - This method is used to login the user
+     */
     @Override
     public String login(AuthDTO authDTO) {
         Authentication authentication = authenticationManager.authenticate(

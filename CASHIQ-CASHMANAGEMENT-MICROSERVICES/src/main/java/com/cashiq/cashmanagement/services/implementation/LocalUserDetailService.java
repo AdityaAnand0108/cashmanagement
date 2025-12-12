@@ -10,6 +10,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
+/**
+ * @author - Aditya
+ * @version - 1.0
+ * @Description - This class is used to store the user details
+ */
 @Service
 public class LocalUserDetailService implements UserDetailsService {
 
@@ -19,6 +24,12 @@ public class LocalUserDetailService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * @method - loadUserByUsername
+     * @param - username
+     * @return - UserDetails
+     * @Description - This method is used to load the user by username
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Users user = userRepository.findByUsername(username)

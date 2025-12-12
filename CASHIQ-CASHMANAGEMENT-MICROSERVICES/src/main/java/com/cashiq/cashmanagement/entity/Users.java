@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
 
+/**
+ * @author - Aditya
+ * @version - 1.0
+ * @Description - This class is used to store the user details
+ */
 @Entity
 @Data
 public class Users {

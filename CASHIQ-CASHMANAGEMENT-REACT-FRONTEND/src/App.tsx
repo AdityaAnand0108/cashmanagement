@@ -3,6 +3,7 @@ import Signup from './components/Signup/Signup'
 import Layout from './components/Layout/Layout'
 import LandingPage from './components/LandingPage/LandingPage';
 import Login from './components/Login/Login'; // Import Login
+import SmartExpense from './components/SmartExpense/SmartExpense';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css'
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/smart-expense" element={<SmartExpense />} />
         </Routes>
       </Layout>
     </Router>

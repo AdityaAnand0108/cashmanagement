@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagercore.model;
+package com.cashiq.cashmanagement.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

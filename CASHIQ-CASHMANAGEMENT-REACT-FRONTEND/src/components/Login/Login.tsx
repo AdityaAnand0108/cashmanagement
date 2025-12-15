@@ -26,14 +26,15 @@ const Login: React.FC = () => {
 
     setLoading(true);
     try {
-      await AuthService.login({
+      const token = await AuthService.login({
         username: formData.username,
         password: formData.password,
       });
 
+      localStorage.setItem('token', token);
       toast.success("Login successful!");
-      // Here you might store the token if/when backend sends one
-      navigate("/"); // Redirect to dashboard or home
+      
+      navigate("/smart-expense"); // Redirect to smart expense page
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message);

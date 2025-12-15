@@ -2,6 +2,8 @@ import re
 import dateparser
 from datetime import datetime
 
+from dateparser.search import search_dates
+
 # Common payment methods in India/Global
 KNOWN_SOURCES = ['cash', 'upi', 'cred', 'gpay', 'paytm', 'hdfc', 'sbi', 'axis', 'credit card', 'debit card']
 
@@ -15,15 +17,21 @@ def extract_amount(text):
         return float(match.group(1))
     return None
 
+
 def extract_date(text):
     """
-    Converts 'yesterday' -> '2025-12-14'
+    Scans the sentence to find a date like 'yesterday', '4th dec', 'last friday'.
     """
-    # PREFER_DATES_FROM='past' ensures if we say "Friday", it means last Friday, not next Friday.
-    parsed_date = dateparser.parse(text, settings={'PREFER_DATES_FROM': 'past'})
-    if parsed_date:
-        return parsed_date.strftime('%Y-%m-%d')
-    # If no date found, default to Today
+    # search_dates returns a list of tuples: [('04 of dec', datetime_object)]
+    # We use settings={'PREFER_DATES_FROM': 'past'} to avoid future dates
+    results = search_dates(text, languages=['en'], settings={'PREFER_DATES_FROM': 'past'})
+
+    if results:
+        # We take the date object from the first result found
+        found_date = results[0][1]
+        return found_date.strftime('%Y-%m-%d')
+
+    # Fallback to Today if no date is mentioned
     return datetime.now().strftime('%Y-%m-%d')
 
 def extract_source(text):

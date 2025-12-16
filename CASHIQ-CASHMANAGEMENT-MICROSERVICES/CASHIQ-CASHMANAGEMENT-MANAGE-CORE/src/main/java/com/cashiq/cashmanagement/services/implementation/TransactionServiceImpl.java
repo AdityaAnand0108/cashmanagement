@@ -21,11 +21,21 @@ import org.springframework.stereotype.Service;
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Override
     public String addTransaction(TransactionDTO transactionDTO) {
-        Transaction transaction= modelMapper.map(transactionDTO, Transaction.class);
+        Transaction transaction = modelMapper.map(transactionDTO, Transaction.class);
+
+        // Get current logged in user
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        transaction.setUser(user);
+
         transactionRepository.save(transaction);
         return "Transaction added successfully";
     }

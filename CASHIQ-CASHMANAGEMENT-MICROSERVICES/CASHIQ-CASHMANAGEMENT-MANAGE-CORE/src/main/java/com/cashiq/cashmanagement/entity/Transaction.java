@@ -25,4 +25,8 @@ public class Transaction {
     private String paymentSource;
 
     private TransactionType type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Users user;
 }

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import SmartExpenseService from '../../services/SmartExpenseService';
-import TransactionService from '../../services/TransactionService';
+import TransactionService, { type TransactionDTO } from '../../services/TransactionService';
 import { toast } from 'react-toastify';
 import './QuickAddTransaction.css';
 
@@ -57,7 +57,7 @@ const QuickAddTransaction: React.FC = () => {
         }
 
         // Prepare DTO
-        const transactionData: any = {
+        const transactionData: TransactionDTO = {
             description: description,
             amount: analyzedData?.amount || 0,
             category: analyzedData?.category || 'Uncategorized',
@@ -75,6 +75,7 @@ const QuickAddTransaction: React.FC = () => {
             setDescription('');
             setAnalyzedData(null);
         } catch (error) {
+            console.error(error); // Log error to fix unused variable
             toast.error('Failed to log transaction. Check backend connection.');
         }
     };

@@ -1,13 +1,19 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Avatar } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'; // Money related icon
 import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  const username = localStorage.getItem('username');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    navigate('/login');
+  };
 
   return (
     <AppBar position="static" className="header-appbar" elevation={0}>
@@ -40,18 +46,33 @@ const Header: React.FC = () => {
         </Box>
 
         {/* Action Icons */}
-        <Box className="header-actions">
-          <IconButton size="large" edge="end" color="inherit">
-            <SearchIcon className="header-action-icon" />
-          </IconButton>
-          <IconButton 
-            size="large" 
-            edge="end" 
-            color="inherit"
-            onClick={() => navigate('/login')}
-          >
-            <AccountCircleIcon className="header-action-icon" />
-          </IconButton>
+        <Box className="header-actions" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {token ? (
+             <IconButton onClick={handleLogout} sx={{ p: 0 }}>
+                <Avatar sx={{ bgcolor: '#1976d2' }}>
+                  {username ? username.charAt(0).toUpperCase() : 'U'}
+                </Avatar>
+             </IconButton>
+          ) : (
+            <>
+              <Button 
+                variant="outlined" 
+                color="inherit" 
+                onClick={() => navigate('/login')}
+                sx={{ textTransform: 'none', borderColor: '#1976d2', color: '#1976d2', '&:hover': { borderColor: '#115293', backgroundColor: 'rgba(25, 118, 210, 0.04)' } }}
+              >
+                Sign In
+              </Button>
+              <Button 
+                variant="contained" 
+                disableElevation
+                onClick={() => navigate('/signup')}
+                sx={{ textTransform: 'none', backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#115293' } }}
+              >
+                Sign Up
+              </Button>
+            </>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

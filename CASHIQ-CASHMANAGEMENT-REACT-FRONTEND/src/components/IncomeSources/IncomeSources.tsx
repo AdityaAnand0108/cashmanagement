@@ -1,39 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import './IncomeSources.css';
 import AddIncomeSourceModal from './AddIncomeSourceModal/AddIncomeSourceModal';
-import IncomeService, { type IncomeDTO } from '../../services/IncomeService';
+import IncomeService from '../../services/IncomeService';
+import type { IncomeDTO } from '../../services/IncomeService';
+import TransactionService from '../../services/TransactionService';
+import type { TransactionDTO } from '../../services/TransactionService';
 
 // Icons
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
-// Recent transactions can remain mock for now or be fetched similarly if desired
-const recentTransactions = [
-    { date: "Dec 25", source: "Salary", amount: "+$5,200.00" },
-    { date: "Dec 12", source: "Freelance", amount: "+$750.00" },
-    { date: "Dec 01", source: "Rental", amount: "+$1,150.00" },
-];
-
 const IncomeSources: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [incomes, setIncomes] = useState<IncomeDTO[]>([]);
+    const [recentTransactions, setRecentTransactions] = useState<TransactionDTO[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchIncomes = async () => {
+    const fetchIncomes = useCallback(async () => {
         try {
             const data = await IncomeService.getAllIncomes();
             setIncomes(data);
         } catch (error) {
             console.error("Failed to fetch incomes", error);
-        } finally {
-            setLoading(false);
         }
-    };
+    }, []);
+
+    const fetchTransactions = useCallback(async () => {
+        try {
+            const data = await TransactionService.getAllTransactions();
+            const incomeTransactions = data.filter(tx => tx.type === 'INCOME');
+            // Sort by date descending if needed, but assuming backend order or basic list for now
+            setRecentTransactions(incomeTransactions);
+        } catch (error) {
+           console.error("Failed to fetch transactions", error);
+        }
+    }, []);
+
+    const loadData = useCallback(async () => {
+        setLoading(true);
+        await Promise.all([fetchIncomes(), fetchTransactions()]);
+        setLoading(false);
+    }, [fetchIncomes, fetchTransactions]);
 
     useEffect(() => {
-        fetchIncomes();
-    }, []);
+        loadData();
+    }, [loadData]);
 
     const handleAddClick = () => {
         setIsAddModalOpen(true);
@@ -60,7 +72,7 @@ const IncomeSources: React.FC = () => {
                     <div className="total-income-banner">
                         <div className="banner-content">
                             <h3>Total Monthly Income</h3>
-                            <div className="total-amount">${totalIncome.toFixed(2)}</div>
+                            <div className="total-amount">₹{totalIncome.toFixed(2)}</div>
                             <p className="banner-subtext">Based on {incomes.length} active sources.</p>
                         </div>
                     </div>
@@ -96,7 +108,7 @@ const IncomeSources: React.FC = () => {
                                         </p>
                                     </div>
                                     <div className="source-financials">
-                                        <div className="source-amount">${source.amount.toFixed(2)}</div>
+                                        <div className="source-amount">₹{source.amount.toFixed(2)}</div>
                                         <div className="source-next-date">
                                             Next payday: {source.nextPayDay}
                                         </div>
@@ -122,13 +134,19 @@ const IncomeSources: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {recentTransactions.map((tx, idx) => (
-                                        <tr key={idx}>
-                                            <td>{tx.date}</td>
-                                            <td>{tx.source}</td>
-                                            <td className="amount-positive">{tx.amount}</td>
+                                    {recentTransactions.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={3} style={{textAlign: 'center'}}>No recent income transactions found.</td>
                                         </tr>
-                                    ))}
+                                    ) : (
+                                        recentTransactions.map((tx, idx) => (
+                                            <tr key={idx}>
+                                                <td>{tx.date}</td>
+                                                <td>{tx.paymentSource}</td>
+                                                <td className="amount-positive">+₹{tx.amount}</td>
+                                            </tr>
+                                        ))
+                                    )}
                                 </tbody>
                             </table>
                         </div>

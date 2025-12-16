@@ -32,6 +32,8 @@ const addIncome = async (income: IncomeDTO): Promise<string> => {
 
         if (!response.ok) {
             if (response.status === 403) {
+                 localStorage.removeItem('token');
+                 window.location.href = '/login';
                  throw new Error('Unauthorized. Please login.');
             }
             throw new Error(`Failed to add income source: ${response.statusText}`);
@@ -62,6 +64,8 @@ const getAllIncomes = async (): Promise<IncomeDTO[]> => {
 
         if (!response.ok) {
             if (response.status === 403) {
+                 localStorage.removeItem('token');
+                 window.location.href = '/login';
                  throw new Error('Unauthorized. Please login.');
             }
             throw new Error(`Failed to fetch income sources: ${response.statusText}`);

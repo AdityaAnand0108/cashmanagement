@@ -32,6 +32,7 @@ const Login: React.FC = () => {
       });
 
       localStorage.setItem('token', token);
+      localStorage.setItem('username', formData.username);
       toast.success("Login successful!");
       
       navigate("/dashboard");

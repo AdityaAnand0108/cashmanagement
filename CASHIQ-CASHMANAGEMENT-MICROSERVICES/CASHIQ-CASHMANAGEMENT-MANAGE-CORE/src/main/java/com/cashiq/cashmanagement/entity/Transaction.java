@@ -1,5 +1,6 @@
 package com.cashiq.cashmanagement.entity;
 
+import com.cashiq.cashmanagement.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
@@ -13,13 +14,15 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String description; // The original text: "Starbucks $5"
+    private String description;
 
-    private Double amount;      // 5.0
-    private String category;    // "Food & Drink"
-    private LocalDate date;     // 2025-12-15
-    private String paymentSource; // "UPI"
+    private Double amount;
 
-    // We default to "EXPENSE" for now, but you can change this logic later
-    private String type = "EXPENSE";
+    private String category;
+
+    private LocalDate date;
+
+    private String paymentSource;
+
+    private TransactionType type;
 }

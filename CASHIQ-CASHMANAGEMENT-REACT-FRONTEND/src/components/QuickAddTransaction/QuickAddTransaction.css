@@ -1,0 +1,153 @@
+.quick-add-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  max-width: 100%;
+}
+
+.quick-add-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.quick-add-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.sparkle-icon {
+  color: #fbbf24; 
+}
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.transaction-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #374151;
+  transition: border-color 0.2s;
+  resize: vertical;
+  min-height: 50px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.transaction-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.ai-tooltip {
+  margin-top: 0;
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 0 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+  
+  /* Transition props */
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  border-width: 0; /* Hide border when closed */
+}
+
+.ai-tooltip.visible {
+  margin-top: 12px;
+  padding: 12px;
+  max-height: 150px; /* Approximate max height needed */
+  opacity: 1;
+  border-width: 1px;
+}
+
+.ai-tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0369a1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ai-loading-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #e0f2fe;
+  border-top-color: #0284c7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.ai-content {
+  font-size: 0.9rem;
+  color: #334155;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ai-label {
+  font-weight: 500;
+  color: #64748b;
+}
+
+.ai-value {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.log-button {
+  width: 100%;
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.log-button:hover {
+  background-color: #1e40af;
+}
+
+.log-button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

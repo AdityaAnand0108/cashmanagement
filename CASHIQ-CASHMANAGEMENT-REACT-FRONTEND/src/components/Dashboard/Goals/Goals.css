@@ -1,0 +1,84 @@
+.goals-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    font-family: 'Inter', sans-serif;
+    height: 100%;
+}
+
+.goals-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.goals-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.target-icon {
+    font-size: 1.2rem;
+}
+
+.goals-grid {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+}
+
+.goal-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Circular Progress Styles */
+.circular-chart {
+    display: block;
+    margin: 0 auto;
+    max-width: 120px;
+    max-height: 120px;
+    margin-bottom: 12px;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: #f3f4f6;
+    stroke-width: 2.5; /* thinner stroke */
+}
+
+.circle {
+    fill: none;
+    stroke-width: 2.5; 
+    stroke-linecap: round;
+    /* Stroke dasharray calculated in JS or inline */
+    transition: stroke-dasharray 0.3s ease;
+}
+
+.percentage {
+    fill: #111827;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.5em; /* relative to viewBox */
+    text-anchor: middle;
+}
+
+.goal-name {
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.goal-amounts {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 500;
+}

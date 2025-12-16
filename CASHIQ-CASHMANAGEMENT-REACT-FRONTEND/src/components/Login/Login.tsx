@@ -34,7 +34,7 @@ const Login: React.FC = () => {
       localStorage.setItem('token', token);
       toast.success("Login successful!");
       
-      navigate("/smart-expense"); // Redirect to smart expense page
+      navigate("/dashboard"); 
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message);

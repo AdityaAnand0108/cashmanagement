@@ -1,0 +1,62 @@
+.recent-transactions-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    font-family: 'Inter', sans-serif;
+    height: 100%;
+}
+
+.recent-transactions-header {
+    margin-bottom: 20px;
+}
+
+.recent-transactions-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.transactions-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+}
+
+.transactions-table th {
+    text-align: left;
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.transactions-table td {
+    padding: 8px 0;
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+.transaction-merchant {
+    font-weight: 500;
+    color: #111827;
+}
+
+.transaction-category {
+    color: #4b5563;
+}
+
+.transaction-amount {
+    text-align: right;
+    font-weight: 600;
+}
+
+.transaction-amount.negative {
+    color: #111827;
+}
+
+.transaction-amount.positive {
+    color: #16a34a;
+}

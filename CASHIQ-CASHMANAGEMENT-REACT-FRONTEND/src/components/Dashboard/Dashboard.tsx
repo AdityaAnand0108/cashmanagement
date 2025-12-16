@@ -7,50 +7,13 @@ import QuickAddTransaction from '../QuickAddTransaction/QuickAddTransaction';
 import AtRiskBudgets from './AtRiskBudgets/AtRiskBudgets';
 import RecentTransactions from './RecentTransactions/RecentTransactions';
 import Goals from './Goals/Goals';
-
-// Icons (using Material Icons as used elsewhere)
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import MoneyOffIcon from '@mui/icons-material/MoneyOff';
-import SavingsIcon from '@mui/icons-material/Savings';
-import PieChartIcon from '@mui/icons-material/PieChart';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
+import Sidebar from '../Sidebar/Sidebar';
 
 const Dashboard: React.FC = () => {
     return (
         <div className="dashboard-container">
             {/* Sidebar */}
-            <aside className="dashboard-sidebar">
-                <div className="sidebar-item active">
-                    <DashboardIcon className="sidebar-icon" />
-                    <span>Dashboard</span>
-                </div>
-                <div className="sidebar-item">
-                    <ReceiptLongIcon className="sidebar-icon" />
-                    <span>Transactions</span>
-                </div>
-                <div className="sidebar-item">
-                    <MonetizationOnIcon className="sidebar-icon" />
-                    <span>Income Sources</span>
-                </div>
-                <div className="sidebar-item">
-                    <MoneyOffIcon className="sidebar-icon" />
-                    <span>Debts & IOUs</span>
-                </div>
-                <div className="sidebar-item">
-                    <SavingsIcon className="sidebar-icon" />
-                    <span>Savings Goals</span>
-                </div>
-                <div className="sidebar-item">
-                    <PieChartIcon className="sidebar-icon" />
-                    <span>Budget Caps</span>
-                </div>
-                <div className="sidebar-item">
-                    <SmartToyIcon className="sidebar-icon" />
-                    <span>AI Insights</span>
-                </div>
-            </aside>
+            <Sidebar />
 
             {/* Main Content */}
             <main className="dashboard-main">

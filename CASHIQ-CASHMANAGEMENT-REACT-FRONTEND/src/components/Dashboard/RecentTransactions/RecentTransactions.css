@@ -44,19 +44,19 @@
     color: #111827;
 }
 
-.transaction-category {
+.category-tag {
     color: #4b5563;
 }
 
-.transaction-amount {
+.amount-cell {
     text-align: right;
     font-weight: 600;
 }
 
-.transaction-amount.negative {
-    color: #111827;
+.amount-cell.negative {
+    color: #ef4444;
 }
 
-.transaction-amount.positive {
+.amount-cell.positive {
     color: #16a34a;
 }

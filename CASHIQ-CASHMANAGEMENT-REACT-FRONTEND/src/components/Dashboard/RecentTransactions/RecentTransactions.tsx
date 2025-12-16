@@ -32,7 +32,6 @@ const RecentTransactions = () => {
     <div className="recent-transactions-container">
       <div className="recent-transactions-header">
         <h3>Recent Transactions</h3>
-        <button className="view-all-button">View All</button>
       </div>
 
       <div className="transactions-list">
@@ -40,7 +39,8 @@ const RecentTransactions = () => {
           <thead>
             <tr>
               <th>Date</th>
-              <th>Merchant/Description</th>
+              <th>Description</th>
+              <th>Merchant</th>
               <th>Category</th>
               <th className="amount-header">Amount</th>
             </tr>
@@ -55,6 +55,7 @@ const RecentTransactions = () => {
                   <tr key={index}>
                     <td>{transaction.date}</td>
                     <td>{transaction.description}</td>
+                    <td className="transaction-merchant">{transaction.paymentSource}</td>
                     <td>
                       <span className="category-tag">{transaction.category}</span>
                     </td>

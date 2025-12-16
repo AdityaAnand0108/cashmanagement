@@ -44,8 +44,39 @@ const addTransaction = async (transaction: TransactionDTO): Promise<string> => {
     }
 };
 
+const getAllTransactions = async (): Promise<TransactionDTO[]> => {
+    const token = localStorage.getItem('token');
+    const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    try {
+        const response = await fetch(`${BASE_URL}/get-all-transaction`, {
+            method: 'GET',
+            headers,
+        });
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                 throw new Error('Unauthorized. Please login.');
+            }
+            throw new Error(`Failed to fetch transactions: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        throw error;
+    }
+};
+
 const TransactionService = {
     addTransaction,
+    getAllTransactions,
 };
 
 export default TransactionService;

@@ -6,6 +6,8 @@ import com.cashiq.cashmanagement.entity.Users;
 import com.cashiq.cashmanagement.repository.TransactionRepository;
 import com.cashiq.cashmanagement.repository.UserRepository;
 import com.cashiq.cashmanagement.services.TransactionService;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -38,5 +40,20 @@ public class TransactionServiceImpl implements TransactionService {
 
         transactionRepository.save(transaction);
         return "Transaction added successfully";
+    }
+
+    @Override
+    public List<TransactionDTO> getAllTransactions() {
+        // Get current logged in user
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Transaction> transactions = transactionRepository.findAllByUser(user);
+
+        return transactions.stream()
+                .map(transaction -> modelMapper.map(transaction, TransactionDTO.class))
+                .collect(Collectors.toList());
     }
 }

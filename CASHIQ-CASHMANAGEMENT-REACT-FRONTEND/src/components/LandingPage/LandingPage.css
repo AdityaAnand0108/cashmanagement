@@ -39,6 +39,7 @@
   border-radius: 8px !important;
   box-shadow: 0 4px 6px -1px rgba(25, 118, 210, 0.2) !important;
   align-self: flex-start; /* Align button left */
+  margin: 30px;
 }
 
 .hero-dashboard-mockup {
@@ -90,6 +91,7 @@
 .feature-desc {
   color: #64748b;
   line-height: 1.6;
+  margin-bottom: 20px;
 }
 
 .mobile-feature-section {

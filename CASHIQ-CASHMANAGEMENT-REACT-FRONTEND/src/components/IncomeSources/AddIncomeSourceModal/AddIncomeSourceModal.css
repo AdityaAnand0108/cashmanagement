@@ -1,0 +1,47 @@
+.modal-title {
+    margin: 0;
+    padding: 16px 24px !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-button {
+    color: #9ca3af !important; /* grey[500] */
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 8px;
+}
+
+.icon-option {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.switch-container {
+    margin-top: 8px;
+}
+
+.status-fixed {
+    font-weight: 600 !important;
+    color: #2e7d32 !important; /* success.main */
+}
+
+.status-variable {
+    font-weight: 600 !important;
+    color: #616161 !important; /* text.secondary approx */
+}
+
+.helper-text {
+    margin-top: 4px !important;
+    color: #757575 !important;
+}
+
+.modal-actions {
+    padding: 16px !important;
+}

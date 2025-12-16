@@ -1,0 +1,149 @@
+import React, { useEffect, useState } from 'react';
+import Sidebar from '../Sidebar/Sidebar';
+import './IncomeSources.css';
+import AddIncomeSourceModal from './AddIncomeSourceModal/AddIncomeSourceModal';
+import IncomeService, { type IncomeDTO } from '../../services/IncomeService';
+
+// Icons
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+
+// Recent transactions can remain mock for now or be fetched similarly if desired
+const recentTransactions = [
+    { date: "Dec 25", source: "Salary", amount: "+$5,200.00" },
+    { date: "Dec 12", source: "Freelance", amount: "+$750.00" },
+    { date: "Dec 01", source: "Rental", amount: "+$1,150.00" },
+];
+
+const IncomeSources: React.FC = () => {
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [incomes, setIncomes] = useState<IncomeDTO[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchIncomes = async () => {
+        try {
+            const data = await IncomeService.getAllIncomes();
+            setIncomes(data);
+        } catch (error) {
+            console.error("Failed to fetch incomes", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchIncomes();
+    }, []);
+
+    const handleAddClick = () => {
+        setIsAddModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsAddModalOpen(false);
+    };
+
+    const handleSaveIncome = async (income: IncomeDTO) => {
+        await IncomeService.addIncome(income);
+        await fetchIncomes();
+    };
+
+    // Calculate total income
+    const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
+
+    return (
+        <div className="income-sources-container">
+            <Sidebar />
+            <main className="income-main">
+                <div className="content-scrollable">
+                    {/* Total Income Banner */}
+                    <div className="total-income-banner">
+                        <div className="banner-content">
+                            <h3>Total Monthly Income</h3>
+                            <div className="total-amount">${totalIncome.toFixed(2)}</div>
+                            <p className="banner-subtext">Based on {incomes.length} active sources.</p>
+                        </div>
+                    </div>
+
+                    {/* Action Bar */}
+                    <div className="action-bar">
+                        <button className="add-source-btn" onClick={handleAddClick}>
+                            <AddIcon fontSize="small" /> Add New Income Source
+                        </button>
+                    </div>
+
+                    {/* Income Sources List */}
+                    <div className="sources-list">
+                        {loading ? (
+                            <p>Loading income sources...</p>
+                        ) : incomes.length === 0 ? (
+                            <p>No income sources added yet.</p>
+                        ) : (
+                            incomes.map((source) => (
+                                <div key={source.id} className="source-card">
+                                    <div className="source-icon-wrapper">
+                                        <span className="source-icon">
+                                            {/* Simple icon mapping based on string value could be improved */}
+                                            {source.icon === 'briefcase' ? '💼' :
+                                             source.icon === 'laptop' ? '💻' :
+                                             source.icon === 'store' ? '🏪' : '🏠'}
+                                        </span>
+                                    </div>
+                                    <div className="source-details">
+                                        <h4 className="source-name">{source.name}</h4>
+                                        <p className="source-meta">
+                                            {source.frequency} · {source.isFixed ? 'Fixed' : 'Variable'}
+                                        </p>
+                                    </div>
+                                    <div className="source-financials">
+                                        <div className="source-amount">${source.amount.toFixed(2)}</div>
+                                        <div className="source-next-date">
+                                            Next payday: {source.nextPayDay}
+                                        </div>
+                                    </div>
+                                    <button className="edit-btn">
+                                        <EditIcon fontSize="small" /> Edit
+                                    </button>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Recent Transactions Table */}
+                    <div className="recent-income-section">
+                        <h3>Recent Income Transactions</h3>
+                        <div className="table-container">
+                            <table className="income-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Source</th>
+                                        <th className="text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {recentTransactions.map((tx, idx) => (
+                                        <tr key={idx}>
+                                            <td>{tx.date}</td>
+                                            <td>{tx.source}</td>
+                                            <td className="amount-positive">{tx.amount}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            {/* Add Income Modal */}
+            <AddIncomeSourceModal 
+                open={isAddModalOpen} 
+                onClose={handleCloseModal} 
+                onSave={handleSaveIncome}
+            />
+        </div>
+    );
+};
+
+export default IncomeSources;

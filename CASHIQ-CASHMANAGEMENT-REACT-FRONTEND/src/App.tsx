@@ -3,6 +3,7 @@ import Signup from './components/Signup/Signup'
 import Layout from './components/Layout/Layout'
 import LandingPage from './components/LandingPage/LandingPage';
 import Login from './components/Login/Login'; // Import Login
+import IncomeSources from './components/IncomeSources/IncomeSources';
 import Dashboard from './components/Dashboard/Dashboard';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
@@ -20,6 +21,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/income-sources" element={<IncomeSources />} />
           </Route>
         </Routes>
       </Layout>

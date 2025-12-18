@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import com.cashiq.cashmanagement.exception.IncomeNotFoundException;
+import com.cashiq.cashmanagement.exception.UserNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
@@ -41,7 +43,7 @@ public class IncomeServiceImpl implements IncomeService {
         // Get current logged in user
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         income.setUser(user);
 
@@ -62,10 +64,10 @@ public class IncomeServiceImpl implements IncomeService {
         // Get current logged in user
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Income existingIncome = incomeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Income not found"));
+                .orElseThrow(() -> new IncomeNotFoundException("Income not found"));
 
         existingIncome.setName(income.getName());
         existingIncome.setAmount(income.getAmount());
@@ -88,7 +90,7 @@ public class IncomeServiceImpl implements IncomeService {
         // Get current logged in user
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         List<Income> incomes = incomeRepository.findByUserId(user.getId());
 

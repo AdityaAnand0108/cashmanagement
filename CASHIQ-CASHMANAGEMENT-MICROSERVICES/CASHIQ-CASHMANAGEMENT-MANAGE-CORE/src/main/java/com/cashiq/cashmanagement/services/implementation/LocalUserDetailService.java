@@ -33,7 +33,8 @@ public class LocalUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+                .orElseThrow(() -> new com.cashiq.cashmanagement.exception.UserNotFoundException(
+                        "User not found with username: " + username));
 
         // Mapping our Entity Users to Spring Security UserDetails
         // For simplicity using empty authorities list for now, extend as needed

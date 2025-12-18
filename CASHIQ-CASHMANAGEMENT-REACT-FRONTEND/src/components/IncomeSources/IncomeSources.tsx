@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import './IncomeSources.css';
 import AddIncomeSourceModal from './AddIncomeSourceModal/AddIncomeSourceModal';
+import ConfirmationModal from '../common/ConfirmationModal/ConfirmationModal';
 import IncomeService from '../../services/IncomeService';
 import type { IncomeDTO } from '../../models/Income';
 import TransactionService from '../../services/TransactionService';
@@ -18,6 +19,10 @@ const IncomeSources: React.FC = () => {
     const [incomes, setIncomes] = useState<IncomeDTO[]>([]);
     const [recentTransactions, setRecentTransactions] = useState<TransactionDTO[]>([]);
     const [loading, setLoading] = useState(true);
+    
+    // Delete Modal State
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [incomeToDelete, setIncomeToDelete] = useState<number | null>(null);
 
     const fetchIncomes = useCallback(async () => {
         try {
@@ -31,7 +36,9 @@ const IncomeSources: React.FC = () => {
     const fetchTransactions = useCallback(async () => {
         try {
             const data = await TransactionService.getAllTransactions();
+            console.log("Fetched Transactions:", data); // DEBUG: Check raw data
             const incomeTransactions = data.filter(tx => tx.type === 'INCOME');
+            console.log("Filtered Income Transactions:", incomeTransactions); // DEBUG: Check filtered data
             // Sort by date descending if needed, but assuming backend order or basic list for now
             setRecentTransactions(incomeTransactions);
         } catch (error) {
@@ -73,15 +80,27 @@ const IncomeSources: React.FC = () => {
         setIsAddModalOpen(true);
     };
 
-    const handleDeleteClick = async (id: number) => {
-        if (window.confirm('Are you sure you want to delete this income source?')) {
+    const handleDeleteClick = (id: number) => {
+        setIncomeToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (incomeToDelete) {
             try {
-                await IncomeService.deleteIncome(id);
+                await IncomeService.deleteIncome(incomeToDelete);
                 await fetchIncomes();
+                setIsDeleteModalOpen(false);
+                setIncomeToDelete(null);
             } catch (error) {
                 console.error("Failed to delete income", error);
             }
         }
+    };
+
+    const handleCancelDelete = () => {
+        setIsDeleteModalOpen(false);
+        setIncomeToDelete(null);
     };
 
     // Calculate total income
@@ -140,8 +159,8 @@ const IncomeSources: React.FC = () => {
                                     <button className="edit-btn" onClick={() => handleEditClick(source)}>
                                         <EditIcon fontSize="small" /> Edit
                                     </button>
-                                    <button className="delete-btn" onClick={() => handleDeleteClick(source.id!)} style={{ marginLeft: '10px', backgroundColor: '#e74c3c' }}>
-                                        <DeleteIcon fontSize="small" />
+                                    <button className="delete-btn" onClick={() => handleDeleteClick(source.id!)}>
+                                        <DeleteIcon fontSize="small" /> Delete
                                     </button>
                                 </div>
                             ))
@@ -187,6 +206,15 @@ const IncomeSources: React.FC = () => {
                 onClose={handleCloseModal} 
                 onSave={handleSaveIncome}
                 incomeToEdit={editingIncome}
+            />
+            {/* Confirmation Modal */}
+            <ConfirmationModal 
+                open={isDeleteModalOpen}
+                title="Delete Income Source"
+                message="Are you sure you want to delete this income source? This action cannot be undone."
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                confirmText="Delete"
             />
         </div>
     );

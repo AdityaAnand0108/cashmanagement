@@ -140,24 +140,46 @@
     font-size: 0.85rem;
 }
 
-.edit-btn {
-    background-color: #ffffff;
-    border: 1px solid #d1d5db;
-    color: #374151;
-    padding: 6px 16px;
-    border-radius: 6px;
+.source-card .edit-btn,
+.source-card .delete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
-.edit-btn:hover {
-    background-color: #f9fafb;
-    border-color: #9ca3af;
+.source-card .edit-btn {
+    background-color: #f0f4ff;
+    color: #4a6fa5;
+    border-color: #dbe4ff;
+}
+
+.source-card .edit-btn:hover {
+    background-color: #dbe4ff;
+    border-color: #4a6fa5;
+}
+
+.source-card .delete-btn {
+    background-color: #fff0f0;
+    color: #e74c3c;
+    border-color: #fadbd8;
+    margin-left: 10px;
+}
+
+.source-card .delete-btn:hover {
+    background-color: #fadbd8;
+    border-color: #e74c3c;
+    transform: translateY(-1px);
+}
+
+.source-card .delete-btn:active {
+    transform: translateY(0);
 }
 
 /* Recent Transactions */

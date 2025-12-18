@@ -24,6 +24,7 @@ public class Transaction {
 
     private String paymentSource;
 
+    @Enumerated(EnumType.STRING)
     private TransactionType type;
 
     @ManyToOne(fetch = FetchType.LAZY)

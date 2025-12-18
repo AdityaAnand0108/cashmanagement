@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -30,6 +30,7 @@ interface AddIncomeSourceModalProps {
     open: boolean;
     onClose: () => void;
     onSave: (income: IncomeDTO) => Promise<void>;
+    incomeToEdit?: IncomeDTO;
 }
 
 const icons = [
@@ -46,7 +47,7 @@ const frequencies = [
     { label: 'One-time', value: 'one-time' },
 ];
 
-const AddIncomeSourceModal: React.FC<AddIncomeSourceModalProps> = ({ open, onClose, onSave }) => {
+const AddIncomeSourceModal: React.FC<AddIncomeSourceModalProps> = ({ open, onClose, onSave, incomeToEdit }) => {
     const [isFixed, setIsFixed] = useState(false);
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
@@ -59,10 +60,32 @@ const AddIncomeSourceModal: React.FC<AddIncomeSourceModalProps> = ({ open, onClo
         setIsFixed(event.target.checked);
     };
 
+    useEffect(() => {
+        if (open) {
+            if (incomeToEdit) {
+                setName(incomeToEdit.name);
+                setAmount(incomeToEdit.amount.toString());
+                setIcon(incomeToEdit.icon);
+                setFrequency(incomeToEdit.frequency);
+                setDate(incomeToEdit.nextPayDay);
+                setIsFixed(incomeToEdit.isFixed);
+            } else {
+                // Reset form for "Add New"
+                setName('');
+                setAmount('');
+                setIcon('briefcase');
+                setFrequency('monthly');
+                setDate('');
+                setIsFixed(false);
+            }
+        }
+    }, [open, incomeToEdit]);
+
     const handleSave = async () => {
         setLoading(true);
         try {
             const newIncome: IncomeDTO = {
+                id: incomeToEdit?.id,
                 name,
                 amount: parseFloat(amount),
                 icon,
@@ -83,7 +106,7 @@ const AddIncomeSourceModal: React.FC<AddIncomeSourceModalProps> = ({ open, onClo
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle className="modal-title">
-                Add New Income Source
+                {incomeToEdit ? 'Edit Income Source' : 'Add New Income Source'}
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
@@ -226,7 +249,7 @@ const AddIncomeSourceModal: React.FC<AddIncomeSourceModalProps> = ({ open, onClo
                     Cancel
                 </Button>
                 <Button onClick={handleSave} variant="contained" color="primary" disabled={loading}>
-                    {loading ? 'Saving...' : 'Save Source'}
+                    {loading ? 'Saving...' : (incomeToEdit ? 'Update Source' : 'Save Source')}
                 </Button>
             </DialogActions>
         </Dialog>

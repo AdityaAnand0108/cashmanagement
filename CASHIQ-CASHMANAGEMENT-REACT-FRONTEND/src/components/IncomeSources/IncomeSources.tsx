@@ -13,6 +13,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 const IncomeSources: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [editingIncome, setEditingIncome] = useState<IncomeDTO | undefined>(undefined);
     const [incomes, setIncomes] = useState<IncomeDTO[]>([]);
     const [recentTransactions, setRecentTransactions] = useState<TransactionDTO[]>([]);
     const [loading, setLoading] = useState(true);
@@ -48,16 +49,27 @@ const IncomeSources: React.FC = () => {
     }, [loadData]);
 
     const handleAddClick = () => {
+        setEditingIncome(undefined);
         setIsAddModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsAddModalOpen(false);
+        setEditingIncome(undefined);
     };
 
     const handleSaveIncome = async (income: IncomeDTO) => {
-        await IncomeService.addIncome(income);
+        if (income.id) {
+            await IncomeService.updateIncome(income.id, income);
+        } else {
+            await IncomeService.addIncome(income);
+        }
         await fetchIncomes();
+    };
+
+    const handleEditClick = (income: IncomeDTO) => {
+        setEditingIncome(income);
+        setIsAddModalOpen(true);
     };
 
     // Calculate total income
@@ -113,7 +125,7 @@ const IncomeSources: React.FC = () => {
                                             Next payday: {source.nextPayDay}
                                         </div>
                                     </div>
-                                    <button className="edit-btn">
+                                    <button className="edit-btn" onClick={() => handleEditClick(source)}>
                                         <EditIcon fontSize="small" /> Edit
                                     </button>
                                 </div>
@@ -154,11 +166,12 @@ const IncomeSources: React.FC = () => {
                 </div>
             </main>
 
-            {/* Add Income Modal */}
+            {/* Add/Edit Income Modal */}
             <AddIncomeSourceModal 
                 open={isAddModalOpen} 
                 onClose={handleCloseModal} 
                 onSave={handleSaveIncome}
+                incomeToEdit={editingIncome}
             />
         </div>
     );

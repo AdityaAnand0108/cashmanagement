@@ -33,7 +33,6 @@ const Header: React.FC = () => {
               letterSpacing: '-0.5px'
             }}
           >
-            
             CashIQ <span style={{ fontSize: '0.8em' }}>➔</span>
           </Typography>
         </Box>

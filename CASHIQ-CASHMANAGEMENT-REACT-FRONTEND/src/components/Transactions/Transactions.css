@@ -1,0 +1,65 @@
+.transactions-container {
+    display: flex;
+    background-color: #f3f4f6;
+    min-height: 100vh;
+}
+
+.transactions-main {
+    flex: 1;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-y: auto;
+}
+
+.transactions-header-filters {
+    display: flex;
+    align-items: flex-end; /* Align bottom to match labels with inputs */
+    gap: 16px;
+    flex-wrap: wrap;
+    background-color: transparent;
+}
+
+.search-field {
+    flex-grow: 1;
+    background-color: white;
+    border-radius: 8px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 16px;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.filter-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-left: 4px;
+}
+
+.filter-select {
+    background-color: white;
+    border-radius: 8px;
+    min-width: 150px;
+}
+
+.add-transaction-btn {
+    height: 56px; /* Match height of text fields */
+    border-radius: 8px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
+    background-color: #1d4ed8 !important; /* Blue 700 */
+}
+
+.add-transaction-btn:hover {
+    background-color: #1e40af !important; /* Blue 800 */
+}

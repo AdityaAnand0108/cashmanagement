@@ -75,7 +75,10 @@ public class IncomeServiceImpl implements IncomeService {
         existingIncome.setNextPayDay(income.getNextPayDay());
         existingIncome.setIsFixed(income.getIsFixed());
 
-        incomeRepository.save(income);
+        existingIncome.setIcon(income.getIcon()); // Added missing icon update just in case, though the main fix is
+                                                  // below
+
+        incomeRepository.save(existingIncome);
         return ResponseEntity.ok("Income source updated successfully");
     }
 
@@ -97,5 +100,29 @@ public class IncomeServiceImpl implements IncomeService {
         return ResponseEntity.ok(incomes.stream()
                 .map(income -> modelMapper.map(income, IncomeDTO.class))
                 .collect(Collectors.toList()));
+    }
+
+    /**
+     * @method - deleteIncome
+     * @param - id
+     * @return - String
+     * @Description - This method is used to delete the income
+     */
+    @Override
+    public ResponseEntity<String> deleteIncome(Long id) {
+        // Get current logged in user to ownership check
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Income income = incomeRepository.findById(id)
+                .orElseThrow(() -> new IncomeNotFoundException("Income not found"));
+
+        if (!income.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized: You do not own this income source");
+        }
+
+        incomeRepository.delete(income);
+        return ResponseEntity.ok("Income source deleted successfully");
     }
 }

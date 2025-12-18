@@ -2,15 +2,7 @@
 
 const API_URL = 'http://localhost:8080/api/expenses';
 
-interface ExpenseAnalysisResponse {
-  status: string;
-  parsed_data: {
-    amount: number;
-    category: string;
-    date: string;
-    payment_source: string;
-  };
-}
+import type { ExpenseAnalysisResponse } from '../models/Expense';
 
 const analyzeExpense = async (description: string): Promise<ExpenseAnalysisResponse> => {
   const token = localStorage.getItem('token');

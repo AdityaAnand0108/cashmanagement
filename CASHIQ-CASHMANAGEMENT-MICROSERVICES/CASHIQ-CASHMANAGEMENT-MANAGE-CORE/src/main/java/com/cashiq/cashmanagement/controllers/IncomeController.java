@@ -51,4 +51,15 @@ public class IncomeController {
     public ResponseEntity<List<IncomeDTO>> getAllIncomes() {
         return incomeService.getAllIncomes();
     }
+
+    /**
+     * @method - deleteIncome
+     * @param - id
+     * @return - String
+     * @Description - This method is used to delete the income
+     */
+    @DeleteMapping("/delete-income/{id}")
+    public ResponseEntity<String> deleteIncome(@PathVariable Long id) {
+        return incomeService.deleteIncome(id);
+    }
 }

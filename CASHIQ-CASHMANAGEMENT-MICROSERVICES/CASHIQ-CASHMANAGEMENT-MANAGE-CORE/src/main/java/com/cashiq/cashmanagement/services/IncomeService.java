@@ -35,4 +35,12 @@ public interface IncomeService {
      * @Description - This method is used to get all the incomes
      */
     ResponseEntity<List<IncomeDTO>> getAllIncomes();
+
+    /**
+     * @method - deleteIncome
+     * @param - id
+     * @return - String
+     * @Description - This method is used to delete the income
+     */
+    ResponseEntity<String> deleteIncome(Long id);
 }

@@ -24,7 +24,8 @@ import LaptopIcon from '@mui/icons-material/Laptop';
 import StoreIcon from '@mui/icons-material/Store';
 import HomeIcon from '@mui/icons-material/Home';
 import './AddIncomeSourceModal.css';
-import type { IncomeDTO } from '../../../services/IncomeService';
+import type { IncomeDTO } from '../../../models/Income';
+import { PaymentFrequency } from '../../../models/PaymentFrequency';
 
 interface AddIncomeSourceModalProps {
     open: boolean;
@@ -41,10 +42,10 @@ const icons = [
 ];
 
 const frequencies = [
-    { label: 'Monthly', value: 'monthly' },
-    { label: 'Bi-Weekly', value: 'bi-weekly' },
-    { label: 'Weekly', value: 'weekly' },
-    { label: 'One-time', value: 'one-time' },
+    { label: 'Monthly', value: PaymentFrequency.MONTHLY },
+    { label: 'Bi-Weekly', value: PaymentFrequency.BIWEEKLY },
+    { label: 'Weekly', value: PaymentFrequency.WEEKLY },
+    { label: 'One-time', value: PaymentFrequency.ONE_TIME },
 ];
 
 const AddIncomeSourceModal: React.FC<AddIncomeSourceModalProps> = ({ open, onClose, onSave, incomeToEdit }) => {
@@ -52,7 +53,7 @@ const AddIncomeSourceModal: React.FC<AddIncomeSourceModalProps> = ({ open, onClo
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
     const [icon, setIcon] = useState('briefcase');
-    const [frequency, setFrequency] = useState('monthly');
+    const [frequency, setFrequency] = useState<PaymentFrequency>(PaymentFrequency.MONTHLY);
     const [date, setDate] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -74,7 +75,7 @@ const AddIncomeSourceModal: React.FC<AddIncomeSourceModalProps> = ({ open, onClo
                 setName('');
                 setAmount('');
                 setIcon('briefcase');
-                setFrequency('monthly');
+                setFrequency(PaymentFrequency.MONTHLY);
                 setDate('');
                 setIsFixed(false);
             }
@@ -189,7 +190,7 @@ const AddIncomeSourceModal: React.FC<AddIncomeSourceModalProps> = ({ open, onClo
                                     id="frequency-select"
                                     value={frequency}
                                     label="Frequency"
-                                    onChange={(e) => setFrequency(e.target.value)}
+                                    onChange={(e) => setFrequency(e.target.value as PaymentFrequency)}
                                 >
                                     {frequencies.map((option) => (
                                         <MenuItem key={option.value} value={option.value}>

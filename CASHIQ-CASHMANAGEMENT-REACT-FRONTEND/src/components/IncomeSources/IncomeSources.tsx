@@ -3,13 +3,14 @@ import Sidebar from '../Sidebar/Sidebar';
 import './IncomeSources.css';
 import AddIncomeSourceModal from './AddIncomeSourceModal/AddIncomeSourceModal';
 import IncomeService from '../../services/IncomeService';
-import type { IncomeDTO } from '../../services/IncomeService';
+import type { IncomeDTO } from '../../models/Income';
 import TransactionService from '../../services/TransactionService';
-import type { TransactionDTO } from '../../services/TransactionService';
+import type { TransactionDTO } from '../../models/Transaction';
 
 // Icons
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const IncomeSources: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -72,6 +73,17 @@ const IncomeSources: React.FC = () => {
         setIsAddModalOpen(true);
     };
 
+    const handleDeleteClick = async (id: number) => {
+        if (window.confirm('Are you sure you want to delete this income source?')) {
+            try {
+                await IncomeService.deleteIncome(id);
+                await fetchIncomes();
+            } catch (error) {
+                console.error("Failed to delete income", error);
+            }
+        }
+    };
+
     // Calculate total income
     const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
 
@@ -127,6 +139,9 @@ const IncomeSources: React.FC = () => {
                                     </div>
                                     <button className="edit-btn" onClick={() => handleEditClick(source)}>
                                         <EditIcon fontSize="small" /> Edit
+                                    </button>
+                                    <button className="delete-btn" onClick={() => handleDeleteClick(source.id!)} style={{ marginLeft: '10px', backgroundColor: '#e74c3c' }}>
+                                        <DeleteIcon fontSize="small" />
                                     </button>
                                 </div>
                             ))

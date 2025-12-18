@@ -2,14 +2,7 @@
 
 const BASE_URL = 'http://localhost:8080';
 
-export interface TransactionDTO {
-    description: string;
-    amount: number;
-    category: string;
-    date: string; // YYYY-MM-DD
-    paymentSource: string;
-    type: 'INCOME' | 'EXPENSE';
-}
+import type { TransactionDTO } from '../models/Transaction';
 
 const addTransaction = async (transaction: TransactionDTO): Promise<string> => {
     const token = localStorage.getItem('token');

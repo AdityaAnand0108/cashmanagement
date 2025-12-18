@@ -20,6 +20,7 @@ public class Income {
 
     private String icon;
 
+    @Enumerated(EnumType.STRING)
     private PayementFrequency frequency;
 
     private LocalDate nextPayDay;

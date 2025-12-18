@@ -1,14 +1,4 @@
-export interface UserDTO {
-  username: string;
-  email: string;
-  phone: string;
-  password?: string;
-}
-
-export interface AuthDTO {
-  username: string;
-  password?: string;
-}
+import type { UserDTO, AuthDTO } from '../models/Auth';
 
 const API_base_URL = "http://localhost:8080/auth";
 

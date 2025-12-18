@@ -1,16 +1,7 @@
 
 const BASE_URL = 'http://localhost:8080';
 
-export interface IncomeDTO {
-    id?: number;
-    name: string;
-    amount: number;
-    icon: string;
-    frequency: string;
-    nextPayDay: string; // YYYY-MM-DD
-    isFixed: boolean;
-    userId?: number;
-}
+import type { IncomeDTO } from '../models/Income';
 
 const addIncome = async (income: IncomeDTO): Promise<string> => {
     const token = localStorage.getItem('token');
@@ -112,10 +103,43 @@ const getAllIncomes = async (): Promise<IncomeDTO[]> => {
     }
 };
 
+const deleteIncome = async (id: number): Promise<string> => {
+    const token = localStorage.getItem('token');
+    const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    try {
+        const response = await fetch(`${BASE_URL}/delete-income/${id}`, {
+            method: 'DELETE',
+            headers,
+        });
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                 localStorage.removeItem('token');
+                 window.location.href = '/login';
+                 throw new Error('Unauthorized. Please login.');
+            }
+            throw new Error(`Failed to delete income source: ${response.statusText}`);
+        }
+
+        return await response.text();
+    } catch (error) {
+        console.error('Error deleting income source:', error);
+        throw error;
+    }
+};
+
 const IncomeService = {
     addIncome,
     updateIncome,
     getAllIncomes,
+    deleteIncome,
 };
 
 export default IncomeService;

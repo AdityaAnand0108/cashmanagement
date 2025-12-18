@@ -1,0 +1,58 @@
+.category-budget-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    min-width: 300px;
+}
+
+.budget-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.budget-category-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.progress-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.budget-values {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.spent-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #b45309; /* Amber 700 default */
+}
+
+.total-budget {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.budget-status {
+    font-size: 0.875rem;
+    margin-top: 4px;
+}

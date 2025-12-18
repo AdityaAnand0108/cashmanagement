@@ -6,6 +6,7 @@ import Login from './components/Login/Login'; // Import Login
 import IncomeSources from './components/IncomeSources/IncomeSources';
 import Transactions from './components/Transactions/Transactions';
 import SavingsGoals from './components/SavingsGoals/SavingsGoals';
+import DebtsIOUs from './components/DebtsIOUs/DebtsIOUs';
 import Dashboard from './components/Dashboard/Dashboard';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
@@ -26,6 +27,7 @@ function App() {
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/income-sources" element={<IncomeSources />} />
             <Route path="/savings-goals" element={<SavingsGoals />} />
+            <Route path="/debts" element={<DebtsIOUs />} />
           </Route>
         </Routes>
       </Layout>

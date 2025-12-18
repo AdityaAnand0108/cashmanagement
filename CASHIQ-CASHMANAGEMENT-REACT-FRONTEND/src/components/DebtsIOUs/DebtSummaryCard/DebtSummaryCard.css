@@ -1,0 +1,44 @@
+.debt-summary-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 6px solid; /* Color defined by prop mainly, but default here */
+    flex: 1;
+}
+
+.debt-summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.summary-title {
+    font-size: 1.25rem;
+    color: #0f172a;
+    font-weight: 500;
+}
+
+.summary-amount {
+    font-weight: 700;
+}
+
+.summary-amount.red {
+    color: #dc2626; /* Red 600 */
+}
+
+.summary-amount.green {
+    color: #16a34a; /* Green 600 */
+}
+
+.summary-breakdown {
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+.summary-icon {
+    font-size: 2.5rem;
+}

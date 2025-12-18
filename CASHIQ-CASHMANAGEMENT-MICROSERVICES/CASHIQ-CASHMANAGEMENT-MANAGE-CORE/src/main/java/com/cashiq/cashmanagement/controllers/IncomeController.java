@@ -3,25 +3,52 @@ package com.cashiq.cashmanagement.controllers;
 import com.cashiq.cashmanagement.dto.IncomeDTO;
 import com.cashiq.cashmanagement.services.IncomeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
+/**
+ * @author - Aditya
+ * @version - 1.0
+ * @description - This class is used to handle income-related operations.
+ */
 @RestController
 @RequiredArgsConstructor
 public class IncomeController {
 
     private final IncomeService incomeService;
 
+    /**
+     * @method - addIncome
+     * @param - IncomeDTO
+     * @return - String
+     * @Description - This method is used to add the income
+     */
     @PostMapping("/add-income")
-    public String addIncome(@RequestBody IncomeDTO incomeDTO) {
+    public ResponseEntity<String> addIncome(@RequestBody IncomeDTO incomeDTO) {
         return incomeService.addIncome(incomeDTO);
     }
 
+    /**
+     * @method - updateIncome
+     * @param - IncomeDTO
+     * @return - String
+     * @Description - This method is used to update the income
+     */
+    @PutMapping("/update-income/{id}")
+    public ResponseEntity<String> updateIncome(@PathVariable Long id, @RequestBody IncomeDTO incomeDTO) {
+        return incomeService.updateIncome(id, incomeDTO);
+    }
+
+    /**
+     * @method - getAllIncomes
+     * @param - None
+     * @return - List<IncomeDTO>
+     * @Description - This method is used to get all the incomes
+     */
     @GetMapping("/get-all-income")
-    public List<IncomeDTO> getAllIncomes() {
+    public ResponseEntity<List<IncomeDTO>> getAllIncomes() {
         return incomeService.getAllIncomes();
     }
 }

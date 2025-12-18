@@ -1,5 +1,6 @@
 package com.cashiq.cashmanagement.entity;
 
+import com.cashiq.cashmanagement.enums.PayementFrequency;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
@@ -19,7 +20,7 @@ public class Income {
 
     private String icon;
 
-    private String frequency;
+    private PayementFrequency frequency;
 
     private LocalDate nextPayDay;
 

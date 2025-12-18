@@ -1,5 +1,6 @@
 package com.cashiq.cashmanagement.dto;
 
+import com.cashiq.cashmanagement.enums.PayementFrequency;
 import lombok.Data;
 import java.time.LocalDate;
 
@@ -14,7 +15,7 @@ public class IncomeDTO {
 
     private String icon;
 
-    private String frequency;
+    private PayementFrequency frequency;
 
     private LocalDate nextPayDay;
 

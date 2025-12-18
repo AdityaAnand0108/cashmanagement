@@ -1,0 +1,115 @@
+.ai-insights-container {
+    display: flex;
+    background-color: #f3f4f6;
+    min-height: 100vh;
+}
+
+.ai-insights-main {
+    flex: 1;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    overflow-y: auto;
+}
+
+.page-header {
+    margin-bottom: 8px;
+}
+
+.header-subtitle {
+    color: #475569;
+    font-size: 1rem;
+    margin-top: 4px;
+}
+
+.section-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.section-heading {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* Alerts Grid */
+.alerts-grid {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+/* Chat Section */
+.chat-section {
+    background-color: white; /* Or maybe transparent if input is standalone */
+    /* No bg for container based on wireframe, just the input bar */
+}
+
+.chat-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.chat-input {
+    width: 100%;
+    padding: 16px 48px 16px 16px;
+    border: 2px solid #94a3b8; /* Slate 400 */
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    color: #334155;
+    background-color: white;
+}
+
+.chat-input:focus {
+    border-color: #2563eb; /* Blue 600 */
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.chat-mic-icon {
+    position: absolute;
+    right: 60px;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.chat-send-btn {
+    position: absolute;
+    right: 12px;
+    color: #64748b;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.suggested-prompts {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.prompt-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.prompt-pill {
+    background-color: #e2e8f0;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    color: #334155;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.prompt-pill:hover {
+    background-color: #cbd5e1;
+}

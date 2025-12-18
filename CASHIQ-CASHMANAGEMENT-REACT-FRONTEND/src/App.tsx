@@ -8,6 +8,7 @@ import Transactions from './components/Transactions/Transactions';
 import SavingsGoals from './components/SavingsGoals/SavingsGoals';
 import DebtsIOUs from './components/DebtsIOUs/DebtsIOUs';
 import BudgetCaps from './components/BudgetCaps/BudgetCaps';
+import AIInsights from './components/AIInsights/AIInsights';
 import Dashboard from './components/Dashboard/Dashboard';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
@@ -30,6 +31,7 @@ function App() {
             <Route path="/savings-goals" element={<SavingsGoals />} />
             <Route path="/debts" element={<DebtsIOUs />} />
             <Route path="/budget-caps" element={<BudgetCaps />} />
+            <Route path="/ai-insights" element={<AIInsights />} />
           </Route>
         </Routes>
       </Layout>

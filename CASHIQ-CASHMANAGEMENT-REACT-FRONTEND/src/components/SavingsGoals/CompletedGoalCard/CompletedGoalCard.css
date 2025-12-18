@@ -1,0 +1,38 @@
+.completed-goal-card {
+    background-color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 500;
+    color: #0f172a;
+    width: 100%; /* Ensure it spans full width if container allows */
+}
+
+.completed-goal-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.completed-goal-icon {
+    font-size: 1.25rem;
+}
+
+.completed-goal-text {
+    font-size: 1rem;
+}
+
+.completed-goal-date {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-left: 8px;
+}
+
+.completed-goal-amount {
+    font-weight: 700;
+    color: #1e293b;
+    margin-left: 4px;
+}

@@ -15,6 +15,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class IncomeController {
 
     private final IncomeService incomeService;

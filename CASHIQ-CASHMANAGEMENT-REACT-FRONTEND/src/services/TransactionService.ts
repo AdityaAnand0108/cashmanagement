@@ -1,68 +1,39 @@
-
+import axios from 'axios';
+import type { TransactionDTO } from '../models/Transaction';
 
 const BASE_URL = 'http://localhost:8080';
 
-import type { TransactionDTO } from '../models/Transaction';
+const getAuthHeader = () => {
+    const token = localStorage.getItem('token');
+    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+};
+
+const handleAuthError = (error: unknown) => {
+    if (axios.isAxiosError(error) && error.response?.status === 403) {
+        // Optional: Redirect or just throw
+         throw new Error('Unauthorized. Please login.');
+    }
+    throw error;
+};
 
 const addTransaction = async (transaction: TransactionDTO): Promise<string> => {
-    const token = localStorage.getItem('token');
-     // Even if token is not strictly required by the snippet, it's good practice if security is enabled.
-    
-    const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-    };
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
     try {
-        const response = await fetch(`${BASE_URL}/add-transaction`, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(transaction),
-        });
-
-        if (!response.ok) {
-            if (response.status === 403) {
-                 throw new Error('Unauthorized. Please login.');
-            }
-            throw new Error(`Failed to add transaction: ${response.statusText}`);
-        }
-
-        return await response.text(); // Controller returns String
+        const response = await axios.post(`${BASE_URL}/add-transaction`, transaction, getAuthHeader());
+        return response.data;
     } catch (error) {
         console.error('Error adding transaction:', error);
+        handleAuthError(error);
         throw error;
     }
 };
 
 const getAllTransactions = async (): Promise<TransactionDTO[]> => {
-    const token = localStorage.getItem('token');
-    const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-    };
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
     try {
-        const response = await fetch(`${BASE_URL}/get-all-transaction`, {
-            method: 'GET',
-            headers,
-        });
-
-        if (!response.ok) {
-            if (response.status === 403) {
-                 throw new Error('Unauthorized. Please login.');
-            }
-            throw new Error(`Failed to fetch transactions: ${response.statusText}`);
-        }
-
-        return await response.json();
+        const response = await axios.get(`${BASE_URL}/get-all-transaction`, getAuthHeader());
+        return response.data;
     } catch (error) {
         console.error('Error fetching transactions:', error);
+        handleAuthError(error);
         throw error;
     }
 };

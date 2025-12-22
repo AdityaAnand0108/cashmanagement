@@ -52,9 +52,7 @@ const BudgetCaps: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [budgets, setBudgets] = useState<Budget[]>([]);
 
-    useEffect(() => {
-        fetchBudgets();
-    }, []);
+
 
     const fetchBudgets = async () => {
         const userId = localStorage.getItem('userId');
@@ -77,6 +75,10 @@ const BudgetCaps: React.FC = () => {
             // toast.error("Could not load budgets");
         }
     };
+
+    useEffect(() => {
+        fetchBudgets();
+    }, []);
 
     const handleSaveBudget = async (data: BudgetCapData) => {
         const userId = localStorage.getItem('userId');
@@ -120,18 +122,22 @@ const BudgetCaps: React.FC = () => {
                 </div>
 
                 {/* Summary Cards (Note: These are hardcoded for now, can be updated later) */}
+                {/* Dynamic Summary Cards */}
                 <div className="summary-grid">
                     <div className="summary-card">
                         <div>
                             <div className="summary-title">Total Budget:</div>
-                            <div className="summary-value">₹4,000 / Month</div>
+                            <div className="summary-value">₹{budgets.reduce((acc, b) => acc + b.limit, 0).toLocaleString()} / Month</div>
                         </div>
                     </div>
                     
                     <div className="summary-card">
                         <div>
                             <div className="summary-title">Spent so far:</div>
-                            <div className="summary-value amber">₹3,150 (78%)</div>
+                            <div className="summary-value amber">
+                                ₹{budgets.reduce((acc, b) => acc + b.spent, 0).toLocaleString()} 
+                                ({budgets.length > 0 ? Math.round((budgets.reduce((acc, b) => acc + b.spent, 0) / budgets.reduce((acc, b) => acc + b.limit, 0)) * 100) : 0}%)
+                            </div>
                         </div>
                         <div className="summary-icon">
                             <WarningAmberIcon sx={{ color: '#d97706', fontSize: 28 }} />
@@ -141,8 +147,12 @@ const BudgetCaps: React.FC = () => {
                     <div className="summary-card">
                         <div>
                             <div className="summary-title">Remaining:</div>
-                            <div className="summary-value green">₹850</div>
-                            <div className="summary-subtext">(Safe for 13 days)</div>
+                            <div className="summary-value green">
+                                ₹{(budgets.reduce((acc, b) => acc + b.limit, 0) - budgets.reduce((acc, b) => acc + b.spent, 0)).toLocaleString()}
+                            </div>
+                            <div className="summary-subtext">
+                                (Safe for {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate()} days)
+                            </div>
                         </div>
                         <div className="summary-icon">
                             <CheckCircleOutlineIcon sx={{ color: '#16a34a', fontSize: 28 }} />

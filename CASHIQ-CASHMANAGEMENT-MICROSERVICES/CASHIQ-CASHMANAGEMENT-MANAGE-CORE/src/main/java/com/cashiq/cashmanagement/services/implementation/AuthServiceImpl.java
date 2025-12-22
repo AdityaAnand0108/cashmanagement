@@ -1,6 +1,7 @@
 package com.cashiq.cashmanagement.services.implementation;
 
 import com.cashiq.cashmanagement.dto.AuthDTO;
+import com.cashiq.cashmanagement.dto.AuthResponseDTO;
 import com.cashiq.cashmanagement.dto.UserDTO;
 import com.cashiq.cashmanagement.entity.Users;
 import com.cashiq.cashmanagement.repository.UserRepository;
@@ -59,13 +60,21 @@ public class AuthServiceImpl implements AuthService {
      * @Description - This method is used to login the user
      */
     @Override
-    public String login(AuthDTO authDTO) {
+    public AuthResponseDTO login(AuthDTO authDTO) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authDTO.getUsername(), authDTO.getPassword()));
 
         if (authentication.isAuthenticated()) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            return jwtUtil.generateToken(userDetails);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // This logic might depend on
+                                                                                   // UserDetailsService impl
+            // Generate token
+            String token = jwtUtil.generateToken(userDetails);
+
+            // Fetch the user entity to get ID
+            Users user = userRepository.findByUsername(authDTO.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            return new AuthResponseDTO(token, user.getId(), user.getUsername());
         } else {
             throw new RuntimeException("Invalid user request !");
         }

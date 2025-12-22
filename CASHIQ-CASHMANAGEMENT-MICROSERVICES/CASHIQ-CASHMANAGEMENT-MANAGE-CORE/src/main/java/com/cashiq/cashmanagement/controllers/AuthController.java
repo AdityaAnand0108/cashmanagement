@@ -1,6 +1,7 @@
 package com.cashiq.cashmanagement.controllers;
 
 import com.cashiq.cashmanagement.dto.AuthDTO;
+import com.cashiq.cashmanagement.dto.AuthResponseDTO;
 import com.cashiq.cashmanagement.dto.UserDTO;
 import com.cashiq.cashmanagement.services.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +39,11 @@ public class AuthController {
     /**
      * @method - login
      * @param - authDTO
-     * @return - ResponseEntity<String>
+     * @return - ResponseEntity<AuthResponseDTO>
      * @Description - This method is used to login the user
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthDTO authDTO) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthDTO authDTO) {
         return ResponseEntity.ok(authService.login(authDTO));
     }
 }

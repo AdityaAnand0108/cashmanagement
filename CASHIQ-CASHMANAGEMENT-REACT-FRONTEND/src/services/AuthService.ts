@@ -1,4 +1,4 @@
-import type { UserDTO, AuthDTO } from '../models/Auth';
+import type { UserDTO, AuthDTO, AuthResponse } from '../models/Auth';
 
 const API_base_URL = "http://localhost:8080/auth";
 
@@ -25,7 +25,7 @@ class AuthService {
     }
   }
 
-  async login(authRequest: AuthDTO): Promise<string> {
+  async login(authRequest: AuthDTO): Promise<AuthResponse> {
     try {
       const response = await fetch(`${API_base_URL}/login`, {
         method: 'POST',
@@ -40,7 +40,7 @@ class AuthService {
         throw new Error(errorText || 'Login failed');
       }
 
-      return await response.text();
+      return await response.json();
     } catch (error) {
       console.error("Login Error:", error);
       throw error;

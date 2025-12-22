@@ -2,6 +2,7 @@ package com.cashiq.cashmanagement.services;
 
 import com.cashiq.cashmanagement.dto.AuthDTO;
 import com.cashiq.cashmanagement.dto.UserDTO;
+import com.cashiq.cashmanagement.dto.AuthResponseDTO;
 
 /**
  * @author - Aditya
@@ -24,5 +25,5 @@ public interface AuthService {
      * @return - String
      * @Description - This method is used to login the user
      */
-    String login(AuthDTO authDTO);
+    AuthResponseDTO login(AuthDTO authDTO);
 }

@@ -26,13 +26,14 @@ const Login: React.FC = () => {
 
     setLoading(true);
     try {
-      const token = await AuthService.login({
+      const authResponse = await AuthService.login({
         username: formData.username,
         password: formData.password,
       });
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('username', formData.username);
+      localStorage.setItem('token', authResponse.token);
+      localStorage.setItem('username', authResponse.username);
+      localStorage.setItem('userId', authResponse.userId.toString());
       toast.success("Login successful!");
       
       navigate("/dashboard");

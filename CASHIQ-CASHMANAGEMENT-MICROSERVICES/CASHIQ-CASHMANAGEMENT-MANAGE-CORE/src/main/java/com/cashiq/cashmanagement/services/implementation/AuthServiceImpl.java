@@ -7,6 +7,7 @@ import com.cashiq.cashmanagement.entity.Users;
 import com.cashiq.cashmanagement.repository.UserRepository;
 import com.cashiq.cashmanagement.services.AuthService;
 import com.cashiq.cashmanagement.util.JwtUtil;
+import com.cashiq.cashmanagement.validation.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final ModelMapper modelMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final UserValidator userValidator;
 
     /**
      * @method - registerUser
@@ -40,9 +42,8 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public String registerUser(UserDTO userDTO) {
-        if (userRepository.findByUsername(userDTO.getUsername()).isPresent()) {
-            throw new RuntimeException("User already exists!");
-        }
+
+        userValidator.validateUserRegistration(userDTO);
 
         Users user = modelMapper.map(userDTO, Users.class);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));

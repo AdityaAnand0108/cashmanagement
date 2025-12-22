@@ -26,103 +26,109 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class IncomeServiceImpl implements IncomeService {
 
-    private final IncomeRepository incomeRepository;
-    private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+        private final IncomeRepository incomeRepository;
+        private final UserRepository userRepository;
+        private final ModelMapper modelMapper;
+        private final com.cashiq.cashmanagement.validation.IncomeValidator incomeValidator;
 
-    /**
-     * @method - addIncome
-     * @param - IncomeDTO
-     * @return - String
-     * @Description - This method is used to add the income
-     */
-    @Override
-    public ResponseEntity<String> addIncome(IncomeDTO incomeDTO) {
-        Income income = modelMapper.map(incomeDTO, Income.class);
+        /**
+         * @method - addIncome
+         * @param - IncomeDTO
+         * @return - String
+         * @Description - This method is used to add the income
+         */
+        @Override
+        public ResponseEntity<String> addIncome(IncomeDTO incomeDTO) {
+                incomeValidator.validateIncome(incomeDTO);
 
-        // Get current logged in user
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                Income income = modelMapper.map(incomeDTO, Income.class);
 
-        income.setUser(user);
+                // Get current logged in user
+                String username = SecurityContextHolder.getContext().getAuthentication().getName();
+                Users user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        incomeRepository.save(income);
-        return ResponseEntity.ok("Income source added successfully");
-    }
+                income.setUser(user);
 
-    /**
-     * @method - updateIncome
-     * @param - IncomeDTO
-     * @return - String
-     * @Description - This method is used to update the income
-     */
-    @Override
-    public ResponseEntity<String> updateIncome(Long id, IncomeDTO incomeDTO) {
-        Income income = modelMapper.map(incomeDTO, Income.class);
-
-        // Get current logged in user
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
-        Income existingIncome = incomeRepository.findById(id)
-                .orElseThrow(() -> new IncomeNotFoundException("Income not found"));
-
-        existingIncome.setName(income.getName());
-        existingIncome.setAmount(income.getAmount());
-        existingIncome.setFrequency(income.getFrequency());
-        existingIncome.setNextPayDay(income.getNextPayDay());
-        existingIncome.setIsFixed(income.getIsFixed());
-
-        existingIncome.setIcon(income.getIcon()); // Added missing icon update just in case, though the main fix is
-                                                  // below
-
-        incomeRepository.save(existingIncome);
-        return ResponseEntity.ok("Income source updated successfully");
-    }
-
-    /**
-     * @method - getAllIncomes
-     * @param - None
-     * @return - List<IncomeDTO>
-     * @Description - This method is used to get all the incomes
-     */
-    @Override
-    public ResponseEntity<List<IncomeDTO>> getAllIncomes() {
-        // Get current logged in user
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
-        List<Income> incomes = incomeRepository.findByUserId(user.getId());
-
-        return ResponseEntity.ok(incomes.stream()
-                .map(income -> modelMapper.map(income, IncomeDTO.class))
-                .collect(Collectors.toList()));
-    }
-
-    /**
-     * @method - deleteIncome
-     * @param - id
-     * @return - String
-     * @Description - This method is used to delete the income
-     */
-    @Override
-    public ResponseEntity<String> deleteIncome(Long id) {
-        // Get current logged in user to ownership check
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
-        Income income = incomeRepository.findById(id)
-                .orElseThrow(() -> new IncomeNotFoundException("Income not found"));
-
-        if (!income.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Unauthorized: You do not own this income source");
+                incomeRepository.save(income);
+                return ResponseEntity.ok("Income source added successfully");
         }
 
-        incomeRepository.delete(income);
-        return ResponseEntity.ok("Income source deleted successfully");
-    }
+        /**
+         * @method - updateIncome
+         * @param - IncomeDTO
+         * @return - String
+         * @Description - This method is used to update the income
+         */
+        @Override
+        public ResponseEntity<String> updateIncome(Long id, IncomeDTO incomeDTO) {
+                incomeValidator.validateIncome(incomeDTO);
+
+                Income income = modelMapper.map(incomeDTO, Income.class);
+
+                // Get current logged in user
+                String username = SecurityContextHolder.getContext().getAuthentication().getName();
+                Users user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+                Income existingIncome = incomeRepository.findById(id)
+                                .orElseThrow(() -> new IncomeNotFoundException("Income not found"));
+
+                existingIncome.setName(income.getName());
+                existingIncome.setAmount(income.getAmount());
+                existingIncome.setFrequency(income.getFrequency());
+                existingIncome.setNextPayDay(income.getNextPayDay());
+                existingIncome.setIsFixed(income.getIsFixed());
+
+                existingIncome.setIcon(income.getIcon()); // Added missing icon update just in case, though the main fix
+                                                          // is
+                                                          // below
+
+                incomeRepository.save(existingIncome);
+                return ResponseEntity.ok("Income source updated successfully");
+        }
+
+        /**
+         * @method - getAllIncomes
+         * @param - None
+         * @return - List<IncomeDTO>
+         * @Description - This method is used to get all the incomes
+         */
+        @Override
+        public ResponseEntity<List<IncomeDTO>> getAllIncomes() {
+                // Get current logged in user
+                String username = SecurityContextHolder.getContext().getAuthentication().getName();
+                Users user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+                List<Income> incomes = incomeRepository.findByUserId(user.getId());
+
+                return ResponseEntity.ok(incomes.stream()
+                                .map(income -> modelMapper.map(income, IncomeDTO.class))
+                                .collect(Collectors.toList()));
+        }
+
+        /**
+         * @method - deleteIncome
+         * @param - id
+         * @return - String
+         * @Description - This method is used to delete the income
+         */
+        @Override
+        public ResponseEntity<String> deleteIncome(Long id) {
+                // Get current logged in user to ownership check
+                String username = SecurityContextHolder.getContext().getAuthentication().getName();
+                Users user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+                Income income = incomeRepository.findById(id)
+                                .orElseThrow(() -> new IncomeNotFoundException("Income not found"));
+
+                if (!income.getUser().getId().equals(user.getId())) {
+                        throw new RuntimeException("Unauthorized: You do not own this income source");
+                }
+
+                incomeRepository.delete(income);
+                return ResponseEntity.ok("Income source deleted successfully");
+        }
 }

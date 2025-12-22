@@ -33,7 +33,7 @@ public class BudgetServiceImpl implements BudgetService {
     private UserRepository userRepository;
 
     @Autowired
-    private TransactionRepository transactionRepository;
+    private com.cashiq.cashmanagement.validation.BudgetValidator budgetValidator;
 
     /**
      * Creates a new budget for a user.
@@ -44,6 +44,8 @@ public class BudgetServiceImpl implements BudgetService {
      */
     @Override
     public ResponseEntity<?> createBudget(Long userId, BudgetDTO budgetDTO) {
+        budgetValidator.validateBudget(budgetDTO);
+
         Optional<Users> userOpt = userRepository.findById(userId);
 
         if (userOpt.isEmpty()) {

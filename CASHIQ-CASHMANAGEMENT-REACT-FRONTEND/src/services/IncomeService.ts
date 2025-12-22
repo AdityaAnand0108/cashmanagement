@@ -8,6 +8,10 @@ const getAuthHeader = () => {
     return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 };
 
+/**
+ * Handles authentication errors.
+ * @param error The error to handle.
+ */
 const handleAuthError = (error: unknown) => {
     if (axios.isAxiosError(error) && error.response?.status === 403) {
         localStorage.removeItem('token');
@@ -17,6 +21,11 @@ const handleAuthError = (error: unknown) => {
     throw error;
 };
 
+/**
+ * Adds an income source for a user.
+ * @param income The income data to add.
+ * @returns A promise that resolves to a string.
+ */
 const addIncome = async (income: IncomeDTO): Promise<string> => {
     try {
         const response = await axios.post(`${BASE_URL}/add-income`, income, getAuthHeader());
@@ -28,6 +37,12 @@ const addIncome = async (income: IncomeDTO): Promise<string> => {
     }
 };
 
+/**
+ * Updates an income source for a user.
+ * @param id The ID of the income source to update.
+ * @param income The income data to update.
+ * @returns A promise that resolves to a string.
+ */
 const updateIncome = async (id: number, income: IncomeDTO): Promise<string> => {
     try {
         const response = await axios.put(`${BASE_URL}/update-income/${id}`, income, getAuthHeader());
@@ -39,6 +54,10 @@ const updateIncome = async (id: number, income: IncomeDTO): Promise<string> => {
     }
 };
 
+/**
+ * Gets all income sources for a user.
+ * @returns A promise that resolves to an array of IncomeDTO.
+ */
 const getAllIncomes = async (): Promise<IncomeDTO[]> => {
     try {
         const response = await axios.get(`${BASE_URL}/get-all-income`, getAuthHeader());
@@ -50,6 +69,11 @@ const getAllIncomes = async (): Promise<IncomeDTO[]> => {
     }
 };
 
+/**
+ * Deletes an income source for a user.
+ * @param id The ID of the income source to delete.
+ * @returns A promise that resolves to a string.
+ */
 const deleteIncome = async (id: number): Promise<string> => {
     try {
         const response = await axios.delete(`${BASE_URL}/delete-income/${id}`, getAuthHeader());
@@ -61,6 +85,9 @@ const deleteIncome = async (id: number): Promise<string> => {
     }
 };
 
+/**
+ * IncomeService class for handling income operations.
+ */
 const IncomeService = {
     addIncome,
     updateIncome,

@@ -28,11 +28,24 @@ class BudgetService {
         return response.data;
     }
 
+    /**
+     * Updates a budget for a user.
+     * @param userId The ID of the user.
+     * @param budgetId The ID of the budget to update.
+     * @param budget The budget data to update.
+     * @returns A promise that resolves to a string.
+     */
     async updateBudget(userId: number, budgetId: number, budget: BudgetDTO): Promise<string> {
         const response = await axios.put(`${API_URL}/update/${userId}/${budgetId}`, budget, this.getAuthHeader());
         return response.data;
     }
 
+    /**
+     * Deletes a budget for a user.
+     * @param userId The ID of the user.
+     * @param budgetId The ID of the budget to delete.
+     * @returns A promise that resolves to a string.
+     */
     async deleteBudget(userId: number, budgetId: number): Promise<string> {
         const response = await axios.delete(`${API_URL}/delete/${userId}/${budgetId}`, this.getAuthHeader());
         return response.data;

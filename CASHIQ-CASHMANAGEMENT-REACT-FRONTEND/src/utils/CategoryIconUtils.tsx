@@ -12,6 +12,11 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { CategoryType } from '../models/CategoryType';
 
+/**
+ * Returns an icon element based on the category.
+ * @param category The category to get the icon for.
+ * @returns The icon element for the category.
+ */
 export const getCategoryIcon = (category: string | undefined): JSX.Element => {
     switch (category) {
         case CategoryType.FOOD:

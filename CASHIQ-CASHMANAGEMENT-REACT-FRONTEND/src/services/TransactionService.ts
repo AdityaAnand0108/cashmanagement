@@ -8,6 +8,10 @@ const getAuthHeader = () => {
     return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 };
 
+/**
+ * Handles authentication errors.
+ * @param error The error to handle.
+ */
 const handleAuthError = (error: unknown) => {
     if (axios.isAxiosError(error) && error.response?.status === 403) {
         // Optional: Redirect or just throw
@@ -16,6 +20,11 @@ const handleAuthError = (error: unknown) => {
     throw error;
 };
 
+/**
+ * Adds a transaction for a user.
+ * @param transaction The transaction data to add.
+ * @returns A promise that resolves to a string.
+ */
 const addTransaction = async (transaction: TransactionDTO): Promise<string> => {
     try {
         const response = await axios.post(`${BASE_URL}/add-transaction`, transaction, getAuthHeader());
@@ -27,6 +36,10 @@ const addTransaction = async (transaction: TransactionDTO): Promise<string> => {
     }
 };
 
+/**
+ * Gets all transactions for a user.
+ * @returns A promise that resolves to an array of TransactionDTO.
+ */
 const getAllTransactions = async (): Promise<TransactionDTO[]> => {
     try {
         const response = await axios.get(`${BASE_URL}/get-all-transaction`, getAuthHeader());
@@ -38,6 +51,9 @@ const getAllTransactions = async (): Promise<TransactionDTO[]> => {
     }
 };
 
+/**
+ * TransactionService class for handling transaction operations.
+ */
 const TransactionService = {
     addTransaction,
     getAllTransactions,

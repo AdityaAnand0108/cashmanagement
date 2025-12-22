@@ -3,7 +3,16 @@ import type { UserDTO, AuthDTO, AuthResponse } from '../models/Auth';
 
 const API_base_URL = "http://localhost:8080/auth";
 
+/**
+ * AuthService class for handling authentication operations.
+ */
 class AuthService {
+
+  /**
+   * Registers a new user.
+   * @param user The user data to register.
+   * @returns A promise that resolves to a string.
+   */
   async registerUser(user: UserDTO): Promise<string> {
     try {
       const response = await axios.post(`${API_base_URL}/register-user`, user);
@@ -17,6 +26,11 @@ class AuthService {
     }
   }
 
+  /**
+   * Logs in a user.
+   * @param authRequest The authentication request data.
+   * @returns A promise that resolves to an AuthResponse.
+   */
   async login(authRequest: AuthDTO): Promise<AuthResponse> {
     try {
       const response = await axios.post(`${API_base_URL}/login`, authRequest);

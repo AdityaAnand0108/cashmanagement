@@ -40,19 +40,23 @@ const iconMap: Record<string, React.ReactNode> = {
 interface Budget {
     id: number;
     category: string;
+    categoryKey: CategoryType; // Store raw key for editing
     icon: React.ReactNode;
     spent: number;
     limit: number;
     status: string;
     statusColor?: string;
     customProgressColor?: string;
+    startDate?: string;
+    endDate?: string;
+    periodType?: string;
 }
 
 const BudgetCaps: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [budgets, setBudgets] = useState<Budget[]>([]);
-
-
+    const [editingBudget, setEditingBudget] = useState<BudgetCapData | undefined>(undefined);
+    const [editingId, setEditingId] = useState<number | null>(null);
 
     const fetchBudgets = async () => {
         const userId = localStorage.getItem('userId');
@@ -62,23 +66,39 @@ const BudgetCaps: React.FC = () => {
             const data = await BudgetService.getUserBudgets(Number(userId));
             const mappedBudgets: Budget[] = data.map(b => ({
                 id: b.id || 0,
-                category: CategoryType[b.category as keyof typeof CategoryType] || b.category, // Show friendly string if possible
-                icon: iconMap[b.category] || <AttachMoneyIcon />, // Fallback icon
+                category: CategoryType[b.category as keyof typeof CategoryType] || b.category,
+                categoryKey: b.category as CategoryType,
+                icon: iconMap[b.category] || <AttachMoneyIcon />,
                 spent: b.spentAmount || 0,
                 limit: b.limitAmount,
                 status: b.status || "On Track",
-                customProgressColor: (b.status === 'Exceeded' || b.status === 'At Risk') ? "#dc2626" : "#16a34a"
+                customProgressColor: (b.status === 'Exceeded' || b.status === 'At Risk') ? "#dc2626" : "#16a34a",
+                startDate: b.startDate,
+                endDate: b.endDate,
+                periodType: b.periodType
             }));
             setBudgets(mappedBudgets);
         } catch (error) {
             console.error("Failed to fetch budgets", error);
-            // toast.error("Could not load budgets");
         }
     };
 
     useEffect(() => {
         fetchBudgets();
     }, []);
+
+    const handleEditBudget = (budget: Budget) => {
+        setEditingId(budget.id);
+        setEditingBudget({
+            category: budget.categoryKey,
+            limit: budget.limit,
+            icon: 'dining',
+            periodType: (budget.periodType as 'MONTHLY' | 'CUSTOM') || 'MONTHLY',
+            startDate: budget.startDate,
+            endDate: budget.endDate
+        });
+        setIsAddModalOpen(true);
+    };
 
     const handleSaveBudget = async (data: BudgetCapData) => {
         const userId = localStorage.getItem('userId');
@@ -88,19 +108,37 @@ const BudgetCaps: React.FC = () => {
         }
 
         try {
-            await BudgetService.addBudget(Number(userId), {
-                category: data.category as CategoryType,
-                limitAmount: data.limit,
-                startDate: data.startDate,
-                endDate: data.endDate,
-                periodType: data.periodType
-            });
-            toast.success("Budget added successfully!");
-            fetchBudgets(); // Refresh list
+            if (editingId) {
+                await BudgetService.updateBudget(Number(userId), editingId, {
+                    category: data.category as CategoryType,
+                    limitAmount: data.limit,
+                    startDate: data.startDate,
+                    endDate: data.endDate,
+                    periodType: data.periodType
+                });
+                toast.success("Budget updated successfully!");
+            } else {
+                await BudgetService.addBudget(Number(userId), {
+                    category: data.category as CategoryType,
+                    limitAmount: data.limit,
+                    startDate: data.startDate,
+                    endDate: data.endDate,
+                    periodType: data.periodType
+                });
+                toast.success("Budget added successfully!");
+            }
+            fetchBudgets();
+            handleCloseModal();
         } catch (error) {
             console.error(error);
-            toast.error("Failed to add budget");
+            toast.error("Failed to save budget");
         }
+    };
+
+    const handleCloseModal = () => {
+        setIsAddModalOpen(false);
+        setEditingId(null);
+        setEditingBudget(undefined);
     };
 
     return (
@@ -115,7 +153,11 @@ const BudgetCaps: React.FC = () => {
                         variant="contained" 
                         startIcon={<AddIcon />}
                         className="add-budget-btn"
-                        onClick={() => setIsAddModalOpen(true)}
+                        onClick={() => {
+                            setEditingId(null);
+                            setEditingBudget(undefined);
+                            setIsAddModalOpen(true);
+                        }}
                     >
                         Add New Budget Cap
                     </Button>
@@ -172,6 +214,7 @@ const BudgetCaps: React.FC = () => {
                             status={budget.status} 
                             statusColor={budget.statusColor}
                             customProgressColor={budget.customProgressColor}
+                            onEdit={() => handleEditBudget(budget)}
                         />
                     ))}
                     {budgets.length === 0 && (
@@ -183,8 +226,9 @@ const BudgetCaps: React.FC = () => {
 
                 <AddBudgetModal 
                     open={isAddModalOpen} 
-                    onClose={() => setIsAddModalOpen(false)} 
+                    onClose={handleCloseModal} 
                     onSave={handleSaveBudget} 
+                    budgetToEdit={editingBudget}
                 />
             </main>
         </div>

@@ -1,5 +1,5 @@
-import React from 'react';
-import { LinearProgress } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import { LinearProgress, IconButton } from '@mui/material';
 import './CategoryBudgetCard.css';
 
 interface CategoryBudgetCardProps {
@@ -11,6 +11,7 @@ interface CategoryBudgetCardProps {
     statusColor?: string; // Hex for status text
     progressColor?: "primary" | "secondary" | "error" | "info" | "success" | "warning" | "inherit"; 
     customProgressColor?: string; // Hex for progress bar if not using standard MUI colors
+    onEdit?: () => void;
 }
 
 const CategoryBudgetCard: React.FC<CategoryBudgetCardProps> = ({ 
@@ -21,7 +22,8 @@ const CategoryBudgetCard: React.FC<CategoryBudgetCardProps> = ({
     status, 
     statusColor = '#475569',
     progressColor = 'primary',
-    customProgressColor
+    customProgressColor,
+    onEdit
 }) => {
     const progress = Math.min((spent / limit) * 100, 100);
 
@@ -31,6 +33,11 @@ const CategoryBudgetCard: React.FC<CategoryBudgetCardProps> = ({
                 <div className="budget-category-title">
                     {category} <span>{icon}</span>
                 </div>
+                {onEdit && (
+                    <IconButton size="small" onClick={onEdit} aria-label="edit budget">
+                        <EditIcon fontSize="small" />
+                    </IconButton>
+                )}
             </div>
 
             <div>

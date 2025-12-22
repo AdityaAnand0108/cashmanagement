@@ -48,6 +48,7 @@ interface AddBudgetModalProps {
     open: boolean;
     onClose: () => void;
     onSave: (data: BudgetCapData) => void;
+    budgetToEdit?: BudgetCapData;
 }
 
 const icons = [
@@ -77,7 +78,7 @@ const categoryToIconMap: Record<string, string> = {
     'EDUCATION': 'education',
 };
 
-const AddBudgetModal: React.FC<AddBudgetModalProps> = ({ open, onClose, onSave }) => {
+const AddBudgetModal: React.FC<AddBudgetModalProps> = ({ open, onClose, onSave, budgetToEdit }) => {
     const [category, setCategory] = useState<CategoryType | ''>('');
     const [limit, setLimit] = useState('');
     const [iconValue, setIconValue] = useState('dining'); // derived from category, internal use
@@ -86,6 +87,30 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({ open, onClose, onSave }
     const [isCustomPeriod, setIsCustomPeriod] = useState(false);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+
+    // Load data when budgetToEdit changes or modal opens
+    React.useEffect(() => {
+        if (budgetToEdit) {
+            setCategory(budgetToEdit.category || '');
+            setLimit(budgetToEdit.limit.toString());
+            
+            // Derive icon from category if possible, else fallback
+            const derivedIcon = categoryToIconMap[budgetToEdit.category as string];
+            setIconValue(derivedIcon || budgetToEdit.icon || 'dining');
+            
+            setIsCustomPeriod(budgetToEdit.periodType === 'CUSTOM');
+            setStartDate(budgetToEdit.startDate || '');
+            setEndDate(budgetToEdit.endDate || '');
+        } else {
+            // Reset if opening new
+            setCategory('');
+            setLimit('');
+            setIconValue('dining');
+            setIsCustomPeriod(false);
+            setStartDate('');
+            setEndDate('');
+        }
+    }, [budgetToEdit, open]);
 
     const handleCategoryChange = (cat: CategoryType) => {
         setCategory(cat);
@@ -140,7 +165,7 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({ open, onClose, onSave }
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle className="modal-title">
-                Add New Budget Cap
+                {budgetToEdit ? 'Edit Budget Cap' : 'Add New Budget Cap'}
                 <IconButton onClick={onClose} className="close-button">
                     <CloseIcon />
                 </IconButton>

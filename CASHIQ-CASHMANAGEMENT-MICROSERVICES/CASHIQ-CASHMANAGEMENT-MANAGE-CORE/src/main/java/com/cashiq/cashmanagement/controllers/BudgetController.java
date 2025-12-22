@@ -21,6 +21,12 @@ public class BudgetController {
         return budgetService.createBudget(userId, budgetDTO);
     }
 
+    @PutMapping("/update/{userId}/{budgetId}")
+    public ResponseEntity<?> updateBudget(@PathVariable Long userId, @PathVariable Long budgetId,
+            @RequestBody BudgetDTO budgetDTO) {
+        return budgetService.updateBudget(userId, budgetId, budgetDTO);
+    }
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<BudgetDTO>> getUserBudgets(@PathVariable Long userId) {
         return budgetService.getUserBudgets(userId);

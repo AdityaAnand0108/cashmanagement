@@ -20,20 +20,9 @@ import {
     Grid
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-// Icons
-import FastfoodIcon from '@mui/icons-material/Fastfood';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
-import MovieIcon from '@mui/icons-material/Movie';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import CheckroomIcon from '@mui/icons-material/Checkroom';
-import HomeIcon from '@mui/icons-material/Home';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
-import SchoolIcon from '@mui/icons-material/School';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import './AddBudgetModal.css';
 import { CategoryType } from '../../../models/CategoryType';
+import { getCategoryIcon } from '../../../utils/CategoryIconUtils';
 
 export interface BudgetCapData {
     category: CategoryType | '';
@@ -51,37 +40,11 @@ interface AddBudgetModalProps {
     budgetToEdit?: BudgetCapData;
 }
 
-const icons = [
-    { label: 'Dining', value: 'dining', icon: <FastfoodIcon /> },
-    { label: 'Groceries', value: 'groceries', icon: <ShoppingCartIcon /> },
-    { label: 'Transport', value: 'transport', icon: <LocalGasStationIcon /> },
-    { label: 'Entertainment', value: 'entertainment', icon: <MovieIcon /> },
-    { label: 'Utilities', value: 'utilities', icon: <LightbulbIcon /> },
-    { label: 'Shopping', value: 'shopping', icon: <CheckroomIcon /> },
-    { label: 'Rent', value: 'rent', icon: <HomeIcon /> },
-    { label: 'Health', value: 'health', icon: <LocalHospitalIcon /> },
-    { label: 'Education', value: 'education', icon: <SchoolIcon /> },
-    { label: 'Transfer', value: 'transfer', icon: <SwapHorizIcon /> },
-    { label: 'Income', value: 'income', icon: <AttachMoneyIcon /> },
-];
-
-const categoryToIconMap: Record<string, string> = {
-    'FOOD': 'dining',
-    'TRANSPORT': 'transport',
-    'UTILITIES': 'utilities',
-    'RENT': 'rent',
-    'INCOME': 'income',
-    'SHOPPING': 'shopping',
-    'ENTERTAINMENT': 'entertainment',
-    'HEALTH': 'health',
-    'TRANSFER': 'transfer',
-    'EDUCATION': 'education',
-};
-
 const AddBudgetModal: React.FC<AddBudgetModalProps> = ({ open, onClose, onSave, budgetToEdit }) => {
     const [category, setCategory] = useState<CategoryType | ''>('');
     const [limit, setLimit] = useState('');
-    const [iconValue, setIconValue] = useState('dining'); // derived from category, internal use
+    // iconValue is kept for interface compatibility but basically unused/derived
+    const [iconValue, setIconValue] = useState('dining'); 
     
     // Toggle for Fixed (Custom Dates) or Variable (Monthly Default)
     const [isCustomPeriod, setIsCustomPeriod] = useState(false);
@@ -93,10 +56,7 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({ open, onClose, onSave, 
         if (budgetToEdit) {
             setCategory(budgetToEdit.category || '');
             setLimit(budgetToEdit.limit.toString());
-            
-            // Derive icon from category if possible, else fallback
-            const derivedIcon = categoryToIconMap[budgetToEdit.category as string];
-            setIconValue(derivedIcon || budgetToEdit.icon || 'dining');
+            setIconValue(budgetToEdit.icon || 'dining');
             
             setIsCustomPeriod(budgetToEdit.periodType === 'CUSTOM');
             setStartDate(budgetToEdit.startDate || '');
@@ -114,10 +74,8 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({ open, onClose, onSave, 
 
     const handleCategoryChange = (cat: CategoryType) => {
         setCategory(cat);
-        const mapped = categoryToIconMap[cat];
-        if (mapped) {
-            setIconValue(mapped);
-        }
+        // We can just set iconValue to the category name or ignored
+        setIconValue(cat); 
     };
 
     const handleSave = () => {
@@ -147,17 +105,13 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({ open, onClose, onSave, 
         // If nothing selected
         if (!selected) return <em>Select Category</em>;
         
-        // Find icon for this category (using the map)
         const catKey = selected as CategoryType;
-        const mappedIconKey = categoryToIconMap[catKey];
-        const iconObj = icons.find(i => i.value === mappedIconKey);
-        
         // For display we use the friendly value from the Enum
         const friendlyName = CategoryType[catKey as keyof typeof CategoryType] || selected;
 
         return (
             <Box className="icon-option">
-                {iconObj?.icon} {friendlyName}
+                {getCategoryIcon(friendlyName)} {friendlyName}
             </Box>
         );
     };
@@ -184,14 +138,10 @@ const AddBudgetModal: React.FC<AddBudgetModalProps> = ({ open, onClose, onSave, 
                             renderValue={renderCategoryValue}
                         >
                             {Object.entries(CategoryType).map(([key, value]) => {
-                                // Find icon to show in the dropdown list too
-                                const mappedIconKey = categoryToIconMap[key];
-                                const iconObj = icons.find(i => i.value === mappedIconKey);
-
                                 return (
                                     <MenuItem key={key} value={key}>
                                         <Box className="icon-option">
-                                            {iconObj?.icon} {value}
+                                            {getCategoryIcon(value)} {value}
                                         </Box>
                                     </MenuItem>
                                 );

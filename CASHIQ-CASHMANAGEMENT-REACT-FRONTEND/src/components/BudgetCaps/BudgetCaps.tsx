@@ -12,31 +12,7 @@ import BudgetService from '../../services/BudgetService';
 import { toast } from 'react-toastify';
 import { CategoryType } from '../../models/CategoryType';
 import ConfirmationModal from '../common/ConfirmationModal/ConfirmationModal';
-
-// Icons for new budgets
-import FastfoodIcon from '@mui/icons-material/Fastfood';
-import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
-import MovieIcon from '@mui/icons-material/Movie';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import CheckroomIcon from '@mui/icons-material/Checkroom';
-import HomeIcon from '@mui/icons-material/Home';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
-import SchoolIcon from '@mui/icons-material/School';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-
-const iconMap: Record<string, React.ReactNode> = {
-    [CategoryType.FOOD]: <FastfoodIcon />,
-    [CategoryType.TRANSPORT]: <LocalGasStationIcon />,
-    [CategoryType.UTILITIES]: <LightbulbIcon />,
-    [CategoryType.RENT]: <HomeIcon />,
-    [CategoryType.INCOME]: <AttachMoneyIcon />,
-    [CategoryType.SHOPPING]: <CheckroomIcon />,
-    [CategoryType.ENTERTAINMENT]: <MovieIcon />,
-    [CategoryType.HEALTH]: <LocalHospitalIcon />,
-    [CategoryType.TRANSFER]: <SwapHorizIcon />,
-    [CategoryType.EDUCATION]: <SchoolIcon />
-};
+import { getCategoryIcon } from '../../utils/CategoryIconUtils';
 
 interface BudgetUI {
     id: number;
@@ -73,7 +49,7 @@ const BudgetCaps: React.FC = () => {
                     id: b.id || 0,
                     category: friendlyCategory,
                     categoryKey: b.category as CategoryType,
-                    icon: iconMap[friendlyCategory] || <AttachMoneyIcon />,
+                    icon: getCategoryIcon(friendlyCategory),
                     spent: b.spentAmount || 0,
                     limit: b.limitAmount,
                     status: b.status || "On Track",
@@ -109,7 +85,7 @@ const BudgetCaps: React.FC = () => {
     const handleSaveBudget = async (data: BudgetCapData) => {
         const userId = localStorage.getItem('userId');
         if (!userId) {
-            toast.error("User not authenticated");
+            toast.error("User not found");
             return;
         }
 

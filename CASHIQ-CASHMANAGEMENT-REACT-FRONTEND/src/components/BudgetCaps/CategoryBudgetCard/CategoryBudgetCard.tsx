@@ -4,7 +4,7 @@ import './CategoryBudgetCard.css';
 
 interface CategoryBudgetCardProps {
     category: string;
-    icon: string;
+    icon: React.ReactNode;
     spent: number;
     limit: number;
     status: string; // e.g., "At Risk", "On Track"

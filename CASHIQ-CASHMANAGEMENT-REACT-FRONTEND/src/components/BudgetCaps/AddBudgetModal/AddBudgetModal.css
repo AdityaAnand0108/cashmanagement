@@ -1,0 +1,29 @@
+
+.modal-title {
+    margin: 0;
+    padding: 16px 24px !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-button {
+    color: #9ca3af !important;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 8px;
+}
+
+.icon-option {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.modal-actions {
+    padding: 16px !important;
+}

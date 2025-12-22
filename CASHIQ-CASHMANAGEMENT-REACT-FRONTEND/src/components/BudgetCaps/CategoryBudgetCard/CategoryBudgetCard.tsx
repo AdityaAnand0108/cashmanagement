@@ -1,5 +1,6 @@
 import EditIcon from '@mui/icons-material/Edit';
-import { LinearProgress, IconButton } from '@mui/material';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { LinearProgress, IconButton, Tooltip } from '@mui/material';
 import './CategoryBudgetCard.css';
 
 interface CategoryBudgetCardProps {
@@ -12,6 +13,7 @@ interface CategoryBudgetCardProps {
     progressColor?: "primary" | "secondary" | "error" | "info" | "success" | "warning" | "inherit"; 
     customProgressColor?: string; // Hex for progress bar if not using standard MUI colors
     onEdit?: () => void;
+    onDelete?: () => void;
 }
 
 const CategoryBudgetCard: React.FC<CategoryBudgetCardProps> = ({ 
@@ -23,7 +25,8 @@ const CategoryBudgetCard: React.FC<CategoryBudgetCardProps> = ({
     statusColor = '#475569',
     progressColor = 'primary',
     customProgressColor,
-    onEdit
+    onEdit,
+    onDelete
 }) => {
     const progress = Math.min((spent / limit) * 100, 100);
 
@@ -33,11 +36,20 @@ const CategoryBudgetCard: React.FC<CategoryBudgetCardProps> = ({
                 <div className="budget-category-title">
                     {category} <span>{icon}</span>
                 </div>
-                {onEdit && (
-                    <IconButton size="small" onClick={onEdit} aria-label="edit budget">
-                        <EditIcon fontSize="small" />
-                    </IconButton>
-                )}
+                <div className="budget-actions">
+                    {onEdit && (
+                        <IconButton size="small" onClick={onEdit} aria-label="edit budget">
+                            <EditIcon fontSize="small" />
+                        </IconButton>
+                    )}
+                    {onDelete && (
+                        <Tooltip title="Delete Budget">
+                            <IconButton size="small" onClick={onDelete} aria-label="delete budget" color="error">
+                                <DeleteOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                </div>
             </div>
 
             <div>

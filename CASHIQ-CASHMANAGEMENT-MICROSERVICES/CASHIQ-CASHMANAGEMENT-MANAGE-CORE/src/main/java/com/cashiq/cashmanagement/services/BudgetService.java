@@ -10,5 +10,7 @@ public interface BudgetService {
 
     ResponseEntity<?> updateBudget(Long userId, Long budgetId, BudgetDTO budgetDTO);
 
+    ResponseEntity<?> deleteBudget(Long userId, Long budgetId);
+
     ResponseEntity<List<BudgetDTO>> getUserBudgets(Long userId);
 }

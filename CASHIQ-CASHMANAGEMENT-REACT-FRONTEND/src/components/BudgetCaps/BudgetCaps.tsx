@@ -11,6 +11,7 @@ import './BudgetCaps.css';
 import BudgetService from '../../services/BudgetService';
 import { toast } from 'react-toastify';
 import { CategoryType } from '../../models/CategoryType';
+import ConfirmationModal from '../common/ConfirmationModal/ConfirmationModal';
 
 // Icons for new budgets
 import FastfoodIcon from '@mui/icons-material/Fastfood';
@@ -37,7 +38,7 @@ const iconMap: Record<string, React.ReactNode> = {
     [CategoryType.EDUCATION]: <SchoolIcon />
 };
 
-interface Budget {
+interface BudgetUI {
     id: number;
     category: string;
     categoryKey: CategoryType; // Store raw key for editing
@@ -54,9 +55,11 @@ interface Budget {
 
 const BudgetCaps: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [budgets, setBudgets] = useState<Budget[]>([]);
+    const [budgets, setBudgets] = useState<BudgetUI[]>([]);
     const [editingBudget, setEditingBudget] = useState<BudgetCapData | undefined>(undefined);
     const [editingId, setEditingId] = useState<number | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const fetchBudgets = async () => {
         const userId = localStorage.getItem('userId');
@@ -64,19 +67,22 @@ const BudgetCaps: React.FC = () => {
 
         try {
             const data = await BudgetService.getUserBudgets(Number(userId));
-            const mappedBudgets: Budget[] = data.map(b => ({
-                id: b.id || 0,
-                category: CategoryType[b.category as keyof typeof CategoryType] || b.category,
-                categoryKey: b.category as CategoryType,
-                icon: iconMap[b.category] || <AttachMoneyIcon />,
-                spent: b.spentAmount || 0,
-                limit: b.limitAmount,
-                status: b.status || "On Track",
-                customProgressColor: (b.status === 'Exceeded' || b.status === 'At Risk') ? "#dc2626" : "#16a34a",
-                startDate: b.startDate,
-                endDate: b.endDate,
-                periodType: b.periodType
-            }));
+            const mappedBudgets: BudgetUI[] = data.map(b => {
+                const friendlyCategory = CategoryType[b.category as keyof typeof CategoryType] || b.category;
+                return {
+                    id: b.id || 0,
+                    category: friendlyCategory,
+                    categoryKey: b.category as CategoryType,
+                    icon: iconMap[friendlyCategory] || <AttachMoneyIcon />,
+                    spent: b.spentAmount || 0,
+                    limit: b.limitAmount,
+                    status: b.status || "On Track",
+                    customProgressColor: (b.status === 'Exceeded' || b.status === 'At Risk') ? "#dc2626" : "#16a34a",
+                    startDate: b.startDate,
+                    endDate: b.endDate,
+                    periodType: b.periodType
+                };
+            });
             setBudgets(mappedBudgets);
         } catch (error) {
             console.error("Failed to fetch budgets", error);
@@ -87,7 +93,7 @@ const BudgetCaps: React.FC = () => {
         fetchBudgets();
     }, []);
 
-    const handleEditBudget = (budget: Budget) => {
+    const handleEditBudget = (budget: BudgetUI) => {
         setEditingId(budget.id);
         setEditingBudget({
             category: budget.categoryKey,
@@ -139,6 +145,29 @@ const BudgetCaps: React.FC = () => {
         setIsAddModalOpen(false);
         setEditingId(null);
         setEditingBudget(undefined);
+    };
+
+    const handleDeleteClick = (id: number) => {
+        setDeletingId(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!deletingId) return;
+        const userId = localStorage.getItem('userId');
+        if (!userId) return;
+
+        try {
+            await BudgetService.deleteBudget(Number(userId), deletingId);
+            toast.success("Budget deleted successfully");
+            fetchBudgets();
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to delete budget");
+        } finally {
+            setIsDeleteModalOpen(false);
+            setDeletingId(null);
+        }
     };
 
     return (
@@ -215,6 +244,7 @@ const BudgetCaps: React.FC = () => {
                             statusColor={budget.statusColor}
                             customProgressColor={budget.customProgressColor}
                             onEdit={() => handleEditBudget(budget)}
+                            onDelete={() => handleDeleteClick(budget.id)}
                         />
                     ))}
                     {budgets.length === 0 && (
@@ -229,6 +259,15 @@ const BudgetCaps: React.FC = () => {
                     onClose={handleCloseModal} 
                     onSave={handleSaveBudget} 
                     budgetToEdit={editingBudget}
+                />
+
+                <ConfirmationModal 
+                    open={isDeleteModalOpen}
+                    title="Delete Budget Cap"
+                    message="Are you sure you want to delete this budget cap? This action cannot be undone."
+                    onConfirm={handleConfirmDelete}
+                    onCancel={() => setIsDeleteModalOpen(false)}
+                    confirmText="Delete"
                 />
             </main>
         </div>

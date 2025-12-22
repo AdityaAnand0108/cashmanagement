@@ -27,6 +27,11 @@ public class BudgetController {
         return budgetService.updateBudget(userId, budgetId, budgetDTO);
     }
 
+    @DeleteMapping("/delete/{userId}/{budgetId}")
+    public ResponseEntity<?> deleteBudget(@PathVariable Long userId, @PathVariable Long budgetId) {
+        return budgetService.deleteBudget(userId, budgetId);
+    }
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<BudgetDTO>> getUserBudgets(@PathVariable Long userId) {
         return budgetService.getUserBudgets(userId);

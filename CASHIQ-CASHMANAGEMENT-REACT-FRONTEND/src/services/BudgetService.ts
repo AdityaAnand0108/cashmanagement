@@ -33,6 +33,11 @@ class BudgetService {
         return response.data;
     }
 
+    async deleteBudget(userId: number, budgetId: number): Promise<string> {
+        const response = await axios.delete(`${API_URL}/delete/${userId}/${budgetId}`, this.getAuthHeader());
+        return response.data;
+    }
+
     /**
      * Gets the budgets for a user.
      * @param userId The ID of the user.

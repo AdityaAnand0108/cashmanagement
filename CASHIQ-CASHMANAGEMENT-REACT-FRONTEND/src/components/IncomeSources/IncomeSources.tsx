@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Typography, Box, Button } from '@mui/material';
 import Sidebar from '../Sidebar/Sidebar';
 import './IncomeSources.css';
 import AddIncomeSourceModal from './AddIncomeSourceModal/AddIncomeSourceModal';
@@ -12,6 +13,8 @@ import type { TransactionDTO } from '../../models/Transaction';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 
 const IncomeSources: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -111,6 +114,8 @@ const IncomeSources: React.FC = () => {
             <Sidebar />
             <main className="income-main">
                 <div className="content-scrollable">
+
+
                     {/* Total Income Banner */}
                     <div className="total-income-banner">
                         <div className="banner-content">
@@ -121,7 +126,8 @@ const IncomeSources: React.FC = () => {
                     </div>
 
                     {/* Action Bar */}
-                    <div className="action-bar">
+                    <div className="action-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <Typography variant="h5" fontWeight="bold">Your Income Sources</Typography>
                         <button className="add-source-btn" onClick={handleAddClick}>
                             <AddIcon fontSize="small" /> Add New Income Source
                         </button>
@@ -132,7 +138,22 @@ const IncomeSources: React.FC = () => {
                         {loading ? (
                             <p>Loading income sources...</p>
                         ) : incomes.length === 0 ? (
-                            <p>No income sources added yet.</p>
+                            <Box className="empty-state-container">
+                                <SmartToyIcon className="empty-state-icon" />
+                                <Typography variant="h6" className="empty-state-title">
+                                    No income sources set yet
+                                </Typography>
+                                <Typography variant="body1" className="empty-state-text">
+                                    Let's get started! Add your salary, freelance work, or other income sources to track your cash flow.
+                                </Typography>
+                                <Button 
+                                    variant="outlined" 
+                                    startIcon={<AddIcon />}
+                                    onClick={handleAddClick}
+                                >
+                                    Add Your First Income
+                                </Button>
+                            </Box>
                         ) : (
                             incomes.map((source) => (
                                 <div key={source.id} className="source-card">
@@ -182,7 +203,14 @@ const IncomeSources: React.FC = () => {
                                 <tbody>
                                     {recentTransactions.length === 0 ? (
                                         <tr>
-                                            <td colSpan={3} style={{textAlign: 'center'}}>No recent income transactions found.</td>
+                                            <td colSpan={3} className="transaction-empty-cell">
+                                                <div className="transaction-empty-wrapper">
+                                                    <ReceiptLongIcon className="transaction-empty-icon" />
+                                                    <Typography variant="body1" color="text.secondary">
+                                                        No recent income transactions found
+                                                    </Typography>
+                                                </div>
+                                            </td>
                                         </tr>
                                     ) : (
                                         recentTransactions.map((tx, idx) => (

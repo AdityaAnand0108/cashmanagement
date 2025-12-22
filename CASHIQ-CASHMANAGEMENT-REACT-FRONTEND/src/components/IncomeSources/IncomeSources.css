@@ -233,3 +233,57 @@
     font-weight: 600;
     text-align: right;
 }
+
+/* Empty State */
+.empty-state-container {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: #64748b; /* text-secondary equivalent */
+    text-align: center;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    border: 2px dashed #e2e8f0;
+    margin-bottom: 2rem;
+}
+
+.empty-state-icon {
+    font-size: 60px !important;
+    color: #94a3b8;
+    margin-bottom: 16px;
+}
+
+.empty-state-title {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.35em !important;
+}
+
+.empty-state-text {
+    margin-bottom: 24px !important;
+    max-width: 400px;
+    font-size: 1rem !important;
+    color: #475569;
+}
+
+/* Transaction Empty State */
+.transaction-empty-cell {
+    text-align: center;
+    padding: 3rem 1rem !important; /* override td padding */
+}
+
+.transaction-empty-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.6;
+}
+
+.transaction-empty-icon {
+    font-size: 60px !important;
+    margin-bottom: 1rem !important;
+    color: #94a3b8;
+}

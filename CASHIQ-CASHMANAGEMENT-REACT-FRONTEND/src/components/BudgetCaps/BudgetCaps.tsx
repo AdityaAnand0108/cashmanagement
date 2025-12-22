@@ -1,9 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button, Typography } from '@mui/material';
+import { Button, Typography, LinearProgress, Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import InfoIcon from '@mui/icons-material/Info';
+import ErrorIcon from '@mui/icons-material/Error';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import Sidebar from '../Sidebar/Sidebar';
 import CategoryBudgetCard from './CategoryBudgetCard/CategoryBudgetCard';
 import AddBudgetModal, { type BudgetCapData } from './AddBudgetModal/AddBudgetModal';
@@ -146,11 +149,89 @@ const BudgetCaps: React.FC = () => {
         }
     };
 
+    // Calculations for Summary Cards
+    const totalLimit = budgets.reduce((acc, b) => acc + b.limit, 0);
+    const totalSpent = budgets.reduce((acc, b) => acc + b.spent, 0);
+    const spentPercentage = totalLimit > 0 ? (totalSpent / totalLimit) * 100 : 0;
+    
+    // Dynamic Icon Logic for Spent Card
+    let spentIcon = <InfoIcon sx={{ color: '#3b82f6', fontSize: 28 }} />;
+    let spentColorClass = 'blue'; 
+    let progressBarColor: "primary" | "secondary" | "error" | "info" | "success" | "warning" = "info";
+
+    if (spentPercentage > 90) {
+        spentIcon = <ErrorIcon sx={{ color: '#ef4444', fontSize: 28 }} />;
+        spentColorClass = 'red';
+        progressBarColor = "error";
+    } else if (spentPercentage > 50) {
+        spentIcon = <WarningAmberIcon sx={{ color: '#f59e0b', fontSize: 28 }} />;
+        spentColorClass = 'amber';
+        progressBarColor = "warning";
+    } else {
+        // 0-50%
+        spentIcon = <CheckCircleOutlineIcon sx={{ color: '#22c55e', fontSize: 28 }} />;
+        spentColorClass = 'green';
+        progressBarColor = "success";
+    }
+
+    // Runway Logic
+    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+    const currentDay = new Date().getDate();
+    const daysRemaining = daysInMonth - currentDay;
+
     return (
         <div className="budget-caps-container">
             <Sidebar />
             
             <main className="budget-caps-main">
+                {/* Summary Cards */}
+                <div className="summary-grid">
+                    <div className="summary-card">
+                        <div>
+                            <div className="summary-title">Total Budget:</div>
+                            <div className="summary-value">₹{totalLimit.toLocaleString()} / Month</div>
+                        </div>
+                    </div>
+                    
+                    <div className="summary-card">
+                        <div style={{ width: '100%', paddingRight: '1rem' }}>
+                            <div className="summary-title">Spent so far:</div>
+                            <div className={`summary-value ${spentColorClass}`}>
+                                ₹{totalSpent.toLocaleString()} 
+                                <span style={{ fontSize: '0.9rem', marginLeft: '0.5rem', color: '#64748b' }}>
+                                    ({Math.round(spentPercentage)}%)
+                                </span>
+                            </div>
+                             <LinearProgress 
+                                variant="determinate" 
+                                value={Math.min(spentPercentage, 100)} 
+                                color={progressBarColor}
+                                sx={{ marginTop: '0.5rem', borderRadius: 4, height: 8 }}
+                            />
+                        </div>
+                        <div className="summary-icon">
+                            {spentIcon}
+                        </div>
+                    </div>
+                    
+                    <div className="summary-card">
+                         <div>
+                            <div className="summary-title">Remaining:</div>
+                            <div className="summary-value green">
+                                ₹{(totalLimit - totalSpent).toLocaleString()}
+                            </div>
+                            <div className="summary-subtext">
+                                {totalLimit > 0 
+                                    ? `(Safe for ${daysRemaining} days)` 
+                                    : "(Set a budget to calculate runway)"}
+                            </div>
+                        </div>
+                        <div className="summary-icon">
+                            <CheckCircleOutlineIcon sx={{ color: '#16a34a', fontSize: 28 }} />
+                        </div>
+                    </div>
+                </div>
+
                 {/* Header */}
                 <div className="budget-header">
                     <Typography variant="h5" fontWeight="bold">Your Monthly Budget Caps</Typography>
@@ -166,45 +247,6 @@ const BudgetCaps: React.FC = () => {
                     >
                         Add New Budget Cap
                     </Button>
-                </div>
-
-                {/* Summary Cards (Note: These are hardcoded for now, can be updated later) */}
-                {/* Dynamic Summary Cards */}
-                <div className="summary-grid">
-                    <div className="summary-card">
-                        <div>
-                            <div className="summary-title">Total Budget:</div>
-                            <div className="summary-value">₹{budgets.reduce((acc, b) => acc + b.limit, 0).toLocaleString()} / Month</div>
-                        </div>
-                    </div>
-                    
-                    <div className="summary-card">
-                        <div>
-                            <div className="summary-title">Spent so far:</div>
-                            <div className="summary-value amber">
-                                ₹{budgets.reduce((acc, b) => acc + b.spent, 0).toLocaleString()} 
-                                ({budgets.length > 0 ? Math.round((budgets.reduce((acc, b) => acc + b.spent, 0) / budgets.reduce((acc, b) => acc + b.limit, 0)) * 100) : 0}%)
-                            </div>
-                        </div>
-                        <div className="summary-icon">
-                            <WarningAmberIcon sx={{ color: '#d97706', fontSize: 28 }} />
-                        </div>
-                    </div>
-                    
-                    <div className="summary-card">
-                        <div>
-                            <div className="summary-title">Remaining:</div>
-                            <div className="summary-value green">
-                                ₹{(budgets.reduce((acc, b) => acc + b.limit, 0) - budgets.reduce((acc, b) => acc + b.spent, 0)).toLocaleString()}
-                            </div>
-                            <div className="summary-subtext">
-                                (Safe for {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate()} days)
-                            </div>
-                        </div>
-                        <div className="summary-icon">
-                            <CheckCircleOutlineIcon sx={{ color: '#16a34a', fontSize: 28 }} />
-                        </div>
-                    </div>
                 </div>
 
                 {/* Categories Grid */}
@@ -223,10 +265,43 @@ const BudgetCaps: React.FC = () => {
                             onDelete={() => handleDeleteClick(budget.id)}
                         />
                     ))}
+                    
+                    {/* Empty State */}
                     {budgets.length === 0 && (
-                        <Typography variant="body1" color="text.secondary" sx={{ mt: 2, ml: 1 }}>
-                            No budgets set yet. Click "Add New Budget Cap" to get started.
-                        </Typography>
+                        <Box 
+                            sx={{ 
+                                gridColumn: '1 / -1', 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                padding: '4rem 2rem',
+                                color: 'text.secondary',
+                                textAlign: 'center',
+                                backgroundColor: '#f8fafc',
+                                borderRadius: '12px',
+                                border: '2px dashed #e2e8f0'
+                            }}
+                        >
+                            <SmartToyIcon sx={{ fontSize: 60, color: '#94a3b8', mb: 2 }} />
+                            <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                No budgets set yet
+                            </Typography>
+                            <Typography variant="body1" sx={{ mb: 3, maxWidth: '400px' }}>
+                                Let's get proactive! Set a budget limit to track your spending and let our AI help you save more.
+                            </Typography>
+                            <Button 
+                                variant="outlined" 
+                                startIcon={<AddIcon />}
+                                onClick={() => {
+                                    setEditingId(null);
+                                    setEditingBudget(undefined);
+                                    setIsAddModalOpen(true);
+                                }}
+                            >
+                                Set Your First Budget
+                            </Button>
+                        </Box>
                     )}
                 </div>
 

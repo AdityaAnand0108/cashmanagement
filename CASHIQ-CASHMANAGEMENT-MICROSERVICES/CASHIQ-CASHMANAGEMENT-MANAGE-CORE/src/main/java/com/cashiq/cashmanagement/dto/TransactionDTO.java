@@ -8,6 +8,8 @@ import java.time.LocalDate;
 @Data
 public class TransactionDTO {
 
+    private Long id;
+
     private String description;
 
     private Double amount;

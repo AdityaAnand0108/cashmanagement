@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Typography, Box, Button } from '@mui/material';
+import { Typography } from '@mui/material';
 import Sidebar from '../Sidebar/Sidebar';
 import './IncomeSources.css';
 import AddIncomeSourceModal from './AddIncomeSourceModal/AddIncomeSourceModal';
 import ConfirmationModal from '../common/ConfirmationModal/ConfirmationModal';
+import EmptyState from '../common/EmptyState/EmptyState';
 import IncomeService from '../../services/IncomeService';
 import type { IncomeDTO } from '../../models/Income';
 import TransactionService from '../../services/TransactionService';
@@ -14,7 +15,6 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
 
 const IncomeSources: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -138,22 +138,12 @@ const IncomeSources: React.FC = () => {
                         {loading ? (
                             <p>Loading income sources...</p>
                         ) : incomes.length === 0 ? (
-                            <Box className="empty-state-container">
-                                <SmartToyIcon className="empty-state-icon" />
-                                <Typography variant="h6" className="empty-state-title">
-                                    No income sources set yet
-                                </Typography>
-                                <Typography variant="body1" className="empty-state-text">
-                                    Let's get started! Add your salary, freelance work, or other income sources to track your cash flow.
-                                </Typography>
-                                <Button 
-                                    variant="outlined" 
-                                    startIcon={<AddIcon />}
-                                    onClick={handleAddClick}
-                                >
-                                    Add Your First Income
-                                </Button>
-                            </Box>
+                            <EmptyState 
+                                title="No income sources set yet"
+                                description="Let's get started! Add your salary, freelance work, or other income sources to track your cash flow."
+                                actionLabel="Add Your First Income"
+                                onAction={handleAddClick}
+                            />
                         ) : (
                             incomes.map((source) => (
                                 <div key={source.id} className="source-card">

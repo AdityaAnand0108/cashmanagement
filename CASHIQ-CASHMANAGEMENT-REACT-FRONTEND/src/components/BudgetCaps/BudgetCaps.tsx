@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button, Typography, LinearProgress, Box } from '@mui/material';
+import { Button, Typography, LinearProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import InfoIcon from '@mui/icons-material/Info';
 import ErrorIcon from '@mui/icons-material/Error';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
 import Sidebar from '../Sidebar/Sidebar';
 import CategoryBudgetCard from './CategoryBudgetCard/CategoryBudgetCard';
 import AddBudgetModal, { type BudgetCapData } from './AddBudgetModal/AddBudgetModal';
@@ -15,6 +14,7 @@ import BudgetService from '../../services/BudgetService';
 import { toast } from 'react-toastify';
 import { CategoryType } from '../../models/CategoryType';
 import ConfirmationModal from '../common/ConfirmationModal/ConfirmationModal';
+import EmptyState from '../common/EmptyState/EmptyState';
 import { getCategoryIcon } from '../../utils/CategoryIconUtils';
 
 interface BudgetUI {
@@ -268,40 +268,16 @@ const BudgetCaps: React.FC = () => {
                     
                     {/* Empty State */}
                     {budgets.length === 0 && (
-                        <Box 
-                            sx={{ 
-                                gridColumn: '1 / -1', 
-                                display: 'flex', 
-                                flexDirection: 'column', 
-                                alignItems: 'center', 
-                                justifyContent: 'center',
-                                padding: '4rem 2rem',
-                                color: 'text.secondary',
-                                textAlign: 'center',
-                                backgroundColor: '#f8fafc',
-                                borderRadius: '12px',
-                                border: '2px dashed #e2e8f0'
+                        <EmptyState 
+                            title="No budgets set yet"
+                            description="Let's get proactive! Set a budget limit to track your spending and let our AI help you save more."
+                            actionLabel="Set Your First Budget"
+                            onAction={() => {
+                                setEditingId(null);
+                                setEditingBudget(undefined);
+                                setIsAddModalOpen(true);
                             }}
-                        >
-                            <SmartToyIcon sx={{ fontSize: 60, color: '#94a3b8', mb: 2 }} />
-                            <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                No budgets set yet
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 3, maxWidth: '400px' }}>
-                                Let's get proactive! Set a budget limit to track your spending and let our AI help you save more.
-                            </Typography>
-                            <Button 
-                                variant="outlined" 
-                                startIcon={<AddIcon />}
-                                onClick={() => {
-                                    setEditingId(null);
-                                    setEditingBudget(undefined);
-                                    setIsAddModalOpen(true);
-                                }}
-                            >
-                                Set Your First Budget
-                            </Button>
-                        </Box>
+                        />
                     )}
                 </div>
 

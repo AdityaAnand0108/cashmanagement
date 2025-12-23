@@ -145,6 +145,8 @@
 .chat-send-btn {
   position: absolute;
   right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
   color: #3b82f6; /* Blue 500 */
   background: none;
   border: none;
@@ -153,7 +155,7 @@
 }
 
 .chat-send-btn:hover {
-  transform: scale(1.1);
+  transform: translateY(-50%) scale(1.1);
   background-color: #eff6ff; /* Blue 50 */
 }
 

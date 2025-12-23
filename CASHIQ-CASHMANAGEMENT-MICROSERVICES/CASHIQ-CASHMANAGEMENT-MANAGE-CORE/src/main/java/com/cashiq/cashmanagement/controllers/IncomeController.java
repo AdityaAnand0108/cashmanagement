@@ -3,6 +3,7 @@ package com.cashiq.cashmanagement.controllers;
 import com.cashiq.cashmanagement.dto.IncomeDTO;
 import com.cashiq.cashmanagement.services.IncomeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Slf4j
 public class IncomeController {
 
     private final IncomeService incomeService;
@@ -28,6 +30,7 @@ public class IncomeController {
      */
     @PostMapping("/add-income")
     public ResponseEntity<String> addIncome(@RequestBody IncomeDTO incomeDTO) {
+        log.info("Request to add income: {}", incomeDTO);
         return incomeService.addIncome(incomeDTO);
     }
 
@@ -39,6 +42,7 @@ public class IncomeController {
      */
     @PutMapping("/update-income/{id}")
     public ResponseEntity<String> updateIncome(@PathVariable Long id, @RequestBody IncomeDTO incomeDTO) {
+        log.info("Request to update income: {} with details: {}", id, incomeDTO);
         return incomeService.updateIncome(id, incomeDTO);
     }
 
@@ -50,6 +54,7 @@ public class IncomeController {
      */
     @GetMapping("/get-all-income")
     public ResponseEntity<List<IncomeDTO>> getAllIncomes() {
+        log.info("Request to fetch all incomes");
         return incomeService.getAllIncomes();
     }
 
@@ -61,6 +66,7 @@ public class IncomeController {
      */
     @DeleteMapping("/delete-income/{id}")
     public ResponseEntity<String> deleteIncome(@PathVariable Long id) {
+        log.info("Request to delete income: {}", id);
         return incomeService.deleteIncome(id);
     }
 }

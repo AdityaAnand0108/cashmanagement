@@ -7,10 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/expenses")
 @CrossOrigin(origins = "http://localhost:5173") // Adjust port if needed, React usually runs on 5173 or 3000
+@Slf4j
 public class ExpenseAnalysisController {
 
     private final AiCategorizationService aiCategorizationService;
@@ -23,15 +25,24 @@ public class ExpenseAnalysisController {
     @PostMapping("/analyze")
     public ResponseEntity<ExpenseAnalysisResponseDTO> analyzeExpense(@RequestBody Map<String, String> request) {
         String description = request.get("description");
+        log.info("Received expense analysis request for description: {}", description);
         if (description == null || description.isEmpty()) {
+            log.warn("Description is empty for expense analysis");
             return ResponseEntity.badRequest().build();
         }
 
-        ExpenseAnalysisResponseDTO response = aiCategorizationService.analyzeExpense(description);
-        if (response == null) {
-            return ResponseEntity.internalServerError().build();
+        try {
+            ExpenseAnalysisResponseDTO response = aiCategorizationService.analyzeExpense(description);
+            if (response == null) {
+                log.error("Analysis service returned null response");
+                return ResponseEntity.internalServerError().build();
+            }
+            log.info("Successfully analyzed expense. Category: {}, Confidence: {}", response.getCategory(),
+                    response.getConfidence());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error analyzing expense", e);
+            throw e;
         }
-
-        return ResponseEntity.ok(response);
     }
 }

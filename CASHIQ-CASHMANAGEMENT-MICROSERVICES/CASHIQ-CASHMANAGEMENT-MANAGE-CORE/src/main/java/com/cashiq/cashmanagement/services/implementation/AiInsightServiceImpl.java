@@ -10,6 +10,7 @@ import com.cashiq.cashmanagement.repository.TransactionRepository;
 import com.cashiq.cashmanagement.repository.UserRepository;
 import com.cashiq.cashmanagement.services.AiInsightService;
 import org.springframework.ai.chat.client.ChatClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class AiInsightServiceImpl implements AiInsightService {
 
     private final ChatClient chatClient;
@@ -40,6 +42,7 @@ public class AiInsightServiceImpl implements AiInsightService {
 
     @Override
     public String getInsights(Long userId, String query) {
+        log.info("Generating insights for user: {} with query: {}", userId, query);
         // 1. Fetch user's financial data
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -96,10 +99,15 @@ public class AiInsightServiceImpl implements AiInsightService {
         context.append("\n--- USER QUESTION ---\n");
         context.append(query);
 
+        log.debug("Built context for AI: {}", context);
+
         // 3. Call AI
-        return chatClient.prompt()
+        String response = chatClient.prompt()
                 .user(context.toString())
                 .call()
                 .content();
+
+        log.info("Received insights from AI");
+        return response;
     }
 }

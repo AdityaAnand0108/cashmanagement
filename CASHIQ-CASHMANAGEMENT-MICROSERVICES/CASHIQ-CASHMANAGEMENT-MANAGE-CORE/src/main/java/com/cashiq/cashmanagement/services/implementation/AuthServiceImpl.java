@@ -9,6 +9,7 @@ import com.cashiq.cashmanagement.services.AuthService;
 import com.cashiq.cashmanagement.util.JwtUtil;
 import com.cashiq.cashmanagement.validation.UserValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +26,7 @@ import java.time.LocalDate;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -42,6 +44,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public String registerUser(UserDTO userDTO) {
+        log.info("Starting registration for user: {}", userDTO.getUsername());
 
         userValidator.validateUserRegistration(userDTO);
 
@@ -51,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
+        log.info("User registered successfully with ID: {}", user.getId());
         return "User registered successfully with ID : " + user.getId();
     }
 
@@ -62,6 +66,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public AuthResponseDTO login(AuthDTO authDTO) {
+        log.info("Authenticating user: {}", authDTO.getUsername());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authDTO.getUsername(), authDTO.getPassword()));
 
@@ -75,8 +80,10 @@ public class AuthServiceImpl implements AuthService {
             Users user = userRepository.findByUsername(authDTO.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
+            log.info("User authenticated successfully: {}", authDTO.getUsername());
             return new AuthResponseDTO(token, user.getId(), user.getUsername());
         } else {
+            log.warn("Authentication failed for user: {}", authDTO.getUsername());
             throw new RuntimeException("Invalid user request !");
         }
     }

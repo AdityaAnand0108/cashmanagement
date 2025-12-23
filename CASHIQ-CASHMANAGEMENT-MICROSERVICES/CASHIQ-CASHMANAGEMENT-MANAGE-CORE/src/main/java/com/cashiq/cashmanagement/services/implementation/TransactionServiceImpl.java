@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -20,40 +21,45 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionServiceImpl implements TransactionService {
 
-    private final TransactionRepository transactionRepository;
-    private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+        private final TransactionRepository transactionRepository;
+        private final UserRepository userRepository;
+        private final ModelMapper modelMapper;
 
-    @Override
-    public String addTransaction(TransactionDTO transactionDTO) {
-        Transaction transaction = modelMapper.map(transactionDTO, Transaction.class);
+        @Override
+        public String addTransaction(TransactionDTO transactionDTO) {
+                log.info("Adding transaction: {}", transactionDTO);
+                Transaction transaction = modelMapper.map(transactionDTO, Transaction.class);
 
-        // Get current logged in user
-        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication().getName();
-        Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                // Get current logged in user
+                String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                                .getAuthentication().getName();
+                Users user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        transaction.setUser(user);
+                transaction.setUser(user);
 
-        transactionRepository.save(transaction);
-        return "Transaction added successfully";
-    }
+                transactionRepository.save(transaction);
+                log.info("Transaction added successfully with ID: {}", transaction.getId());
+                return "Transaction added successfully";
+        }
 
-    @Override
-    public List<TransactionDTO> getAllTransactions() {
-        // Get current logged in user
-        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication().getName();
-        Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        @Override
+        public List<TransactionDTO> getAllTransactions() {
+                // Get current logged in user
+                String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                                .getAuthentication().getName();
+                log.info("Fetching transactions for user: {}", username);
+                Users user = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Transaction> transactions = transactionRepository.findAllByUser(user);
+                List<Transaction> transactions = transactionRepository.findAllByUser(user);
+                log.info("Found {} transactions for user: {}", transactions.size(), username);
 
-        return transactions.stream()
-                .map(transaction -> modelMapper.map(transaction, TransactionDTO.class))
-                .collect(Collectors.toList());
-    }
+                return transactions.stream()
+                                .map(transaction -> modelMapper.map(transaction, TransactionDTO.class))
+                                .collect(Collectors.toList());
+        }
 }

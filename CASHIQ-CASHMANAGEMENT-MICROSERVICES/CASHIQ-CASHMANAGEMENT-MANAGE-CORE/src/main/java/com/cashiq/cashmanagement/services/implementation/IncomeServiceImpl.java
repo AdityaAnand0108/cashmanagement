@@ -7,6 +7,7 @@ import com.cashiq.cashmanagement.repository.IncomeRepository;
 import com.cashiq.cashmanagement.repository.UserRepository;
 import com.cashiq.cashmanagement.services.IncomeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class IncomeServiceImpl implements IncomeService {
 
         private final IncomeRepository incomeRepository;
@@ -39,6 +41,7 @@ public class IncomeServiceImpl implements IncomeService {
          */
         @Override
         public ResponseEntity<String> addIncome(IncomeDTO incomeDTO) {
+                log.info("Attempting to add income: {}", incomeDTO);
                 incomeValidator.validateIncome(incomeDTO);
 
                 Income income = modelMapper.map(incomeDTO, Income.class);
@@ -51,6 +54,7 @@ public class IncomeServiceImpl implements IncomeService {
                 income.setUser(user);
 
                 incomeRepository.save(income);
+                log.info("Income source added successfully for user: {}, Income ID: {}", username, income.getId());
                 return ResponseEntity.ok("Income source added successfully");
         }
 
@@ -62,6 +66,7 @@ public class IncomeServiceImpl implements IncomeService {
          */
         @Override
         public ResponseEntity<String> updateIncome(Long id, IncomeDTO incomeDTO) {
+                log.info("Attempting to update income ID: {} with details: {}", id, incomeDTO);
                 incomeValidator.validateIncome(incomeDTO);
 
                 Income income = modelMapper.map(incomeDTO, Income.class);
@@ -85,6 +90,7 @@ public class IncomeServiceImpl implements IncomeService {
                                                           // below
 
                 incomeRepository.save(existingIncome);
+                log.info("Income source updated successfully for ID: {}", id);
                 return ResponseEntity.ok("Income source updated successfully");
         }
 
@@ -98,10 +104,12 @@ public class IncomeServiceImpl implements IncomeService {
         public ResponseEntity<List<IncomeDTO>> getAllIncomes() {
                 // Get current logged in user
                 String username = SecurityContextHolder.getContext().getAuthentication().getName();
+                log.info("Fetching all incomes for user: {}", username);
                 Users user = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
                 List<Income> incomes = incomeRepository.findByUserId(user.getId());
+                log.info("Found {} income sources for user: {}", incomes.size(), username);
 
                 return ResponseEntity.ok(incomes.stream()
                                 .map(income -> modelMapper.map(income, IncomeDTO.class))
@@ -116,6 +124,7 @@ public class IncomeServiceImpl implements IncomeService {
          */
         @Override
         public ResponseEntity<String> deleteIncome(Long id) {
+                log.info("Attempting to delete income ID: {}", id);
                 // Get current logged in user to ownership check
                 String username = SecurityContextHolder.getContext().getAuthentication().getName();
                 Users user = userRepository.findByUsername(username)
@@ -125,10 +134,12 @@ public class IncomeServiceImpl implements IncomeService {
                                 .orElseThrow(() -> new IncomeNotFoundException("Income not found"));
 
                 if (!income.getUser().getId().equals(user.getId())) {
+                        log.warn("Unauthorized attempt to delete income ID: {} by user: {}", id, username);
                         throw new RuntimeException("Unauthorized: You do not own this income source");
                 }
 
                 incomeRepository.delete(income);
+                log.info("Income source deleted successfully for ID: {}", id);
                 return ResponseEntity.ok("Income source deleted successfully");
         }
 }

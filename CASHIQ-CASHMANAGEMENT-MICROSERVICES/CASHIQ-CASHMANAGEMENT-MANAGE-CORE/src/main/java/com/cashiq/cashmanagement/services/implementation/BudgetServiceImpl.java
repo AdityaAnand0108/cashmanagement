@@ -12,6 +12,7 @@ import com.cashiq.cashmanagement.exception.BudgetNotFoundException;
 import com.cashiq.cashmanagement.exception.UserNotFoundException;
 import com.cashiq.cashmanagement.util.StringUtils;
 import com.cashiq.cashmanagement.validation.BudgetValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class BudgetServiceImpl implements BudgetService {
 
     @Autowired
@@ -46,6 +48,7 @@ public class BudgetServiceImpl implements BudgetService {
      */
     @Override
     public ResponseEntity<?> createBudget(Long userId, BudgetDTO budgetDTO) {
+        log.info("Creating budget for user: {} with category: {}", userId, budgetDTO.getCategory());
         budgetValidator.validateBudget(budgetDTO);
 
         Optional<Users> userOpt = userRepository.findById(userId);
@@ -57,10 +60,12 @@ public class BudgetServiceImpl implements BudgetService {
         Budget budget;
         if (existing.isPresent()) {
             budget = existing.get();
+            log.info("Updating existing budget for user: {} category: {}", userId, budgetDTO.getCategory());
         } else {
             budget = new Budget();
             budget.setUsers(userOpt.get());
             budget.setCategory(budgetDTO.getCategory());
+            log.info("Creating new budget entity for user: {} category: {}", userId, budgetDTO.getCategory());
         }
 
         budget.setLimitAmount(budgetDTO.getLimitAmount());
@@ -79,6 +84,7 @@ public class BudgetServiceImpl implements BudgetService {
         budget.setEndDate(end);
 
         budgetRepository.save(budget);
+        log.info("Budget saved successfully with ID: {}", budget.getId());
         return ResponseEntity.ok("Budget saved successfully");
     }
 
@@ -92,18 +98,21 @@ public class BudgetServiceImpl implements BudgetService {
      */
     @Override
     public ResponseEntity<?> updateBudget(Long userId, Long budgetId, BudgetDTO budgetDTO) {
+        log.info("Updating budget ID: {} for user: {}", budgetId, userId);
         Optional<Budget> budgetOpt = budgetRepository.findById(budgetId);
         if (budgetOpt.isEmpty()) {
             throw new BudgetNotFoundException("Budget not found with id :: " + budgetId);
         }
         Budget budget = budgetOpt.get();
         if (!budget.getUsers().getId().equals(userId)) {
+            log.warn("Access denied for user: {} to update budget: {}", userId, budgetId);
             throw new RuntimeException("Access Denied: You cannot update this budget");
         }
 
         budget.setLimitAmount(budgetDTO.getLimitAmount());
         // Potential update to dates if needed
         budgetRepository.save(budget);
+        log.info("Budget updated successfully: {}", budgetId);
         return ResponseEntity.ok("Budget updated");
     }
 
@@ -116,16 +125,19 @@ public class BudgetServiceImpl implements BudgetService {
      */
     @Override
     public ResponseEntity<?> deleteBudget(Long userId, Long budgetId) {
+        log.info("Deleting budget ID: {} for user: {}", budgetId, userId);
         Optional<Budget> budgetOpt = budgetRepository.findById(budgetId);
         if (budgetOpt.isEmpty()) {
             throw new BudgetNotFoundException("Budget not found with id :: " + budgetId);
         }
         Budget budget = budgetOpt.get();
         if (!budget.getUsers().getId().equals(userId)) {
+            log.warn("Access denied for user: {} to delete budget: {}", userId, budgetId);
             throw new RuntimeException("Access Denied: You cannot delete this budget");
         }
 
         budgetRepository.delete(budget);
+        log.info("Budget deleted successfully: {}", budgetId);
         return ResponseEntity.ok("Budget deleted successfully");
     }
 
@@ -137,6 +149,7 @@ public class BudgetServiceImpl implements BudgetService {
      */
     @Override
     public ResponseEntity<List<BudgetDTO>> getUserBudgets(Long userId) {
+        log.info("Fetching budgets for user: {}", userId);
         List<Budget> budgets = budgetRepository.findByUsersId(userId);
         Optional<Users> userOpt = userRepository.findById(userId);
 

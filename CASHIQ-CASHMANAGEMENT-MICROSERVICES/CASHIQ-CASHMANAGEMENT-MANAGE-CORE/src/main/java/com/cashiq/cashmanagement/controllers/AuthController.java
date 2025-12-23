@@ -5,6 +5,7 @@ import com.cashiq.cashmanagement.dto.AuthResponseDTO;
 import com.cashiq.cashmanagement.dto.UserDTO;
 import com.cashiq.cashmanagement.services.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -33,7 +35,15 @@ public class AuthController {
      */
     @PostMapping("/register-user")
     public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(authService.registerUser(userDTO));
+        log.info("Attempting to register user: {}", userDTO.getUsername());
+        try {
+            String result = authService.registerUser(userDTO);
+            log.info("User registered successfully: {}", userDTO.getUsername());
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error registering user: {}", userDTO.getUsername(), e);
+            throw e;
+        }
     }
 
     /**
@@ -44,6 +54,14 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthDTO authDTO) {
-        return ResponseEntity.ok(authService.login(authDTO));
+        log.info("Login attempt for user: {}", authDTO.getUsername());
+        try {
+            AuthResponseDTO response = authService.login(authDTO);
+            log.info("User logged in successfully: {}", authDTO.getUsername());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Login failed for user: {}", authDTO.getUsername(), e);
+            throw e;
+        }
     }
 }

@@ -11,14 +11,13 @@ import com.cashiq.cashmanagement.services.BudgetService;
 import com.cashiq.cashmanagement.exception.BudgetNotFoundException;
 import com.cashiq.cashmanagement.exception.UserNotFoundException;
 import com.cashiq.cashmanagement.util.StringUtils;
+import com.cashiq.cashmanagement.validation.BudgetValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,7 +32,10 @@ public class BudgetServiceImpl implements BudgetService {
     private UserRepository userRepository;
 
     @Autowired
-    private com.cashiq.cashmanagement.validation.BudgetValidator budgetValidator;
+    private BudgetValidator budgetValidator;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     /**
      * Creates a new budget for a user.

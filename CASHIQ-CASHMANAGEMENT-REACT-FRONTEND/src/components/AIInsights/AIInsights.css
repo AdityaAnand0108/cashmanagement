@@ -127,9 +127,9 @@
 }
 
 .chat-input {
-  width: 100%;
-  padding: 24px 64px 24px 24px; /* More comfy padding, Right padding for Send btn */
-  border: 1px solid #e2e8f0; /* Slate 200 */
+  flex: 1; /* Allow input to take available space */
+  padding: 24px; /* Uniform padding */
+  border: none;
   border-radius: 16px;
   font-size: 1.1rem;
   outline: none;
@@ -139,23 +139,24 @@
 }
 
 .chat-input:focus {
-  border-color: #3b82f6; /* Blue 500 */
+  /* border-color: #3b82f6; Removed to avoid line collision */
 }
 
 .chat-send-btn {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+  /* Position absolute removed for flex alignment */
+  margin-right: 16px; /* Keep spacing from right edge */
   color: #3b82f6; /* Blue 500 */
   background: none;
   border: none;
   cursor: pointer;
   transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chat-send-btn:hover {
-  transform: translateY(-50%) scale(1.1);
+  transform: scale(1.1);
   background-color: #eff6ff; /* Blue 50 */
 }
 

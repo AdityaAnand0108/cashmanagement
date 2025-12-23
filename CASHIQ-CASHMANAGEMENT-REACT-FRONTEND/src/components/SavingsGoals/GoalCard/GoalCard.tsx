@@ -1,16 +1,16 @@
-import React from 'react';
-import { CircularProgress } from '@mui/material';
+import { LinearProgress, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import './GoalCard.css';
 
 interface GoalCardProps {
     title: string;
-    icon?: string; // Emoji or URL
+    icon?: string; // Emoji
     currentAmount: number;
     targetAmount: number;
     progress: number; // 0 to 100
     message: string;
-    color: string; // Hex code for progress bar and amount
-    isCompleted?: boolean;
+    color: string; // Hex code
 }
 
 const GoalCard: React.FC<GoalCardProps> = ({
@@ -24,38 +24,42 @@ const GoalCard: React.FC<GoalCardProps> = ({
 }) => {
     return (
         <div className="goal-card">
-            {/* Circular Progress */}
-            <div className="goal-progress-wrapper">
-                <CircularProgress
-                    variant="determinate"
-                    value={100}
-                    size={100}
-                    thickness={4}
-                    sx={{ color: '#e2e8f0', position: 'absolute' }} // Background ring
-                />
-                <CircularProgress
-                    variant="determinate"
-                    value={progress}
-                    size={100}
-                    thickness={4}
-                    sx={{ color: color, strokeLinecap: 'round' }}
-                />
-                <div className="goal-progress-text">
-                    {progress}%
+            <div className="goal-header-row">
+                <div className="goal-title">
+                    {title} <span>{icon}</span>
+                </div>
+                <div className="goal-actions">
+                    <IconButton size="small" aria-label="edit goal">
+                        <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" aria-label="delete goal" color="error">
+                        <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
                 </div>
             </div>
 
-            {/* Details */}
-            <div className="goal-details">
-                <div className="goal-title">
-                    {title} {icon && <span>{icon}</span>}
+            <div>
+                <span className="progress-label">Progress Bar</span>
+                <LinearProgress 
+                    variant="determinate" 
+                    value={progress} 
+                    sx={{ 
+                        height: 8, 
+                        borderRadius: 4,
+                        backgroundColor: '#e2e8f0',
+                        '& .MuiLinearProgress-bar': {
+                            backgroundColor: color
+                        }
+                    }}
+                />
+                
+                <div className="goal-values">
+                    <span className="current-amount" style={{ color: color }}>₹{currentAmount.toLocaleString()}</span>
+                    <span className="target-amount"> / ₹{targetAmount.toLocaleString()}</span>
                 </div>
-                <div className="goal-amount">
-                    <span style={{ color: color }}>₹{currentAmount.toLocaleString()}</span>
-                    <span className="goal-target"> / ₹{targetAmount.toLocaleString()}</span>
-                </div>
+                
                 <div className="goal-message">
-                    {message}
+                    Status: {message}
                 </div>
             </div>
         </div>

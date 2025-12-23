@@ -78,29 +78,26 @@ const AIInsights: React.FC = () => {
 
         {/* Proactive Alerts Section */}
         <div className="section-container">
-          <Typography className="section-heading">
-            Proactive Alerts & Suggestions
-          </Typography>
           <div className="alerts-grid">
             <AlertCard
               title="Unusual Spending Detected"
               icon="⚠️"
               type="danger"
-              description="You spent $150 on 'Gaming' this week, which is 3x your normal average. Review this category?"
+              description="You spent ₹150 on 'Gaming' this week, which is 3x your normal average. Review this category?"
               actionLabel="Review Transactions"
             />
             <AlertCard
               title="Savings Opportunity Found"
               icon="💡"
               type="success"
-              description="Based on your cash flow, you could safely move an extra $200 to your 'Europe Vacation' goal this month without impacting bills."
-              actionLabel="Move $200 Now"
+              description="Based on your cash flow, you could safely move an extra ₹200 to your 'Europe Vacation' goal this month without impacting bills."
+              actionLabel="Move ₹200 Now"
             />
             <AlertCard
               title="Budget Forecast Warning"
               icon="📉"
               type="warning"
-              description="At your current pace, you will exceed your 'Dining/Coffee' budget by $85 in 5 days. Consider cooking at home."
+              description="At your current pace, you will exceed your 'Dining/Coffee' budget by ₹85 in 5 days. Consider cooking at home."
               actionLabel="See Budget Details"
             />
           </div>
@@ -136,7 +133,7 @@ const AIInsights: React.FC = () => {
               <input
                 type="text"
                 className="chat-input"
-                placeholder='Ask anything... e.g., "How much did I spend on Uber last month?", "Can I afford a $500 purchase?", "What&apos;s my biggest expense?"'
+                placeholder="Ask anything..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}

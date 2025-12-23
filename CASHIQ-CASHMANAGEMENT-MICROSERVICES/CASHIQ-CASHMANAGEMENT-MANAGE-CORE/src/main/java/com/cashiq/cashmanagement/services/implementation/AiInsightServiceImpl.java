@@ -43,16 +43,12 @@ public class AiInsightServiceImpl implements AiInsightService {
     @Override
     public String getInsights(Long userId, String query) {
         log.info("Generating insights for user: {} with query: {}", userId, query);
+
         // 1. Fetch user's financial data
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<Transaction> transactions = transactionRepository.findAllByUser(user);
-        // Note: Assuming findByUserId exists or finding all and filtering.
-        // ideally fetching limited recent ones would be better but for MVP fetching all
-        // user txns.
-        // If findByUserId doesn't exist, we might need to adjust or use existing
-        // methods.
 
         List<Budget> budgets = budgetRepository.findByUsersId(userId);
         List<Income> incomes = incomeRepository.findByUserId(userId);

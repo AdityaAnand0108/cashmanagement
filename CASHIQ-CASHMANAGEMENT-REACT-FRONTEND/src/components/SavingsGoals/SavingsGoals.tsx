@@ -7,11 +7,50 @@ import CompletedGoalCard from './CompletedGoalCard/CompletedGoalCard';
 import './SavingsGoals.css';
 
 const SavingsGoals: React.FC = () => {
+    // Static calculation for demo, normally dynamic
+    const totalGoal = 17000;
+    const totalSaved = 5600;
+    const remaining = totalGoal - totalSaved;
+    
     return (
         <div className="savings-goals-container">
             <Sidebar />
             
             <main className="savings-goals-main">
+                {/* Summary Cards */}
+                <div className="summary-grid">
+                    <div className="summary-card">
+                        <div>
+                            <div className="summary-title">Total Goal:</div>
+                            <div className="summary-value">₹{totalGoal.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    
+                    <div className="summary-card">
+                        <div style={{ width: '100%', paddingRight: '1rem' }}>
+                            <div className="summary-title">Saved so far:</div>
+                            <div className="summary-value green">
+                                ₹{totalSaved.toLocaleString()}
+                                <span style={{ fontSize: '0.9rem', marginLeft: '0.5rem', color: '#64748b' }}>
+                                    ({Math.round((totalSaved / totalGoal) * 100)}%)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="summary-card">
+                         <div>
+                            <div className="summary-title">Remaining:</div>
+                            <div className="summary-value amber">
+                                ₹{remaining.toLocaleString()}
+                            </div>
+                            <div className="summary-subtext">
+                                (Keep going!)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Header */}
                 <div className="goals-header">
                     <Typography variant="h5" fontWeight="bold">Your Savings Goals</Typography>

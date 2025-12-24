@@ -61,6 +61,7 @@ const DebtsIOUs: React.FC = () => {
                             details="Next payment: ₹100 on Dec 25." 
                             actionLabel="Pay" 
                             type="owe"
+                            urgencyTag="Interest: 6%"
                             onAction={() => handlePay('1')}
                         />
                         <DebtItemCard 

@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
+import { CircularProgress } from '@mui/material';
 import SmartExpenseService from '../../services/SmartExpenseService';
-import TransactionService, { type TransactionDTO } from '../../services/TransactionService';
+import TransactionService from '../../services/TransactionService';
+import { type TransactionDTO } from '../../models/Transaction';
 import { toast } from 'react-toastify';
 import './QuickAddTransaction.css';
 
@@ -15,6 +17,7 @@ const QuickAddTransaction: React.FC = () => {
     const [description, setDescription] = useState('');
     const [analyzedData, setAnalyzedData] = useState<AnalyzedData | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [isLogging, setIsLogging] = useState(false);
     const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -56,6 +59,8 @@ const QuickAddTransaction: React.FC = () => {
             return;
         }
 
+        setIsLogging(true);
+
         // Prepare DTO
         const transactionData: TransactionDTO = {
             description: description,
@@ -66,10 +71,10 @@ const QuickAddTransaction: React.FC = () => {
             type: 'EXPENSE' // Defaulting to EXPENSE for now, could infer from category/amount sign
         };
 
-        // If no AI data, verify if we should ask user to fill details or just send defaults.
-        // For Quick Add, we'll send what we have.
-
         try {
+            // Artificial delay to simulate "thinking"
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
             await TransactionService.addTransaction(transactionData);
             toast.success('Transaction logged successfully!');
             setDescription('');
@@ -77,6 +82,8 @@ const QuickAddTransaction: React.FC = () => {
         } catch (error) {
             console.error(error); // Log error to fix unused variable
             toast.error('Failed to log transaction. Check backend connection.');
+        } finally {
+            setIsLogging(false);
         }
     };
 
@@ -123,8 +130,20 @@ const QuickAddTransaction: React.FC = () => {
                 </div>
             </div>
 
-            <button className="log-button" onClick={handleLogIt}>
-                Log it
+            <button 
+                className={`log-button ${isLogging ? 'logging' : ''}`} 
+                onClick={handleLogIt}
+                disabled={isLogging}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            >
+                {isLogging ? (
+                    <>
+                        <CircularProgress size={16} color="inherit" />
+                        Analyzing...
+                    </>
+                ) : (
+                    "Log it"
+                )}
             </button>
         </div>
     );

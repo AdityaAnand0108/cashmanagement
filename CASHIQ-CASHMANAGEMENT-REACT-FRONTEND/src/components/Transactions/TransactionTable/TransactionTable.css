@@ -21,7 +21,7 @@
 }
 
 .amount-negative {
-  color: #1e293b !important; /* Slate 800 */
+  color: #dc2626 !important; /* Red 600 */
   font-weight: 600 !important;
 }
 
@@ -30,4 +30,16 @@
   align-items: center;
   gap: 8px;
   font-weight: 500;
+}
+
+.transaction-actions {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.transaction-row:hover .transaction-actions {
+  opacity: 1;
 }

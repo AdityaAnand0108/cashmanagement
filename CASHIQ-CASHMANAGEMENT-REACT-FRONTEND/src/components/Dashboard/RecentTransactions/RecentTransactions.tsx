@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './RecentTransactions.css';
-import TransactionService, { type TransactionDTO } from '../../../services/TransactionService';
+import TransactionService from '../../../services/TransactionService';
+import { type TransactionDTO } from '../../../models/Transaction';
 
 const RecentTransactions = () => {
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);

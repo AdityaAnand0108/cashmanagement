@@ -17,7 +17,7 @@ import { CategoryType } from '../models/CategoryType';
  * @param category The category to get the icon for.
  * @returns The icon element for the category.
  */
-export const getCategoryIcon = (category: string | undefined): JSX.Element => {
+export const getCategoryIcon = (category: string | undefined): React.ReactNode => {
     switch (category) {
         case CategoryType.FOOD:
             return <FastfoodIcon />;

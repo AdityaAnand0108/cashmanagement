@@ -8,14 +8,13 @@ import {
   TableRow,
   Paper,
   IconButton,
-  Menu,
-  MenuItem,
   Typography,
   Box,
   TablePagination,
   CircularProgress,
 } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import EmptyState from "../../common/EmptyState/EmptyState";
 import "./TransactionTable.css";
@@ -27,6 +26,7 @@ interface TransactionUI {
   id: string;
   date: string;
   merchant: string;
+  rawDescription: string;
   category: string;
   categoryIcon: React.ReactNode;
   amount: number;
@@ -38,8 +38,6 @@ const TransactionTable: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -51,7 +49,8 @@ const TransactionTable: React.FC = () => {
         const mappedTransactions: TransactionUI[] = data.map((dto: TransactionDTO) => ({
             id: dto.id ? dto.id.toString() : Math.random().toString(), // Fallback if ID missing
             date: dto.date ? new Date(dto.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
-            merchant: dto.description || "Unknown",
+            merchant: dto.paymentSource || "Unknown",
+            rawDescription: dto.description || "",
             category: dto.category || "Uncategorized",
             categoryIcon: getCategoryIcon(dto.category || "Uncategorized"),
             amount: dto.amount,
@@ -81,19 +80,9 @@ const TransactionTable: React.FC = () => {
     setPage(0);
   };
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, id: string) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedId(id);
-  };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedId(null);
-  };
 
-  // Used for future edit/delete implementations
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _currentSelectedId = selectedId;
+
 
   if (loading) {
       return (
@@ -144,7 +133,14 @@ const TransactionTable: React.FC = () => {
                       <TableCell component="th" scope="row">
                         {row.date}
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 500 }}>{row.merchant}</TableCell>
+                      <TableCell>
+                        <Typography variant="body1" fontWeight="bold">
+                            {row.merchant}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                            {row.rawDescription}
+                        </Typography>
+                      </TableCell>
                       <TableCell>
                         <Box className="category-chip">
                           {row.category}
@@ -162,14 +158,14 @@ const TransactionTable: React.FC = () => {
                         {row.type === "income" ? "+" : "-"}₹{row.amount.toFixed(2)}
                       </TableCell>
                       <TableCell align="right">
-                        <IconButton
-                          aria-label="more"
-                          aria-controls={`action-menu-${row.id}`}
-                          aria-haspopup="true"
-                          onClick={(e) => handleMenuOpen(e, row.id)}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
+                        <Box className="transaction-actions">
+                          <IconButton aria-label="edit" size="small">
+                              <EditIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton aria-label="delete" size="small" color="error">
+                              <DeleteOutlineIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -188,20 +184,7 @@ const TransactionTable: React.FC = () => {
         </>
       )}
 
-      <Menu
-        id="action-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
-      >
-        <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
-        <MenuItem onClick={handleMenuClose} sx={{ color: "error.main" }}>
-          Delete
-        </MenuItem>
-      </Menu>
+
     </Paper>
   );
 };

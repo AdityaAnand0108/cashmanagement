@@ -88,8 +88,9 @@
 
 .goals-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Matches Budget Grid */
-    gap: 32px; /* Increased from 24px for better breathing room */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 350px)); /* Constrain width and auto-fill */
+    gap: 24px;
+    justify-content: start; /* Force left alignment */
 }
 
 .section-title {

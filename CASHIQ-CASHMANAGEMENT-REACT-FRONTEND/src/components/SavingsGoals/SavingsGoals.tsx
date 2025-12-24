@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Button, Typography, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import FlightIcon from '@mui/icons-material/Flight';
-import LaptopMacIcon from '@mui/icons-material/LaptopMac';
-import SecurityIcon from '@mui/icons-material/Security';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import Sidebar from '../Sidebar/Sidebar';
 import GoalCard from './GoalCard/GoalCard';
@@ -11,6 +9,10 @@ import CompletedGoalCard from './CompletedGoalCard/CompletedGoalCard';
 import './SavingsGoals.css';
 import SavingsService from '../../services/SavingsService';
 import type { SavingGoalDTO } from '../../models/SavingGoal';
+import EmptyState from '../common/EmptyState/EmptyState';
+import SavingsIcon from '@mui/icons-material/Savings';
+import { toast } from 'react-toastify';
+import ConfirmationModal from '../common/ConfirmationModal/ConfirmationModal';
 
 const SavingsGoals: React.FC = () => {
     const [goals, setGoals] = useState<SavingGoalDTO[]>([]);
@@ -24,16 +26,30 @@ const SavingsGoals: React.FC = () => {
         targetDate: ''
     });
     const [fundsAmount, setFundsAmount] = useState('');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
 
-    const userId = 1; // Retrieve from auth context or local storage in real app
+    const [userId, setUserId] = useState<number | null>(null);
 
     useEffect(() => {
-        fetchGoals();
+        const storedUserId = localStorage.getItem('userId');
+        if (storedUserId) {
+            setUserId(parseInt(storedUserId));
+        } else {
+            console.error("No user ID found in local storage. Please login.");
+            // Ideally redirect to login or show an error
+        }
     }, []);
 
-    const fetchGoals = async () => {
+    useEffect(() => {
+        if (userId) {
+            fetchGoals(userId);
+        }
+    }, [userId]);
+
+    const fetchGoals = async (id: number) => {
         try {
-            const data = await SavingsService.getUserGoals(userId);
+            const data = await SavingsService.getUserGoals(id);
             setGoals(data);
         } catch (error) {
             console.error("Error fetching goals:", error);
@@ -43,6 +59,10 @@ const SavingsGoals: React.FC = () => {
     };
 
     const handleCreateGoal = async () => {
+        if (!userId) {
+            toast.error("User not authenticated.");
+            return;
+        }
         try {
             const goalData: SavingGoalDTO = {
                 userId: userId,
@@ -53,19 +73,31 @@ const SavingsGoals: React.FC = () => {
             await SavingsService.createGoal(userId, goalData);
             setOpenAddDialog(false);
             setNewGoal({ goalName: '', targetAmount: '', targetDate: '' });
-            fetchGoals();
+            toast.success("Goal created successfully!");
+            fetchGoals(userId);
         } catch (error) {
             console.error("Error creating goal:", error);
+            toast.error("Failed to create goal.");
         }
     };
 
-    const handleDeleteGoal = async (id: number) => {
-        if (window.confirm("Are you sure you want to delete this goal?")) {
+    const handleDeleteClick = (id: number) => {
+        setDeletingId(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (deletingId && userId) {
             try {
-                await SavingsService.deleteGoal(userId, id);
-                fetchGoals();
+                await SavingsService.deleteGoal(userId, deletingId);
+                toast.success("Goal deleted successfully!");
+                fetchGoals(userId);
             } catch (error) {
                 console.error("Error deleting goal:", error);
+                toast.error("Failed to delete goal.");
+            } finally {
+                setIsDeleteModalOpen(false);
+                setDeletingId(null);
             }
         }
     };
@@ -76,14 +108,16 @@ const SavingsGoals: React.FC = () => {
     };
 
     const handleAddFunds = async () => {
-        if (selectedGoalId && fundsAmount) {
+        if (selectedGoalId && fundsAmount && userId) {
             try {
                 await SavingsService.addFunds(userId, selectedGoalId, parseFloat(fundsAmount));
                 setOpenFundsDialog(false);
                 setFundsAmount('');
-                fetchGoals();
+                toast.success("Funds added successfully!");
+                fetchGoals(userId);
             } catch (error) {
                 console.error("Error adding funds:", error);
+                toast.error("Failed to add funds.");
             }
         }
     };
@@ -177,12 +211,18 @@ const SavingsGoals: React.FC = () => {
                                 progress={goal.targetAmount > 0 ? ((goal.currentAmount || 0) / goal.targetAmount) * 100 : 0}
                                 color="#f59e0b"
                                 message={`Target date: ${goal.targetDate}`}
-                                onDelete={handleDeleteGoal}
+                                onDelete={handleDeleteClick}
                                 onAddFunds={handleOpenFundsDialog}
                             />
                         ))
                     ) : (
-                        <p>No active goals found.</p>
+                        <EmptyState 
+                            title="No active goals" 
+                            description="Start saving for your dreams today! Create a new goal to track your progress." 
+                            actionLabel="Create Goal" 
+                            onAction={() => setOpenAddDialog(true)} 
+                            icon={<SavingsIcon sx={{ fontSize: 60, color: '#94a3b8' }} />}
+                        />
                     )}
                 </div>
 
@@ -261,6 +301,15 @@ const SavingsGoals: React.FC = () => {
                     <Button onClick={handleAddFunds} variant="contained">Add</Button>
                 </DialogActions>
             </Dialog>
+
+            <ConfirmationModal 
+                open={isDeleteModalOpen}
+                title="Delete Goal"
+                message="Are you sure you want to delete this saving goal? This action cannot be undone."
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setIsDeleteModalOpen(false)}
+                confirmText="Delete"
+            />
         </div>
     );
 };

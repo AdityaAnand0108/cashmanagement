@@ -23,7 +23,7 @@ const Goals: React.FC = () => {
                 <span className="target-icon">🎯</span>
             </div>
 
-            <div className="goals-grid">
+            <div className="dashboard-goals-grid">
                 {goals.map(goal => {
                     const percentage = Math.round((goal.saved / goal.target) * 100);
                     // SVG Circle calculation

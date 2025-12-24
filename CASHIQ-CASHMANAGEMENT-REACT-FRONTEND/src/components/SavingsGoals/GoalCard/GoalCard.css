@@ -6,8 +6,7 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 8px; /* Tighter spacing */
+    gap: 16px; /* Matched to CategoryBudgetCard */
     height: 100%;
 }
 
@@ -19,14 +18,14 @@
 .goal-header-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 4px;
+    align-items: center; /* Matched alignment */
+    margin-bottom: 8px; /* Matched margin */
 }
 
 .goal-title {
-    font-size: 1.25rem; /* Bigger */
-    font-weight: 700;   /* Bolder */
-    color: #0f172a;
+    font-size: 1.1rem; /* Matched to CategoryBudgetCard (1.1rem) */
+    font-weight: 600;  /* Matched to CategoryBudgetCard (600) */
+    color: #1e293b;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -40,25 +39,24 @@
 .goal-values {
     display: flex;
     align-items: baseline;
-    margin-top: 16px;
-    margin-bottom: 8px;
+    margin-top: 12px; /* Matched to CategoryBudgetCard */
 }
 
 .current-amount {
-    font-size: 1.5rem; /* Primary Highlight */
-    font-weight: 800;
+    font-size: 1.25rem; /* Matched to CategoryBudgetCard (1.25rem) */
+    font-weight: 700;   /* Matched to CategoryBudgetCard (700) */
+    color: #0f172a;
 }
 
 .target-amount {
-    font-size: 0.9rem;
+    font-size: 1rem;    /* Matched to CategoryBudgetCard (1rem) */
     color: #94a3b8;
-    margin-left: 6px;
-    font-weight: 500;
+    margin-left: 4px;
 }
 
 .goal-message {
     margin-top: 4px;
-    font-size: 0.8rem; /* Smaller */
-    color: #94a3b8;    /* Muted */
+    font-size: 0.85rem; /* Matched to CategoryBudgetCard (0.85rem) */
+    color: #64748b;
     font-weight: 500;
 }

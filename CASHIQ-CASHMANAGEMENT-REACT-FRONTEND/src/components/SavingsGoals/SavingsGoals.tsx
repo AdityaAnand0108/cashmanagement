@@ -64,6 +64,7 @@ const SavingsGoals: React.FC = () => {
                 </div>
 
                 {/* Active Goals Grid */}
+                {/* Active Goals Grid */}
                 <div className="goals-grid">
                     <GoalCard 
                         title="Europe Vacation" 
@@ -71,7 +72,7 @@ const SavingsGoals: React.FC = () => {
                         currentAmount={3500} 
                         targetAmount={5000} 
                         progress={70} 
-                        color="#16a34a" 
+                        color="#f59e0b" 
                         message="On track! Last contribution: ₹200 on Dec 15."
                     />
                     <GoalCard 
@@ -80,7 +81,7 @@ const SavingsGoals: React.FC = () => {
                         currentAmount={600} 
                         targetAmount={2000} 
                         progress={30} 
-                        color="#3b82f6" 
+                        color="#f59e0b" 
                         message="Keep going. Last contribution: ₹50 on Dec 1."
                     />
                     <GoalCard 
@@ -89,7 +90,7 @@ const SavingsGoals: React.FC = () => {
                         currentAmount={1500} 
                         targetAmount={10000} 
                         progress={15} 
-                        color="#f59e0b" 
+                        color="#ef4444" 
                         message="Target date: Dec 2026."
                     />
                 </div>

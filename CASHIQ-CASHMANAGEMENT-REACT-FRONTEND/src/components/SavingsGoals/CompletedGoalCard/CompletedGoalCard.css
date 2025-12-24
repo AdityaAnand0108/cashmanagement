@@ -1,38 +1,64 @@
 .completed-goal-card {
-    background-color: white;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     padding: 16px 24px;
     border-radius: 12px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f59e0b;
+    box-shadow: 0px 4px 12px rgba(245, 158, 11, 0.15);
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-weight: 500;
-    color: #0f172a;
-    width: 100%; /* Ensure it spans full width if container allows */
+    color: #92400e;
+    width: 100%;
+    box-sizing: border-box; /* Fix for padding causing overflow */
+    transition: transform 0.2s;
+}
+
+.completed-goal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 16px rgba(245, 158, 11, 0.25);
 }
 
 .completed-goal-content {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
 }
 
-.completed-goal-icon {
-    font-size: 1.25rem;
+.trophy-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    padding: 8px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.trophy-icon {
+    color: #f59e0b;
+    font-size: 1.5rem !important;
+}
+
+.completed-goal-details {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .completed-goal-text {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #78350f;
 }
 
 .completed-goal-date {
-    color: #64748b;
+    color: #b45309;
     font-size: 0.875rem;
-    margin-left: 8px;
 }
 
 .completed-goal-amount {
     font-weight: 700;
-    color: #1e293b;
-    margin-left: 4px;
+    color: #78350f;
 }

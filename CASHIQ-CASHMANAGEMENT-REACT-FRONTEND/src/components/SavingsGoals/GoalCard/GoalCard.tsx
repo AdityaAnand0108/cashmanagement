@@ -39,7 +39,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
             </div>
 
             <div>
-                <span className="progress-label">Progress Bar</span>
+
                 <LinearProgress 
                     variant="determinate" 
                     value={progress} 

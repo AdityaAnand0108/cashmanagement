@@ -8,6 +8,7 @@ interface AlertCardProps {
     description: string;
     actionLabel: string;
     type: 'danger' | 'success' | 'warning';
+    onClick?: () => void;
 }
 
 const AlertCard: React.FC<AlertCardProps> = ({ 
@@ -15,7 +16,8 @@ const AlertCard: React.FC<AlertCardProps> = ({
     icon, 
     description, 
     actionLabel, 
-    type 
+    type,
+    onClick
 }) => {
     let borderColor = '';
     let btnColor = '';
@@ -51,6 +53,7 @@ const AlertCard: React.FC<AlertCardProps> = ({
             <Button 
                 variant="outlined" 
                 className="alert-action-btn"
+                onClick={onClick}
                 sx={{ 
                     color: btnColor, 
                     borderColor: '#cbd5e1',

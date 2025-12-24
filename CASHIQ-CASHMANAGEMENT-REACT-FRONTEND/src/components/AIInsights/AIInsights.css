@@ -119,11 +119,13 @@
   border-radius: 16px;
   background-color: white;
   transition: box-shadow 0.2s;
+  padding-right: 12px;
 }
 
 .chat-input-wrapper:focus-within {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #3b82f6;
 }
 
 .chat-input {
@@ -138,17 +140,32 @@
   transition: all 0.2s;
 }
 
-.chat-input:focus {
-  /* border-color: #3b82f6; Removed to avoid line collision */
+.chat-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.generate-report-btn {
+    text-transform: none !important;
+    color: #64748b !important;
+    font-weight: 600 !important;
+}
+
+.generate-report-btn:hover {
+    color: #3b82f6 !important;
+    background-color: #eff6ff !important;
 }
 
 .chat-send-btn {
   /* Position absolute removed for flex alignment */
-  margin-right: 16px; /* Keep spacing from right edge */
   color: #3b82f6; /* Blue 500 */
   background: none;
   border: none;
   cursor: pointer;
+  background-color: #eff6ff !important;
+  border-radius: 12px !important;
+  padding: 8px !important;
   transition: transform 0.2s;
   display: flex;
   align-items: center;
@@ -156,8 +173,8 @@
 }
 
 .chat-send-btn:hover {
-  transform: scale(1.1);
-  background-color: #eff6ff; /* Blue 50 */
+  transform: scale(1.05);
+  background-color: #dbeafe !important; /* Blue 100 */
 }
 
 .suggested-prompts {

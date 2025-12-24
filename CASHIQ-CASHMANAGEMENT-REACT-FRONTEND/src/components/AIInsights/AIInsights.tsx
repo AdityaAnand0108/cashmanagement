@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Typography, IconButton, CircularProgress } from "@mui/material";
+import { Typography, IconButton, CircularProgress, Snackbar, Alert, Button } from "@mui/material";
 
 import SendIcon from "@mui/icons-material/Send";
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import Sidebar from "../Sidebar/Sidebar";
 import AlertCard from "./AlertCard/AlertCard";
 import NarrativeSummaryCard from "./NarrativeSummaryCard/NarrativeSummaryCard";
@@ -17,6 +18,7 @@ const AIInsights: React.FC = () => {
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [inputValue, setInputValue] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [toastOpen, setToastOpen] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -60,6 +62,14 @@ const AIInsights: React.FC = () => {
         // Optionally auto-send
     };
 
+    const handleMoveMoney = () => {
+        setToastOpen(true);
+    };
+
+    const handleCloseToast = () => {
+        setToastOpen(false);
+    };
+
   return (
     <div className="ai-insights-container">
       <Sidebar />
@@ -92,6 +102,7 @@ const AIInsights: React.FC = () => {
               type="success"
               description="Based on your cash flow, you could safely move an extra ₹200 to your 'Europe Vacation' goal this month without impacting bills."
               actionLabel="Move ₹200 Now"
+              onClick={handleMoveMoney}
             />
             <AlertCard
               title="Budget Forecast Warning"
@@ -129,20 +140,42 @@ const AIInsights: React.FC = () => {
                 </div>
             )}
 
-            <div className="chat-input-wrapper">
+            <div className="chat-input-wrapper prompt-style">
               <input
                 type="text"
                 className="chat-input"
-                placeholder="Ask anything..."
+                placeholder="Ask AI to analyze, forecast, or find savings..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
 
-              <IconButton className="chat-send-btn" onClick={handleSend} disabled={isLoading}>
-                {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
-              </IconButton>
+              <div className="chat-actions">
+                  <Button 
+                    variant="text" 
+                    size="small" 
+                    className="generate-report-btn"
+                    startIcon={<AutoAwesomeIcon />}
+                    onClick={() => handlePromptClick("Generate a full financial report for this month")}
+                  >
+                    Generate Report
+                  </Button>
+                  <IconButton className="chat-send-btn" onClick={handleSend} disabled={isLoading}>
+                    {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
+                  </IconButton>
+              </div>
             </div>
+            
+            <Snackbar
+                open={toastOpen}
+                autoHideDuration={4000}
+                onClose={handleCloseToast}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseToast} severity="success" sx={{ width: '100%', boxShadow: 3 }}>
+                    Success! ₹200 transferred to Savings.
+                </Alert>
+            </Snackbar>
             <div className="suggested-prompts">
               <span className="prompt-label">Suggested Prompts:</span>
               <span className="prompt-pill" onClick={() => handlePromptClick("Analyze my spending habits")}>Analyze my spending habits</span>

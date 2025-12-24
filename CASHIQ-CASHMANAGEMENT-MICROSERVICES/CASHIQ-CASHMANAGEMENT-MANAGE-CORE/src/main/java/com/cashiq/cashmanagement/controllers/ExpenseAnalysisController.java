@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Controller class for handling expense analysis operations.
+ */
 @RestController
 @RequestMapping("/api/expenses")
 @CrossOrigin(origins = "http://localhost:5173") // Adjust port if needed, React usually runs on 5173 or 3000
@@ -22,6 +25,12 @@ public class ExpenseAnalysisController {
         this.aiCategorizationService = aiCategorizationService;
     }
 
+    /**
+     * Analyzes the given expense description and returns the insights.
+     *
+     * @param request The request containing the expense description.
+     * @return The insights.
+     */
     @PostMapping("/analyze")
     public ResponseEntity<ExpenseAnalysisResponseDTO> analyzeExpense(@RequestBody Map<String, String> request) {
         String description = request.get("description");

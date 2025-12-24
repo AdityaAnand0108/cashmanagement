@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Typography, LinearProgress } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Button, Typography, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import FlightIcon from '@mui/icons-material/Flight';
 import LaptopMacIcon from '@mui/icons-material/LaptopMac';
@@ -9,14 +9,93 @@ import Sidebar from '../Sidebar/Sidebar';
 import GoalCard from './GoalCard/GoalCard';
 import CompletedGoalCard from './CompletedGoalCard/CompletedGoalCard';
 import './SavingsGoals.css';
+import SavingsService from '../../services/SavingsService';
+import type { SavingGoalDTO } from '../../models/SavingGoal';
 
 const SavingsGoals: React.FC = () => {
-    // Static calculation for demo, normally dynamic
-    const totalGoal = 17000;
-    const totalSaved = 5600;
+    const [goals, setGoals] = useState<SavingGoalDTO[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openFundsDialog, setOpenFundsDialog] = useState(false);
+    const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null);
+    const [newGoal, setNewGoal] = useState({
+        goalName: '',
+        targetAmount: '',
+        targetDate: ''
+    });
+    const [fundsAmount, setFundsAmount] = useState('');
+
+    const userId = 1; // Retrieve from auth context or local storage in real app
+
+    useEffect(() => {
+        fetchGoals();
+    }, []);
+
+    const fetchGoals = async () => {
+        try {
+            const data = await SavingsService.getUserGoals(userId);
+            setGoals(data);
+        } catch (error) {
+            console.error("Error fetching goals:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCreateGoal = async () => {
+        try {
+            const goalData: SavingGoalDTO = {
+                userId: userId,
+                goalName: newGoal.goalName,
+                targetAmount: parseFloat(newGoal.targetAmount),
+                targetDate: newGoal.targetDate,
+            };
+            await SavingsService.createGoal(userId, goalData);
+            setOpenAddDialog(false);
+            setNewGoal({ goalName: '', targetAmount: '', targetDate: '' });
+            fetchGoals();
+        } catch (error) {
+            console.error("Error creating goal:", error);
+        }
+    };
+
+    const handleDeleteGoal = async (id: number) => {
+        if (window.confirm("Are you sure you want to delete this goal?")) {
+            try {
+                await SavingsService.deleteGoal(userId, id);
+                fetchGoals();
+            } catch (error) {
+                console.error("Error deleting goal:", error);
+            }
+        }
+    };
+
+    const handleOpenFundsDialog = (id: number) => {
+        setSelectedGoalId(id);
+        setOpenFundsDialog(true);
+    };
+
+    const handleAddFunds = async () => {
+        if (selectedGoalId && fundsAmount) {
+            try {
+                await SavingsService.addFunds(userId, selectedGoalId, parseFloat(fundsAmount));
+                setOpenFundsDialog(false);
+                setFundsAmount('');
+                fetchGoals();
+            } catch (error) {
+                console.error("Error adding funds:", error);
+            }
+        }
+    };
+
+    const activeGoals = goals.filter(g => g.status !== 'COMPLETED');
+    const completedGoals = goals.filter(g => g.status === 'COMPLETED');
+
+    const totalGoal = goals.reduce((acc, curr) => acc + curr.targetAmount, 0);
+    const totalSaved = goals.reduce((acc, curr) => acc + (curr.currentAmount || 0), 0);
     const remaining = totalGoal - totalSaved;
-    const savedPercentage = (totalSaved / totalGoal) * 100;
-    
+    const savedPercentage = totalGoal > 0 ? (totalSaved / totalGoal) * 100 : 0;
+
     return (
         <div className="savings-goals-container">
             <Sidebar />
@@ -76,6 +155,7 @@ const SavingsGoals: React.FC = () => {
                         variant="contained" 
                         startIcon={<AddIcon />}
                         className="add-goal-btn"
+                        onClick={() => setOpenAddDialog(true)}
                     >
                         Add New Goal
                     </Button>
@@ -83,48 +163,104 @@ const SavingsGoals: React.FC = () => {
 
                 {/* Active Goals Grid */}
                 <div className="goals-grid">
-                    <GoalCard 
-                        title="Europe Vacation" 
-                        icon={<FlightIcon sx={{ color: '#0ea5e9' }} />} 
-                        currentAmount={3500} 
-                        targetAmount={5000} 
-                        progress={70} 
-                        color="#f59e0b" 
-                        message="On track! Last contribution: ₹200 on Dec 15."
-                    />
-                    <GoalCard 
-                        title="New Macbook" 
-                        icon={<LaptopMacIcon sx={{ color: '#64748b' }} />} 
-                        currentAmount={600} 
-                        targetAmount={2000} 
-                        progress={30} 
-                        color="#f59e0b" 
-                        message="Keep going. Last contribution: ₹50 on Dec 1."
-                    />
-                    <GoalCard 
-                        title="Emergency Fund" 
-                        icon={<SecurityIcon sx={{ color: '#ef4444' }} />} 
-                        currentAmount={1500} 
-                        targetAmount={10000} 
-                        progress={15} 
-                        color="#ef4444" 
-                        message="Target date: Dec 2026."
-                    />
+                    {loading ? (
+                        <p>Loading goals...</p>
+                    ) : activeGoals.length > 0 ? (
+                        activeGoals.map(goal => (
+                            <GoalCard 
+                                key={goal.id}
+                                id={goal.id!}
+                                title={goal.goalName}
+                                icon={<FlightIcon sx={{ color: '#0ea5e9' }} />} // Ideally dynamic icon
+                                currentAmount={goal.currentAmount || 0}
+                                targetAmount={goal.targetAmount}
+                                progress={goal.targetAmount > 0 ? ((goal.currentAmount || 0) / goal.targetAmount) * 100 : 0}
+                                color="#f59e0b"
+                                message={`Target date: ${goal.targetDate}`}
+                                onDelete={handleDeleteGoal}
+                                onAddFunds={handleOpenFundsDialog}
+                            />
+                        ))
+                    ) : (
+                        <p>No active goals found.</p>
+                    )}
                 </div>
 
                 {/* Completed Goals Section */}
-                <div>
-                    <Typography variant="h6" className="section-title">Completed Goals</Typography>
-                    <div className="completed-goals-list">
-                        <CompletedGoalCard 
-                            title="Wedding Gift" 
-                            icon={<CardGiftcardIcon sx={{ color: '#d97706', fontSize: 20 }} />} 
-                            date="Nov 2025" 
-                            amount={500} 
-                        />
+                {completedGoals.length > 0 && (
+                    <div>
+                        <Typography variant="h6" className="section-title">Completed Goals</Typography>
+                        <div className="completed-goals-list">
+                            {completedGoals.map(goal => (
+                                <CompletedGoalCard 
+                                    key={goal.id}
+                                    title={goal.goalName}
+                                    icon={<CardGiftcardIcon sx={{ color: '#d97706', fontSize: 20 }} />} 
+                                    date={goal.updatedAt || 'Recently'}
+                                    amount={goal.targetAmount}
+                                />
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
             </main>
+
+            {/* Add Goal Dialog */}
+            <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)}>
+                <DialogTitle>Add New Savings Goal</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Goal Name"
+                        type="text"
+                        fullWidth
+                        value={newGoal.goalName}
+                        onChange={(e) => setNewGoal({ ...newGoal, goalName: e.target.value })}
+                    />
+                    <TextField
+                        margin="dense"
+                        label="Target Amount"
+                        type="number"
+                        fullWidth
+                        value={newGoal.targetAmount}
+                        onChange={(e) => setNewGoal({ ...newGoal, targetAmount: e.target.value })}
+                    />
+                    <TextField
+                        margin="dense"
+                        label="Target Date"
+                        type="date"
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        value={newGoal.targetDate}
+                        onChange={(e) => setNewGoal({ ...newGoal, targetDate: e.target.value })}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
+                    <Button onClick={handleCreateGoal} variant="contained">Create</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Add Funds Dialog */}
+            <Dialog open={openFundsDialog} onClose={() => setOpenFundsDialog(false)}>
+                <DialogTitle>Add Funds</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Amount to Add"
+                        type="number"
+                        fullWidth
+                        value={fundsAmount}
+                        onChange={(e) => setFundsAmount(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenFundsDialog(false)}>Cancel</Button>
+                    <Button onClick={handleAddFunds} variant="contained">Add</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };

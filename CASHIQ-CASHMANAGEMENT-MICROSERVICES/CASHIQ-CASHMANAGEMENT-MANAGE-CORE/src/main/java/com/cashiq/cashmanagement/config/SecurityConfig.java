@@ -16,6 +16,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/**
+ * Configuration class for setting up the SecurityFilterChain bean.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

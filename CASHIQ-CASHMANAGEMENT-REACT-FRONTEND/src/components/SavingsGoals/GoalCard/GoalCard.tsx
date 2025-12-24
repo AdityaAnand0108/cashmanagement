@@ -4,6 +4,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import './GoalCard.css';
 
 interface GoalCardProps {
+    id: number;
     title: string;
     icon?: React.ReactNode;
     currentAmount: number;
@@ -11,9 +12,12 @@ interface GoalCardProps {
     progress: number; // 0 to 100
     message: string;
     color: string; // Hex code
+    onDelete: (id: number) => void;
+    onAddFunds: (id: number) => void;
 }
 
 const GoalCard: React.FC<GoalCardProps> = ({
+    id,
     title,
     icon,
     currentAmount,
@@ -21,6 +25,8 @@ const GoalCard: React.FC<GoalCardProps> = ({
     progress,
     message,
     color,
+    onDelete,
+    onAddFunds,
 }) => {
     return (
         <div className="goal-card">
@@ -29,10 +35,10 @@ const GoalCard: React.FC<GoalCardProps> = ({
                     {title} {icon}
                 </div>
                 <div className="goal-actions">
-                    <IconButton size="small" aria-label="edit goal">
+                    <IconButton size="small" aria-label="add funds" onClick={() => onAddFunds(id)} title="Add Funds">
                         <EditIcon fontSize="small" />
                     </IconButton>
-                    <IconButton size="small" aria-label="delete goal" color="error">
+                    <IconButton size="small" aria-label="delete goal" color="error" onClick={() => onDelete(id)}>
                         <DeleteOutlineIcon fontSize="small" />
                     </IconButton>
                 </div>

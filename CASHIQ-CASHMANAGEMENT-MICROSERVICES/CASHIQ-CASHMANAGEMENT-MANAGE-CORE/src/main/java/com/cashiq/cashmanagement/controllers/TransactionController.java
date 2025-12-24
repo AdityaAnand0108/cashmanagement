@@ -24,12 +24,24 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
+    /**
+     * @method - addTransaction
+     * @param - TransactionDTO
+     * @return - String
+     * @Description - This method is used to add a transaction
+     */
     @PostMapping("/add-transaction")
     public String addTransaction(@RequestBody TransactionDTO transactionDTO) {
         log.info("Request to add transaction: {}", transactionDTO);
         return transactionService.addTransaction(transactionDTO);
     }
 
+    /**
+     * @method - getAllTransactions
+     * @param - None
+     * @return - List<TransactionDTO>
+     * @Description - This method is used to get all transactions
+     */
     @GetMapping("/get-all-transaction")
     public List<TransactionDTO> getAllTransactions() {
         log.info("Request to fetch all transactions");

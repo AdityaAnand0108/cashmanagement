@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Controller class for handling AI insights.
+ */
 @RestController
 @RequestMapping("/api/ai/insights")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -28,6 +31,12 @@ public class AiInsightController {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Analyzes the given query and returns the insights.
+     *
+     * @param request The request containing the query.
+     * @return The insights.
+     */
     @PostMapping("/analyze")
     public ResponseEntity<?> analyze(@RequestBody Map<String, String> request) {
         String query = request.get("query");

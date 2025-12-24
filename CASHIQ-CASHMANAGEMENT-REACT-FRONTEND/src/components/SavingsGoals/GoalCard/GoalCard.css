@@ -6,8 +6,8 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* To balance height */
-    gap: 16px;
+    justify-content: space-between;
+    gap: 8px; /* Tighter spacing */
     height: 100%;
 }
 
@@ -19,22 +19,17 @@
 .goal-header-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+    align-items: flex-start;
+    margin-bottom: 4px;
 }
 
 .goal-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1e293b;
+    font-size: 1.25rem; /* Bigger */
+    font-weight: 700;   /* Bolder */
+    color: #0f172a;
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-.goal-title span {
-    display: flex; 
-    color: #64748b;
 }
 
 .goal-actions {
@@ -42,33 +37,28 @@
     gap: 4px;
 }
 
-.progress-label {
-    display: block;
-    font-size: 0.85rem;
-    color: #64748b;
-    margin-bottom: 8px;
-}
-
 .goal-values {
     display: flex;
     align-items: baseline;
-    margin-top: 12px;
+    margin-top: 16px;
+    margin-bottom: 8px;
 }
 
 .current-amount {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.5rem; /* Primary Highlight */
+    font-weight: 800;
 }
 
 .target-amount {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #94a3b8;
-    margin-left: 4px;
+    margin-left: 6px;
+    font-weight: 500;
 }
 
 .goal-message {
     margin-top: 4px;
-    font-size: 0.85rem;
+    font-size: 0.8rem; /* Smaller */
+    color: #94a3b8;    /* Muted */
     font-weight: 500;
-    color: #475569;
 }

@@ -1,6 +1,10 @@
 import React from 'react';
-import { Button, Typography } from '@mui/material';
+import { Button, Typography, LinearProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import FlightIcon from '@mui/icons-material/Flight';
+import LaptopMacIcon from '@mui/icons-material/LaptopMac';
+import SecurityIcon from '@mui/icons-material/Security';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import Sidebar from '../Sidebar/Sidebar';
 import GoalCard from './GoalCard/GoalCard';
 import CompletedGoalCard from './CompletedGoalCard/CompletedGoalCard';
@@ -11,6 +15,7 @@ const SavingsGoals: React.FC = () => {
     const totalGoal = 17000;
     const totalSaved = 5600;
     const remaining = totalGoal - totalSaved;
+    const savedPercentage = (totalSaved / totalGoal) * 100;
     
     return (
         <div className="savings-goals-container">
@@ -32,9 +37,22 @@ const SavingsGoals: React.FC = () => {
                             <div className="summary-value green">
                                 ₹{totalSaved.toLocaleString()}
                                 <span style={{ fontSize: '0.9rem', marginLeft: '0.5rem', color: '#64748b' }}>
-                                    ({Math.round((totalSaved / totalGoal) * 100)}%)
+                                    ({Math.round(savedPercentage)}%)
                                 </span>
                             </div>
+                            <LinearProgress 
+                                variant="determinate" 
+                                value={savedPercentage} 
+                                sx={{ 
+                                    mt: 2,
+                                    height: 8, 
+                                    borderRadius: 4,
+                                    backgroundColor: '#e2e8f0',
+                                    '& .MuiLinearProgress-bar': {
+                                        backgroundColor: '#16a34a'
+                                    }
+                                }}
+                            />
                         </div>
                     </div>
                     
@@ -64,11 +82,10 @@ const SavingsGoals: React.FC = () => {
                 </div>
 
                 {/* Active Goals Grid */}
-                {/* Active Goals Grid */}
                 <div className="goals-grid">
                     <GoalCard 
                         title="Europe Vacation" 
-                        icon="✈️" 
+                        icon={<FlightIcon sx={{ color: '#0ea5e9' }} />} 
                         currentAmount={3500} 
                         targetAmount={5000} 
                         progress={70} 
@@ -77,7 +94,7 @@ const SavingsGoals: React.FC = () => {
                     />
                     <GoalCard 
                         title="New Macbook" 
-                        icon="💻" 
+                        icon={<LaptopMacIcon sx={{ color: '#64748b' }} />} 
                         currentAmount={600} 
                         targetAmount={2000} 
                         progress={30} 
@@ -86,7 +103,7 @@ const SavingsGoals: React.FC = () => {
                     />
                     <GoalCard 
                         title="Emergency Fund" 
-                        icon="🛡️" 
+                        icon={<SecurityIcon sx={{ color: '#ef4444' }} />} 
                         currentAmount={1500} 
                         targetAmount={10000} 
                         progress={15} 
@@ -101,7 +118,7 @@ const SavingsGoals: React.FC = () => {
                     <div className="completed-goals-list">
                         <CompletedGoalCard 
                             title="Wedding Gift" 
-                            icon="🎁" 
+                            icon={<CardGiftcardIcon sx={{ color: '#d97706', fontSize: 20 }} />} 
                             date="Nov 2025" 
                             amount={500} 
                         />

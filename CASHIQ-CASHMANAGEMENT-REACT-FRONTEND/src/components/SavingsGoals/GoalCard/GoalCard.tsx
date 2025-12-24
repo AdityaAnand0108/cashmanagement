@@ -5,7 +5,7 @@ import './GoalCard.css';
 
 interface GoalCardProps {
     title: string;
-    icon?: string; // Emoji
+    icon?: React.ReactNode;
     currentAmount: number;
     targetAmount: number;
     progress: number; // 0 to 100
@@ -26,7 +26,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
         <div className="goal-card">
             <div className="goal-header-row">
                 <div className="goal-title">
-                    {title} <span>{icon}</span>
+                    {title} {icon}
                 </div>
                 <div className="goal-actions">
                     <IconButton size="small" aria-label="edit goal">

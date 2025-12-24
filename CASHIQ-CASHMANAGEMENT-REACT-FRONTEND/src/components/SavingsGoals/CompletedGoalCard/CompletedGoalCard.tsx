@@ -4,7 +4,7 @@ import './CompletedGoalCard.css';
 
 interface CompletedGoalCardProps {
     title: string;
-    icon: string;
+    icon: React.ReactNode;
     date: string;
     amount: number;
 }

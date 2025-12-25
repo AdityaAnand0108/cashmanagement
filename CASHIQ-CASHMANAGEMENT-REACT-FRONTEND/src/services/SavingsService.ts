@@ -29,6 +29,11 @@ class SavingsService {
         const response = await axios.delete(`${API_URL}/${userId}/${goalId}`, this.getAuthHeader());
         return response.data;
     }
+
+    async updateGoal(userId: number, goalId: number, goal: Partial<SavingGoalDTO>): Promise<string> {
+        const response = await axios.put(`${API_URL}/${userId}/${goalId}`, goal, this.getAuthHeader());
+        return response.data;
+    }
 }
 
 export default new SavingsService();

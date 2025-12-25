@@ -13,4 +13,6 @@ public interface SavingGoalService {
     ResponseEntity<List<SavingGoalDTO>> getUserGoals(Long userId);
 
     ResponseEntity<?> deleteGoal(Long userId, Long goalId);
+
+    ResponseEntity<?> updateGoal(Long userId, Long goalId, SavingGoalDTO goalDTO);
 }

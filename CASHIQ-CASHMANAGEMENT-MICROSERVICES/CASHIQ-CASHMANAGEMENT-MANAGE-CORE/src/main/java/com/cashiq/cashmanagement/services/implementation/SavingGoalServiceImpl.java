@@ -142,4 +142,51 @@ public class SavingGoalServiceImpl implements SavingGoalService {
         log.info("Saving goal deleted successfully: {}", goalId);
         return ResponseEntity.ok("Saving goal deleted successfully");
     }
+
+    /**
+     * Updates an existing saving goal.
+     *
+     * @param userId  The ID of the user.
+     * @param goalId  The ID of the saving goal.
+     * @param goalDTO The updated saving goal data.
+     * @return A ResponseEntity containing a success message.
+     */
+    @Override
+    public ResponseEntity<?> updateGoal(Long userId, Long goalId, SavingGoalDTO goalDTO) {
+        log.info("Updating saving goal ID: {} for user: {}", goalId, userId);
+        Optional<SavingGoal> goalOpt = savingGoalRepository.findById(goalId);
+
+        if (goalOpt.isEmpty()) {
+            throw new ResourceNotFoundException("Saving goal not found with id :: " + goalId);
+        }
+
+        SavingGoal goal = goalOpt.get();
+        if (!goal.getUsers().getId().equals(userId)) {
+            log.warn("Access denied for user: {} to update goal: {}", userId, goalId);
+            throw new RuntimeException("Access Denied: You cannot update this goal");
+        }
+
+        // Update fields
+        if (goalDTO.getGoalName() != null) {
+            goal.setGoalName(goalDTO.getGoalName());
+        }
+        if (goalDTO.getTargetAmount() > 0) {
+            goal.setTargetAmount(goalDTO.getTargetAmount());
+        }
+        if (goalDTO.getTargetDate() != null) {
+            goal.setTargetDate(goalDTO.getTargetDate());
+        }
+
+        // Re-evaluate status if necessary (e.g. if target amount increased beyond
+        // current saved)
+        if (goal.getCurrentAmount() >= goal.getTargetAmount()) {
+            goal.setStatus("COMPLETED");
+        } else {
+            goal.setStatus("IN_PROGRESS");
+        }
+
+        savingGoalRepository.save(goal);
+        log.info("Saving goal updated successfully: {}", goalId);
+        return ResponseEntity.ok("Saving goal updated successfully");
+    }
 }

@@ -66,9 +66,21 @@ public class SavingGoalController {
      * @return - ResponseEntity<?>
      * @Description - This method is used to delete a saving goal
      */
-    @DeleteMapping("/{userId}/{goalId}")
     public ResponseEntity<?> deleteGoal(@PathVariable Long userId, @PathVariable Long goalId) {
         log.info("Request to delete saving goal: {} for user: {}", goalId, userId);
         return savingGoalService.deleteGoal(userId, goalId);
+    }
+
+    /**
+     * @method - updateGoal
+     * @param - userId, goalId, goalDTO
+     * @return - ResponseEntity<?>
+     * @Description - This method is used to update a saving goal
+     */
+    @PutMapping("/{userId}/{goalId}")
+    public ResponseEntity<?> updateGoal(@PathVariable Long userId, @PathVariable Long goalId,
+            @RequestBody SavingGoalDTO goalDTO) {
+        log.info("Request to update saving goal: {} for user: {}", goalId, userId);
+        return savingGoalService.updateGoal(userId, goalId, goalDTO);
     }
 }

@@ -18,14 +18,12 @@ const SavingsGoals: React.FC = () => {
     const [goals, setGoals] = useState<SavingGoalDTO[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [openAddDialog, setOpenAddDialog] = useState(false);
-    const [openFundsDialog, setOpenFundsDialog] = useState(false);
-    const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null);
+    const [editingGoalId, setEditingGoalId] = useState<number | null>(null);
     const [newGoal, setNewGoal] = useState({
         goalName: '',
         targetAmount: '',
         targetDate: ''
     });
-    const [fundsAmount, setFundsAmount] = useState('');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
@@ -37,7 +35,6 @@ const SavingsGoals: React.FC = () => {
             setUserId(parseInt(storedUserId));
         } else {
             console.error("No user ID found in local storage. Please login.");
-            // Ideally redirect to login or show an error
         }
     }, []);
 
@@ -55,29 +52,6 @@ const SavingsGoals: React.FC = () => {
             console.error("Error fetching goals:", error);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleCreateGoal = async () => {
-        if (!userId) {
-            toast.error("User not authenticated.");
-            return;
-        }
-        try {
-            const goalData: SavingGoalDTO = {
-                userId: userId,
-                goalName: newGoal.goalName,
-                targetAmount: parseFloat(newGoal.targetAmount),
-                targetDate: newGoal.targetDate,
-            };
-            await SavingsService.createGoal(userId, goalData);
-            setOpenAddDialog(false);
-            setNewGoal({ goalName: '', targetAmount: '', targetDate: '' });
-            toast.success("Goal created successfully!");
-            fetchGoals(userId);
-        } catch (error) {
-            console.error("Error creating goal:", error);
-            toast.error("Failed to create goal.");
         }
     };
 
@@ -102,17 +76,54 @@ const SavingsGoals: React.FC = () => {
         }
     };
 
-    const handleOpenFundsDialog = (id: number) => {
-        setSelectedGoalId(id);
-        setOpenFundsDialog(true);
+    const handleCreateGoal = async () => {
+        if (!userId) {
+            toast.error("User not authenticated.");
+            return;
+        }
+        try {
+            const goalData: SavingGoalDTO = {
+                userId: userId,
+                goalName: newGoal.goalName,
+                targetAmount: parseFloat(newGoal.targetAmount),
+                targetDate: newGoal.targetDate,
+            };
+
+            if (editingGoalId) {
+                await SavingsService.updateGoal(userId, editingGoalId, goalData);
+                toast.success("Goal updated successfully!");
+            } else {
+                await SavingsService.createGoal(userId, goalData);
+                toast.success("Goal created successfully!");
+            }
+
+            setOpenAddDialog(false);
+            setNewGoal({ goalName: '', targetAmount: '', targetDate: '' });
+            setEditingGoalId(null);
+            fetchGoals(userId);
+        } catch (error) {
+            console.error("Error saving goal:", error);
+            toast.error("Failed to save goal.");
+        }
+    };
+    
+    const handleEditClick = (id: number) => {
+        const goalToEdit = goals.find(g => g.id === id);
+        if (goalToEdit) {
+            setNewGoal({
+                goalName: goalToEdit.goalName,
+                targetAmount: goalToEdit.targetAmount.toString(),
+                targetDate: goalToEdit.targetDate
+            });
+            setEditingGoalId(id);
+            setOpenAddDialog(true);
+        }
     };
 
-    const handleAddFunds = async () => {
-        if (selectedGoalId && fundsAmount && userId) {
+    const handleAddFundsInline = async (id: number, amount: number) => {
+        if (userId) {
             try {
-                await SavingsService.addFunds(userId, selectedGoalId, parseFloat(fundsAmount));
-                setOpenFundsDialog(false);
-                setFundsAmount('');
+                await SavingsService.addFunds(userId, id, amount);
                 toast.success("Funds added successfully!");
                 fetchGoals(userId);
             } catch (error) {
@@ -196,11 +207,11 @@ const SavingsGoals: React.FC = () => {
                 </div>
 
                 {/* Active Goals Grid */}
-                <div className="goals-grid">
-                    {loading ? (
-                        <p>Loading goals...</p>
-                    ) : activeGoals.length > 0 ? (
-                        activeGoals.map(goal => (
+                {loading ? (
+                    <p>Loading goals...</p>
+                ) : activeGoals.length > 0 ? (
+                    <div className="goals-grid">
+                        {activeGoals.map(goal => (
                             <GoalCard 
                                 key={goal.id}
                                 id={goal.id!}
@@ -212,19 +223,20 @@ const SavingsGoals: React.FC = () => {
                                 color="#f59e0b"
                                 message={`Target date: ${goal.targetDate}`}
                                 onDelete={handleDeleteClick}
-                                onAddFunds={handleOpenFundsDialog}
+                                onAddFunds={handleAddFundsInline}
+                                onEdit={handleEditClick}
                             />
-                        ))
-                    ) : (
-                        <EmptyState 
-                            title="No active goals" 
-                            description="Start saving for your dreams today! Create a new goal to track your progress." 
-                            actionLabel="Create Goal" 
-                            onAction={() => setOpenAddDialog(true)} 
-                            icon={<SavingsIcon sx={{ fontSize: 60, color: '#94a3b8' }} />}
-                        />
-                    )}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <EmptyState 
+                        title="No active goals" 
+                        description="Start saving for your dreams today! Create a new goal to track your progress." 
+                        actionLabel="Create Goal" 
+                        onAction={() => setOpenAddDialog(true)} 
+                        icon={<SavingsIcon sx={{ fontSize: 60, color: '#94a3b8' }} />}
+                    />
+                )}
 
                 {/* Completed Goals Section */}
                 {completedGoals.length > 0 && (
@@ -245,9 +257,9 @@ const SavingsGoals: React.FC = () => {
                 )}
             </main>
 
-            {/* Add Goal Dialog */}
-            <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)}>
-                <DialogTitle>Add New Savings Goal</DialogTitle>
+            {/* Add/Edit Goal Dialog */}
+            <Dialog open={openAddDialog} onClose={() => { setOpenAddDialog(false); setEditingGoalId(null); setNewGoal({ goalName: '', targetAmount: '', targetDate: '' }); }}>
+                <DialogTitle>{editingGoalId ? 'Edit Savings Goal' : 'Add New Savings Goal'}</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
@@ -277,28 +289,8 @@ const SavingsGoals: React.FC = () => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
-                    <Button onClick={handleCreateGoal} variant="contained">Create</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Add Funds Dialog */}
-            <Dialog open={openFundsDialog} onClose={() => setOpenFundsDialog(false)}>
-                <DialogTitle>Add Funds</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Amount to Add"
-                        type="number"
-                        fullWidth
-                        value={fundsAmount}
-                        onChange={(e) => setFundsAmount(e.target.value)}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenFundsDialog(false)}>Cancel</Button>
-                    <Button onClick={handleAddFunds} variant="contained">Add</Button>
+                    <Button onClick={() => { setOpenAddDialog(false); setEditingGoalId(null); setNewGoal({ goalName: '', targetAmount: '', targetDate: '' }); }}>Cancel</Button>
+                    <Button onClick={handleCreateGoal} variant="contained">{editingGoalId ? 'Update' : 'Create'}</Button>
                 </DialogActions>
             </Dialog>
 

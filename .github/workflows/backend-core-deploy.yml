@@ -1,0 +1,46 @@
+name: Backend Core CI/CD
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "CASHIQ-CASHMANAGEMENT-MICROSERVICES/CASHIQ-CASHMANAGEMENT-MANAGE-CORE/**"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "CASHIQ-CASHMANAGEMENT-MICROSERVICES/CASHIQ-CASHMANAGEMENT-MANAGE-CORE/**"
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./CASHIQ-CASHMANAGEMENT-MICROSERVICES/CASHIQ-CASHMANAGEMENT-MANAGE-CORE
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "maven"
+          cache-dependency-path: "./CASHIQ-CASHMANAGEMENT-MICROSERVICES/CASHIQ-CASHMANAGEMENT-MANAGE-CORE/pom.xml"
+
+      - name: Build with Maven
+        run: mvn clean verify
+
+  deploy:
+    name: Trigger Render Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Trigger Deploy Hook
+        if: env.RENDER_DEPLOY_HOOK_BACKEND_CORE != ''
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_BACKEND_CORE }}
+        env:
+          RENDER_DEPLOY_HOOK_BACKEND_CORE: ${{ secrets.RENDER_DEPLOY_HOOK_BACKEND_CORE }}

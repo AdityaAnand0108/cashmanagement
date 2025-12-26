@@ -1,0 +1,51 @@
+name: Backend AI CI/CD
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "CASHIQ-CASHMANAGEMENT-MICROSERVICES/CASHIQ-CASHMANAGEMENT-AI-CATEGORIZER/**"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "CASHIQ-CASHMANAGEMENT-MICROSERVICES/CASHIQ-CASHMANAGEMENT-AI-CATEGORIZER/**"
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./CASHIQ-CASHMANAGEMENT-MICROSERVICES/CASHIQ-CASHMANAGEMENT-AI-CATEGORIZER
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "./CASHIQ-CASHMANAGEMENT-MICROSERVICES/CASHIQ-CASHMANAGEMENT-AI-CATEGORIZER/requirements.txt"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # Add test steps here if you have tests (e.g., pytest)
+      # - name: Run Tests
+      #   run: pytest
+
+  deploy:
+    name: Trigger Render Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Trigger Deploy Hook
+        if: env.RENDER_DEPLOY_HOOK_BACKEND_AI != ''
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_BACKEND_AI }}
+        env:
+          RENDER_DEPLOY_HOOK_BACKEND_AI: ${{ secrets.RENDER_DEPLOY_HOOK_BACKEND_AI }}

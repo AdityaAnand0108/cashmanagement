@@ -171,7 +171,7 @@ const SavingsGoals: React.FC = () => {
                                     mt: 2,
                                     height: 8, 
                                     borderRadius: 4,
-                                    backgroundColor: '#e2e8f0',
+                                    backgroundColor: '#cbd5e1', // Darker grey
                                     '& .MuiLinearProgress-bar': {
                                         backgroundColor: '#16a34a'
                                     }

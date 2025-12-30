@@ -6,6 +6,7 @@ interface DebtItemCardProps {
     title: string;
     icon?: string; // Emoji
     amount: number;
+    formattedAmount?: string; // Optional formatted amount
     details: string; // e.g., "Next payment: $100 on Dec 25"
     actionLabel: string;
     onAction: () => void;
@@ -17,6 +18,7 @@ const DebtItemCard: React.FC<DebtItemCardProps> = ({
     title, 
     icon, 
     amount, 
+    formattedAmount,
     details, 
     actionLabel, 
     onAction, 
@@ -76,7 +78,7 @@ const DebtItemCard: React.FC<DebtItemCardProps> = ({
                     <span className="debt-amount-label">
                         {type === 'owe' ? 'Balance:' : 'Amount:'}
                     </span>
-                    <span className="debt-amount-value">₹{amount.toLocaleString()}</span>
+                    <span className="debt-amount-value">{formattedAmount || `₹${amount.toLocaleString()}`}</span>
                 </div>
                 <div className="debt-date">
                     {details}

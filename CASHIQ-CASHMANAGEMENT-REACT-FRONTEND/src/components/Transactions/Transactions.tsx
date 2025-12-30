@@ -101,6 +101,7 @@ const Transactions: React.FC = () => {
                                     displayEmpty
                                 >
                                     <MenuItem value="This Month">This Month</MenuItem>
+                                    <MenuItem value="Last 7 Days">Last 7 Days</MenuItem>
                                     <MenuItem value="Last Month">Last Month</MenuItem>
                                     <MenuItem value="Last 3 Months">Last 3 Months</MenuItem>
                                     <MenuItem value="This Year">This Year</MenuItem>
@@ -117,10 +118,16 @@ const Transactions: React.FC = () => {
                                     displayEmpty
                                 >
                                     <MenuItem value="All Categories">All Categories</MenuItem>
-                                    <MenuItem value="Dining">Dining</MenuItem>
-                                    <MenuItem value="Shopping">Shopping</MenuItem>
+                                    <MenuItem value="Food">Food</MenuItem>
+                                    <MenuItem value="Transport">Transport</MenuItem>
+                                    <MenuItem value="Utilities">Utilities</MenuItem>
                                     <MenuItem value="Rent">Rent</MenuItem>
                                     <MenuItem value="Income">Income</MenuItem>
+                                    <MenuItem value="Shopping">Shopping</MenuItem>
+                                    <MenuItem value="Entertainment">Entertainment</MenuItem>
+                                    <MenuItem value="Health">Health</MenuItem>
+                                    <MenuItem value="Transfer">Transfer</MenuItem>
+                                    <MenuItem value="Education">Education</MenuItem>
                                 </Select>
                             </FormControl>
                         </div>

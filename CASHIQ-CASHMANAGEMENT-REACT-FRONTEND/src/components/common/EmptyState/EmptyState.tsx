@@ -1,54 +1,36 @@
 import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
-import AddIcon from '@mui/icons-material/Add';
+import { Typography, Box } from '@mui/material';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 import './EmptyState.css';
 
 interface EmptyStateProps {
-    title: string;
-    description: string;
-    actionLabel?: string;
-    onAction?: () => void;
+    message: string;
+    description?: string;
     icon?: React.ReactNode;
 }
 
+/**
+ * A reusable component to display when there is no data.
+ */
 const EmptyState: React.FC<EmptyStateProps> = ({ 
-    title, 
+    message, 
     description, 
-    actionLabel, 
-    onAction, 
     icon 
 }) => {
     return (
-        <Box className="empty-state-container">
-            {icon ? (
-                <div className="empty-state-custom-icon-wrapper">
-                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                    {React.cloneElement(icon as React.ReactElement<any>, { className: 'empty-state-icon' })}
-                </div>
-            ) : (
-                <SmartToyIcon className="empty-state-icon" sx={{ fontSize: 60, color: '#94a3b8', mb: 2 }} />
-            )}
-            
-            <Typography variant="h6" className="empty-state-title">
-                {title}
+        <div className="empty-state-container">
+            <Box className="empty-state-icon">
+                {icon || <SearchOffIcon fontSize="inherit" />}
+            </Box>
+            <Typography variant="h6" className="empty-state-message">
+                {message}
             </Typography>
-            
-            <Typography variant="body1" className="empty-state-text">
-                {description}
-            </Typography>
-            
-            {actionLabel && onAction && (
-                <Button 
-                    variant="outlined" 
-                    startIcon={<AddIcon />}
-                    onClick={onAction}
-                    className="empty-state-button"
-                >
-                    {actionLabel}
-                </Button>
+            {description && (
+                <Typography variant="body2" className="empty-state-description">
+                    {description}
+                </Typography>
             )}
-        </Box>
+        </div>
     );
 };
 

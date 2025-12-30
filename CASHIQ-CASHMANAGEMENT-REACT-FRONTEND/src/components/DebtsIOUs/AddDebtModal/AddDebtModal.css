@@ -1,0 +1,44 @@
+.add-debt-modal-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-debt-toggle-group-container {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+.add-debt-input-field {
+    margin-bottom: 16px !important;
+}
+
+.add-debt-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.add-debt-row-item {
+    flex: 1;
+}
+
+.add-debt-category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-debt-category-icons {
+    display: flex;
+    gap: 8px;
+}
+
+.category-icon-btn {
+    border: 1px solid #e0e0e0;
+}
+
+.category-icon-btn.selected {
+    border: 1px solid #1976d2;
+}

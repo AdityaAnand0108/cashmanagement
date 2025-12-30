@@ -9,6 +9,9 @@ import IncomeService from '../../services/IncomeService';
 import type { IncomeDTO } from '../../models/Income';
 import TransactionService from '../../services/TransactionService';
 import type { TransactionDTO } from '../../models/Transaction';
+import { formatCurrency } from '../../utils/CurrencyUtils';
+import { calculateSmartNextPayDay, daysAgo, formatReadableDate } from '../../utils/DateUtils';
+import { Chip } from '@mui/material'; // Importing Chip for the "Last paid" tag
 
 // Icons
 import AddIcon from '@mui/icons-material/Add';
@@ -120,7 +123,7 @@ const IncomeSources: React.FC = () => {
                     <div className="total-income-banner">
                         <div className="banner-content">
                             <h3>Total Monthly Income</h3>
-                            <div className="total-amount">₹{totalIncome.toFixed(2)}</div>
+                            <div className="total-amount">{formatCurrency(totalIncome)}</div>
                             <p className="banner-subtext">Based on {incomes.length} active sources.</p>
                         </div>
                     </div>
@@ -162,9 +165,20 @@ const IncomeSources: React.FC = () => {
                                         </p>
                                     </div>
                                     <div className="source-financials">
-                                        <div className="source-amount">₹{source.amount.toFixed(2)}</div>
+                                        <div className="source-amount">{formatCurrency(source.amount)}</div>
                                         <div className="source-next-date">
-                                            Next payday: {source.nextPayDay}
+                                            Next payday: {formatReadableDate(calculateSmartNextPayDay(source.nextPayDay, source.frequency))}
+                                            {daysAgo(source.nextPayDay) > 0 && source.frequency !== 'ONE_TIME' && (
+                                                <div style={{ marginTop: '0.25rem' }}>
+                                                    <Chip 
+                                                        label={`Last paid: ${daysAgo(source.nextPayDay)} days ago`} 
+                                                        size="small" 
+                                                        color="warning" 
+                                                        variant="outlined"
+                                                        style={{ fontSize: '0.75rem', height: '20px' }}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <button className="edit-btn" onClick={() => handleEditClick(source)}>
@@ -207,7 +221,7 @@ const IncomeSources: React.FC = () => {
                                             <tr key={idx}>
                                                 <td>{tx.date}</td>
                                                 <td>{tx.paymentSource}</td>
-                                                <td className="amount-positive">+₹{tx.amount}</td>
+                                                <td className="amount-positive">+{formatCurrency(tx.amount)}</td>
                                             </tr>
                                         ))
                                     )}

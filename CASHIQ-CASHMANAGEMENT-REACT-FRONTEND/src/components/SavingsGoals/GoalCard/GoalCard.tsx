@@ -67,7 +67,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
                 sx={{ 
                     height: 8, 
                     borderRadius: 4,
-                    backgroundColor: '#e2e8f0',
+                    backgroundColor: '#cbd5e1', // Darker grey for better visibility
                     '& .MuiLinearProgress-bar': {
                         backgroundColor: color
                     }

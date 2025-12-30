@@ -4,42 +4,29 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    color: #64748b; /* text.secondary equivalentish */
     text-align: center;
-    background-color: #f8fafc;
+    background-color: #f8fafc; /* Light gray background */
     border-radius: 12px;
-    border: 2px dashed #e2e8f0;
-    grid-column: 1 / -1; /* Useful if placed inside a grid */
-    width: 100%;
-    box-sizing: border-box;
+    border: 1px dashed #cbd5e1;
+    margin-top: 1rem;
+    min-height: 200px;
 }
 
 .empty-state-icon {
-    font-size: 60px !important;
+    font-size: 4rem !important;
     color: #94a3b8;
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
+    opacity: 0.8;
 }
 
-.empty-state-title {
-    font-weight: 700 !important;
-    margin-bottom: 8px !important;
-    color: #0f172a;
-}
-
-.empty-state-text {
-    margin-bottom: 24px !important;
-    max-width: 400px;
-    line-height: 1.6 !important;
-}
-
-.empty-state-button {
-    text-transform: none !important;
+.empty-state-message {
     font-weight: 600 !important;
+    color: #475569;
+    margin-bottom: 0.5rem !important;
 }
 
-/* Optional wrapper if user passes custom icon that needs centering/sizing context */
-.empty-state-custom-icon-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 16px;
+.empty-state-description {
+    color: #64748b;
+    font-size: 0.9rem !important;
+    max-width: 300px;
 }

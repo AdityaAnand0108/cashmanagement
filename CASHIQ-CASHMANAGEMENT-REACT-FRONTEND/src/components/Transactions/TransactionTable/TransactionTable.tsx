@@ -21,15 +21,20 @@ import EmptyState from "../../common/EmptyState/EmptyState";
 import "./TransactionTable.css";
 import TransactionService from "../../../services/TransactionService";
 import type { TransactionDTO } from "../../../models/Transaction";
+import BudgetService from "../../../services/BudgetService";
+import type { BudgetDTO } from "../../../models/Budget";
 import { getCategoryIcon } from "../../../utils/CategoryIconUtils";
+import { extractMerchant } from "../../../utils/SmartParser";
 import ConfirmationModal from "../../common/ConfirmationModal/ConfirmationModal";
 import { toast } from "react-toastify";
+import { Chip } from "@mui/material";
 
 interface TransactionUI {
   id: string;
   date: string;
   merchant: string;
   rawDescription: string;
+  paymentSource: string;
   category: string;
   categoryIcon: React.ReactNode;
   amount: number;
@@ -55,6 +60,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     filterSearchQuery = ''
 }) => {
   const [transactions, setTransactions] = useState<TransactionUI[]>([]);
+  const [budgets, setBudgets] = useState<BudgetDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -64,33 +70,46 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
   const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
+    const fetchTransactionsAndBudgets = async () => {
       try {
         setLoading(true);
-        const data = await TransactionService.getAllTransactions();
+        const userId = localStorage.getItem('userId');
+        const [transData, budgetData] = await Promise.all([
+             TransactionService.getAllTransactions(),
+             userId ? BudgetService.getUserBudgets(Number(userId)) : Promise.resolve([])
+        ]);
         
         // Map DTO to UI model
-        const mappedTransactions: TransactionUI[] = data.map((dto: TransactionDTO) => ({
-            id: dto.id ? dto.id.toString() : Math.random().toString(), // Fallback if ID missing
-            date: dto.date ? new Date(dto.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
-            merchant: dto.paymentSource || "Unknown",
-            rawDescription: dto.description || "",
-            category: dto.category || "Uncategorized",
-            categoryIcon: getCategoryIcon(dto.category || "Uncategorized"),
-            amount: dto.amount,
-            type: (dto.type === 'INCOME' || dto.type === 'DEPOSIT') ? 'income' : 'expense',
-            isoDate: dto.date ? dto.date.toString() : ''
-        }));
+        const mappedTransactions: TransactionUI[] = transData.map((dto: TransactionDTO) => {
+            const extractedMerchant = extractMerchant(dto.description || "");
+            const displayMerchant = (extractedMerchant !== "Unknown Merchant") 
+                ? extractedMerchant 
+                : (dto.paymentSource || "Unknown");
+
+            return {
+                id: dto.id ? dto.id.toString() : Math.random().toString(), // Fallback if ID missing
+                date: dto.date ? new Date(dto.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
+                merchant: displayMerchant,
+                rawDescription: dto.description || "",
+                paymentSource: dto.paymentSource || "",
+                category: dto.category || "Uncategorized",
+                categoryIcon: getCategoryIcon(dto.category || "Uncategorized"),
+                amount: dto.amount,
+                type: (dto.type === 'INCOME' || dto.type === 'DEPOSIT') ? 'income' : 'expense',
+                isoDate: dto.date ? dto.date.toString() : ''
+            };
+        });
         
         setTransactions(mappedTransactions);
+        setBudgets(budgetData);
       } catch (error) {
-        console.error("Failed to load transactions", error);
+        console.error("Failed to load data", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTransactions();
+    fetchTransactionsAndBudgets();
   }, [refreshTrigger]);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -139,6 +158,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         
         if (filterDateRange === 'This Month') {
             if (!isSameMonth(transDate, now)) return false;
+        } else if (filterDateRange === 'Last 7 Days') {
+            const sevenDaysAgo = new Date(now);
+            sevenDaysAgo.setDate(now.getDate() - 7);
+            if (transDate < sevenDaysAgo) return false;
         } else if (filterDateRange === 'Last Month') {
             const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
             if (!isSameMonth(transDate, lastMonth)) return false;
@@ -217,7 +240,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
             <Table sx={{ minWidth: 650 }} aria-label="transaction table">
               <TableHead className="transaction-table-head">
                 <TableRow>
-                  <TableCell>
+                  <TableCell align="left" width="15%">
                       <TableSortLabel
                         active={orderBy === 'date'}
                         direction={orderBy === 'date' ? order : 'asc'}
@@ -226,10 +249,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                         Date
                       </TableSortLabel>
                   </TableCell>
-                  <TableCell>Merchant</TableCell>
-                  <TableCell>Category</TableCell>
-                  <TableCell align="right">Amount</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                  <TableCell align="left" width="35%">Description</TableCell>
+                  <TableCell align="left" width="20%">Category</TableCell>
+                  <TableCell align="right" width="15%">Amount</TableCell>
+                  <TableCell align="right" width="15%">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -241,22 +264,59 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                       className="transaction-row"
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell component="th" scope="row">
+                      <TableCell component="th" scope="row" align="left">
                         {row.date}
                       </TableCell>
-                      <TableCell>
-                        <Typography variant="body1" fontWeight="bold">
-                            {row.merchant}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-                            {row.rawDescription}
-                        </Typography>
+                      <TableCell align="left">
+                        <Box display="flex" flexDirection="column" gap={0.5}>
+                            {/* Full Description (Grey/Small as requested) */}
+                            <Typography 
+                                variant="body2" 
+                                color="text.primary" 
+                                sx={{ textTransform: 'capitalize' }}
+                            >
+                                {row.rawDescription}
+                            </Typography>
+
+                            {/* Payment Source Badge */}
+                            {row.paymentSource && (
+                                <Box display="flex" alignItems="center" gap={1} mt={1}>
+                                    <Chip 
+                                        label={row.paymentSource.toUpperCase()} 
+                                        size="small" 
+                                        variant="outlined" 
+                                        sx={{ 
+                                            height: '20px', 
+                                            fontSize: '0.7rem', 
+                                            fontWeight: '600',
+                                            color: '#64748b',
+                                            borderColor: '#e2e8f0',
+                                            backgroundColor: '#f8fafc'
+                                        }} 
+                                    />
+                                </Box>
+                            )}
+                        </Box>
                       </TableCell>
-                      <TableCell>
-                        <Box className="category-chip">
+                      <TableCell align="left">
+                        <Box className="category-chip" mb={0.5}>
                           {row.category}
                           {row.categoryIcon}
                         </Box>
+                        {(() => {
+                           // Find budget for this category
+                           const budget = budgets.find(b => b.category === row.category);
+                           if (budget && budget.limitAmount > 0) {
+                               const spent = budget.spentAmount || 0;
+                               const percent = Math.min(Math.round((spent / budget.limitAmount) * 100), 100);
+                               return (
+                                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                       {percent}% of {row.category} Budget
+                                   </Typography>
+                               );
+                           }
+                           return null;
+                        })()}
                       </TableCell>
                       <TableCell
                         align="right"

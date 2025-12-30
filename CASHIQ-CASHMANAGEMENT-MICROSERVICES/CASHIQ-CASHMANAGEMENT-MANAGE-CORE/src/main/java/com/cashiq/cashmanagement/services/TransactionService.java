@@ -8,5 +8,7 @@ import com.cashiq.cashmanagement.dto.TransactionDTO;
 public interface TransactionService {
      String addTransaction(TransactionDTO transactionDTO);
 
+     String updateTransaction(TransactionDTO transactionDTO);
+
      List<TransactionDTO> getAllTransactions();
 }

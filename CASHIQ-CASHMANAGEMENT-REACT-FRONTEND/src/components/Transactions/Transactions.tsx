@@ -18,12 +18,16 @@ import type { SelectChangeEvent } from '@mui/material/Select';
 
 import { Dialog, DialogContent } from '@mui/material';
 import QuickAddTransaction from '../QuickAddTransaction/QuickAddTransaction';
+import EditTransactionModal from './EditTransactionModal/EditTransactionModal';
+import type { TransactionDTO } from '../../models/Transaction';
 
 const Transactions: React.FC = () => {
     const [dateRange, setDateRange] = useState('This Month');
     const [category, setCategory] = useState('All Categories');
     const [openAddModal, setOpenAddModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
+    const [editingTransaction, setEditingTransaction] = useState<TransactionDTO | null>(null);
+    const [openEditModal, setOpenEditModal] = useState(false);
 
     const handleDateRangeChange = (event: SelectChangeEvent) => {
         setDateRange(event.target.value as string);
@@ -37,6 +41,27 @@ const Transactions: React.FC = () => {
         setOpenAddModal(false);
         setRefreshTrigger(prev => !prev);
     };
+
+    const handleEditTransaction = (transactionUI: { id: string; rawDescription: string; amount: number; category: string; isoDate: string; merchant: string; type: string }) => {
+        // Convert UI model back to DTO
+        const transactionDTO: TransactionDTO = {
+            id: Number(transactionUI.id),
+            description: transactionUI.rawDescription,
+            amount: transactionUI.amount,
+            category: transactionUI.category,
+            date: transactionUI.isoDate, 
+            paymentSource: transactionUI.merchant,
+            type: transactionUI.type.toUpperCase() as 'INCOME' | 'EXPENSE'
+        };
+        setEditingTransaction(transactionDTO);
+        setOpenEditModal(true);
+    };
+
+    const handleEditSuccess = () => {
+        setOpenEditModal(false);
+        setEditingTransaction(null);
+        setRefreshTrigger(prev => !prev);
+    }
 
     return (
         <div className="transactions-container">
@@ -110,7 +135,10 @@ const Transactions: React.FC = () => {
                 </Box>
 
                 {/* Transactions Table */}
-                <TransactionTable refreshTrigger={refreshTrigger} />
+                <TransactionTable 
+                    refreshTrigger={refreshTrigger} 
+                    onEdit={handleEditTransaction}
+                />
 
                 {/* Add Transaction Modal */}
                 <Dialog 
@@ -131,6 +159,14 @@ const Transactions: React.FC = () => {
                         <QuickAddTransaction onSuccess={handleAddTransactionSuccess} />
                     </DialogContent>
                 </Dialog>
+
+                {/* Edit Transaction Modal */}
+                <EditTransactionModal
+                    open={openEditModal}
+                    transaction={editingTransaction}
+                    onClose={() => setOpenEditModal(false)}
+                    onSuccess={handleEditSuccess}
+                />
             </main>
         </div>
     );

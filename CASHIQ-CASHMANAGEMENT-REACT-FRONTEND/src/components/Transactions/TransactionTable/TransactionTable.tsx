@@ -31,13 +31,15 @@ interface TransactionUI {
   categoryIcon: React.ReactNode;
   amount: number;
   type: "income" | "expense";
+  isoDate: string;
 }
 
 interface TransactionTableProps {
   refreshTrigger?: boolean;
+  onEdit?: (transaction: TransactionUI) => void;
 }
 
-const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger }) => {
+const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onEdit }) => {
   const [transactions, setTransactions] = useState<TransactionUI[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState(0);
@@ -58,7 +60,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger }) =
             category: dto.category || "Uncategorized",
             categoryIcon: getCategoryIcon(dto.category || "Uncategorized"),
             amount: dto.amount,
-            type: (dto.type === 'INCOME' || dto.type === 'DEPOSIT') ? 'income' : 'expense'
+            type: (dto.type === 'INCOME' || dto.type === 'DEPOSIT') ? 'income' : 'expense',
+            isoDate: dto.date ? dto.date.toString() : ''
         }));
         
         setTransactions(mappedTransactions);
@@ -163,7 +166,11 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger }) =
                       </TableCell>
                       <TableCell align="right">
                         <Box className="transaction-actions">
-                          <IconButton aria-label="edit" size="small">
+                          <IconButton 
+                              aria-label="edit" 
+                              size="small"
+                              onClick={() => onEdit && onEdit(row)}
+                          >
                               <EditIcon fontSize="small" />
                           </IconButton>
                           <IconButton aria-label="delete" size="small" color="error">

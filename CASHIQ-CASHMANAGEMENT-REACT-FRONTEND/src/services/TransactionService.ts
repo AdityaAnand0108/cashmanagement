@@ -52,11 +52,28 @@ const getAllTransactions = async (): Promise<TransactionDTO[]> => {
 };
 
 /**
+ * Updates an existing transaction.
+ * @param transaction The transaction data to update.
+ * @returns A promise that resolves to a string.
+ */
+const updateTransaction = async (transaction: TransactionDTO): Promise<string> => {
+    try {
+        const response = await axios.put(`${BASE_URL}/update-transaction`, transaction, getAuthHeader());
+        return response.data;
+    } catch (error) {
+        console.error('Error updating transaction:', error);
+        handleAuthError(error);
+        throw error;
+    }
+}
+
+/**
  * TransactionService class for handling transaction operations.
  */
 const TransactionService = {
     addTransaction,
     getAllTransactions,
+    updateTransaction,
 };
 
 export default TransactionService;

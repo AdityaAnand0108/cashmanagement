@@ -37,6 +37,18 @@ public class TransactionController {
     }
 
     /**
+     * @method - updateTransaction
+     * @param - TransactionDTO
+     * @return - String
+     * @Description - This method is used to update a transaction
+     */
+    @org.springframework.web.bind.annotation.PutMapping("/update-transaction")
+    public String updateTransaction(@RequestBody TransactionDTO transactionDTO) {
+        log.info("Request to update transaction: {}", transactionDTO);
+        return transactionService.updateTransaction(transactionDTO);
+    }
+
+    /**
      * @method - getAllTransactions
      * @param - None
      * @return - List<TransactionDTO>

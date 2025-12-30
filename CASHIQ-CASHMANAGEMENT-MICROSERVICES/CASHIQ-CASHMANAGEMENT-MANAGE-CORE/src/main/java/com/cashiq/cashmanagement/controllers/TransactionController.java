@@ -60,4 +60,16 @@ public class TransactionController {
         return transactionService.getAllTransactions();
     }
 
+    /**
+     * @method - deleteTransaction
+     * @param - id
+     * @return - String
+     * @Description - This method is used to delete a transaction
+     */
+    @org.springframework.web.bind.annotation.DeleteMapping("/delete-transaction/{id}")
+    public String deleteTransaction(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        log.info("Request to delete transaction with ID: {}", id);
+        return transactionService.deleteTransaction(id);
+    }
+
 }

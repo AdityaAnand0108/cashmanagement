@@ -10,5 +10,7 @@ public interface TransactionService {
 
      String updateTransaction(TransactionDTO transactionDTO);
 
+     String deleteTransaction(Long id);
+
      List<TransactionDTO> getAllTransactions();
 }

@@ -20,7 +20,9 @@ import EmptyState from "../../common/EmptyState/EmptyState";
 import "./TransactionTable.css";
 import TransactionService from "../../../services/TransactionService";
 import type { TransactionDTO } from "../../../models/Transaction";
-import { getCategoryIcon } from "../../../utils/CategoryIconUtils"; // Assuming this utility exists based on previous files
+import { getCategoryIcon } from "../../../utils/CategoryIconUtils";
+import ConfirmationModal from "../../common/ConfirmationModal/ConfirmationModal";
+import { toast } from "react-toastify";
 
 interface TransactionUI {
   id: string;
@@ -43,7 +45,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
   const [transactions, setTransactions] = useState<TransactionUI[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState(0);
+
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -87,6 +92,27 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
     setPage(0);
   };
 
+  const handleDeleteClick = (id: string) => {
+    setSelectedTransactionId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedTransactionId) return;
+
+    try {
+        await TransactionService.deleteTransaction(Number(selectedTransactionId));
+        toast.success("Transaction deleted successfully");
+        setTransactions(prev => prev.filter(t => t.id !== selectedTransactionId));
+    } catch (error) {
+        console.error("Failed to delete transaction", error);
+        toast.error("Failed to delete transaction");
+    } finally {
+        setDeleteConfirmOpen(false);
+        setSelectedTransactionId(null);
+    }
+  };
+
 
 
 
@@ -100,6 +126,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
   }
 
   return (
+    <>
     <Paper className="transaction-table-container">
       <Box p={3} pb={1}>
         <Typography variant="h6" fontWeight="bold">
@@ -173,7 +200,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
                           >
                               <EditIcon fontSize="small" />
                           </IconButton>
-                          <IconButton aria-label="delete" size="small" color="error">
+                          <IconButton 
+                            aria-label="delete" 
+                            size="small" 
+                            color="error"
+                            onClick={() => handleDeleteClick(row.id)}
+                          >
                               <DeleteOutlineIcon fontSize="small" />
                           </IconButton>
                         </Box>
@@ -197,6 +229,16 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
 
 
     </Paper>
+      <ConfirmationModal
+        open={deleteConfirmOpen}
+        title="Delete Transaction"
+        message="Are you sure you want to delete this transaction? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteConfirmOpen(false)}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+    </>
   );
 };
 

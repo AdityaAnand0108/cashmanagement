@@ -99,4 +99,24 @@ public class TransactionServiceImpl implements TransactionService {
                                 .map(transaction -> modelMapper.map(transaction, TransactionDTO.class))
                                 .collect(Collectors.toList());
         }
+
+        @Override
+        public String deleteTransaction(Long id) {
+                log.info("Deleting transaction with ID: {}", id);
+
+                // Get current logged in user to verify ownership
+                String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                                .getAuthentication().getName();
+
+                Transaction transaction = transactionRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+                if (!transaction.getUser().getUsername().equals(username)) {
+                        throw new RuntimeException("Unauthorized to delete this transaction");
+                }
+
+                transactionRepository.delete(transaction);
+                log.info("Transaction deleted successfully with ID: {}", id);
+                return "Transaction deleted successfully";
+        }
 }

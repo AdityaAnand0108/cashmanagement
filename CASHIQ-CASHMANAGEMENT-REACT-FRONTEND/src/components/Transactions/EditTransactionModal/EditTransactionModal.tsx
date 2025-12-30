@@ -19,7 +19,6 @@ import { toast } from 'react-toastify';
 import TransactionService from '../../../services/TransactionService';
 import type { TransactionDTO } from '../../../models/Transaction';
 import { getCategoryIcon } from '../../../utils/CategoryIconUtils';
-import { CategoryType } from '../../../models/CategoryType';
 import './EditTransactionModal.css';
 
 interface EditTransactionModalProps {
@@ -79,114 +78,116 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ open, trans
     if (!transaction) return null;
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle className="modal-title">
-                Edit Transaction
-                <IconButton
-                    aria-label="close"
-                    onClick={onClose}
-                    className="close-button"
-                >
-                    <CloseIcon />
-                </IconButton>
-            </DialogTitle>
-            <DialogContent dividers>
-                <Box component="form" className="modal-form">
-                    <TextField
-                        label="Description"
-                        value={formData.description}
-                        onChange={(e) => handleChange('description', e.target.value)}
-                        fullWidth
-                        variant="outlined"
-                    />
+        <>
+            <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+                <DialogTitle className="modal-title">
+                    Edit Transaction
+                    <IconButton
+                        aria-label="close"
+                        onClick={onClose}
+                        className="close-button"
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>
+                    <Box component="form" className="modal-form">
+                        <TextField
+                            label="Description"
+                            value={formData.description}
+                            onChange={(e) => handleChange('description', e.target.value)}
+                            fullWidth
+                            variant="outlined"
+                        />
 
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <TextField
-                                label="Amount"
-                                type="number"
-                                value={formData.amount}
-                                onChange={(e) => handleChange('amount', parseFloat(e.target.value))}
-                                fullWidth
-                                variant="outlined"
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <FormControl fullWidth>
-                                <InputLabel>Category</InputLabel>
-                                <Select
-                                    value={formData.category}
-                                    label="Category"
-                                    onChange={(e) => handleChange('category', e.target.value)}
-                                    renderValue={(selected) => (
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            {getCategoryIcon(selected as string)}
-                                            {selected as string}
-                                        </Box>
-                                    )}
-                                >
-                                    {['Food', 'Transport', 'Utilities', 'Rent', 'Income', 'Shopping', 'Entertainment', 'Health', 'Transfer', 'Education'].map((cat) => (
-                                        <MenuItem key={cat} value={cat}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <TextField
+                                    label="Amount"
+                                    type="number"
+                                    value={formData.amount}
+                                    onChange={(e) => handleChange('amount', parseFloat(e.target.value))}
+                                    fullWidth
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Category</InputLabel>
+                                    <Select
+                                        value={formData.category}
+                                        label="Category"
+                                        onChange={(e) => handleChange('category', e.target.value)}
+                                        renderValue={(selected) => (
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                {getCategoryIcon(cat)}
-                                                {cat}
+                                                {getCategoryIcon(selected as string)}
+                                                {selected as string}
                                             </Box>
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                                        )}
+                                    >
+                                        {['Food', 'Transport', 'Utilities', 'Rent', 'Income', 'Shopping', 'Entertainment', 'Health', 'Transfer', 'Education'].map((cat) => (
+                                            <MenuItem key={cat} value={cat}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    {getCategoryIcon(cat)}
+                                                    {cat}
+                                                </Box>
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
                         </Grid>
-                    </Grid>
 
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                             <FormControl fullWidth>
-                                <InputLabel>Type</InputLabel>
-                                <Select
-                                    value={formData.type}
-                                    label="Type"
-                                    onChange={(e) => handleChange('type', e.target.value)}
-                                >
-                                    <MenuItem value="EXPENSE">Expense</MenuItem>
-                                    <MenuItem value="INCOME">Income</MenuItem>
-                                </Select>
-                            </FormControl>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                 <FormControl fullWidth>
+                                    <InputLabel>Type</InputLabel>
+                                    <Select
+                                        value={formData.type}
+                                        label="Type"
+                                        onChange={(e) => handleChange('type', e.target.value)}
+                                    >
+                                        <MenuItem value="EXPENSE">Expense</MenuItem>
+                                        <MenuItem value="INCOME">Income</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    label="Date"
+                                    type="date"
+                                    value={formData.date}
+                                    onChange={(e) => handleChange('date', e.target.value)}
+                                    fullWidth
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
                         </Grid>
-                        <Grid item xs={6}>
-                            <TextField
-                                label="Date"
-                                type="date"
-                                value={formData.date}
-                                onChange={(e) => handleChange('date', e.target.value)}
-                                fullWidth
-                                InputLabelProps={{ shrink: true }}
-                            />
-                        </Grid>
-                    </Grid>
-                    
-                     <TextField
-                        label="Payment Source"
-                        value={formData.paymentSource}
-                        onChange={(e) => handleChange('paymentSource', e.target.value)}
-                        fullWidth
-                        variant="outlined"
-                    />
-                </Box>
-            </DialogContent>
-            <DialogActions className="modal-actions">
-                <Button onClick={onClose} variant="outlined" color="inherit" disabled={loading}>
-                    Cancel
-                </Button>
-                <Button 
-                    onClick={handleSubmit} 
-                    variant="contained" 
-                    color="primary"
-                    disabled={loading}
-                >
-                    {loading ? 'Saving...' : 'Save Changes'}
-                </Button>
-            </DialogActions>
-        </Dialog>
+                        
+                         <TextField
+                            label="Payment Source"
+                            value={formData.paymentSource}
+                            onChange={(e) => handleChange('paymentSource', e.target.value)}
+                            fullWidth
+                            variant="outlined"
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions className="modal-actions">
+                    <Button onClick={onClose} variant="outlined" color="inherit" disabled={loading}>
+                        Cancel
+                    </Button>
+                    <Button 
+                        onClick={handleSubmit} 
+                        variant="contained" 
+                        color="primary"
+                        disabled={loading}
+                    >
+                        {loading ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 };
 

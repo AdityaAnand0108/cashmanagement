@@ -68,12 +68,29 @@ const updateTransaction = async (transaction: TransactionDTO): Promise<string> =
 }
 
 /**
+ * Deletes a transaction by ID.
+ * @param id The ID of the transaction to delete.
+ * @returns A promise that resolves to a string.
+ */
+const deleteTransaction = async (id: number): Promise<string> => {
+    try {
+        const response = await axios.delete(`${BASE_URL}/delete-transaction/${id}`, getAuthHeader());
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting transaction:', error);
+        handleAuthError(error);
+        throw error;
+    }
+};
+
+/**
  * TransactionService class for handling transaction operations.
  */
 const TransactionService = {
     addTransaction,
     getAllTransactions,
     updateTransaction,
+    deleteTransaction,
 };
 
 export default TransactionService;

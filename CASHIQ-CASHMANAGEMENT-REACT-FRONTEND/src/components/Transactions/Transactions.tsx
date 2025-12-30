@@ -24,6 +24,7 @@ import type { TransactionDTO } from '../../models/Transaction';
 const Transactions: React.FC = () => {
     const [dateRange, setDateRange] = useState('This Month');
     const [category, setCategory] = useState('All Categories');
+    const [searchQuery, setSearchQuery] = useState('');
     const [openAddModal, setOpenAddModal] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<TransactionDTO | null>(null);
@@ -76,6 +77,8 @@ const Transactions: React.FC = () => {
                         className="search-field"
                         placeholder="Search transactions..."
                         variant="outlined"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         slotProps={{
                             input: {
                                 startAdornment: (
@@ -135,9 +138,13 @@ const Transactions: React.FC = () => {
                 </Box>
 
                 {/* Transactions Table */}
+                {/* Transactions Table */}
                 <TransactionTable 
                     refreshTrigger={refreshTrigger} 
                     onEdit={handleEditTransaction}
+                    filterDateRange={dateRange}
+                    filterCategory={category}
+                    filterSearchQuery={searchQuery}
                 />
 
                 {/* Add Transaction Modal */}

@@ -12,6 +12,7 @@ import {
   Box,
   TablePagination,
   CircularProgress,
+  TableSortLabel,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -39,14 +40,26 @@ interface TransactionUI {
 interface TransactionTableProps {
   refreshTrigger?: boolean;
   onEdit?: (transaction: TransactionUI) => void;
+  filterDateRange?: string;
+  filterCategory?: string;
+  filterSearchQuery?: string;
 }
 
-const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onEdit }) => {
+type Order = 'asc' | 'desc';
+
+const TransactionTable: React.FC<TransactionTableProps> = ({ 
+    refreshTrigger, 
+    onEdit,
+    filterDateRange = 'This Month',
+    filterCategory = 'All Categories',
+    filterSearchQuery = ''
+}) => {
   const [transactions, setTransactions] = useState<TransactionUI[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState(0);
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [order, setOrder] = useState<Order>('desc');
+  const [orderBy, setOrderBy] = useState<keyof TransactionUI>('date');
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
 
@@ -92,6 +105,62 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
     setPage(0);
   };
 
+  const handleRequestSort = (property: keyof TransactionUI) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const createSortHandler = (property: keyof TransactionUI) => () => {
+    handleRequestSort(property);
+  };
+
+  const filteredTransactions = React.useMemo(() => {
+    return transactions.filter((transaction) => {
+        // 1. Search Filter
+        const searchLower = filterSearchQuery.toLowerCase();
+        const matchesSearch = 
+            transaction.merchant.toLowerCase().includes(searchLower) ||
+            transaction.rawDescription.toLowerCase().includes(searchLower);
+
+        if (!matchesSearch) return false;
+
+        // 2. Category Filter
+        if (filterCategory !== 'All Categories' && transaction.category !== filterCategory) {
+            return false;
+        }
+
+        // 3. Date Range Filter
+        const transDate = new Date(transaction.isoDate);
+        const now = new Date();
+        
+        // Helper to check if dates are in the same month/year
+        const isSameMonth = (d1: Date, d2: Date) => d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
+        
+        if (filterDateRange === 'This Month') {
+            if (!isSameMonth(transDate, now)) return false;
+        } else if (filterDateRange === 'Last Month') {
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            if (!isSameMonth(transDate, lastMonth)) return false;
+        } else if (filterDateRange === 'Last 3 Months') {
+            const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+            if (transDate < threeMonthsAgo) return false;
+        } else if (filterDateRange === 'This Year') {
+             if (transDate.getFullYear() !== now.getFullYear()) return false;
+        }
+
+        return true;
+    }).sort((a, b) => {
+        // Sorting logic (currently only handling date primarily)
+        if (orderBy === 'date') {
+            const dateA = new Date(a.isoDate).getTime();
+            const dateB = new Date(b.isoDate).getTime();
+            return order === 'asc' ? dateA - dateB : dateB - dateA;
+        }
+        return 0;
+    });
+  }, [transactions, filterSearchQuery, filterCategory, filterDateRange, order, orderBy]);
+
   const handleDeleteClick = (id: string) => {
     setSelectedTransactionId(id);
     setDeleteConfirmOpen(true);
@@ -134,11 +203,11 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
         </Typography>
       </Box>
 
-      {transactions.length === 0 ? (
+      {filteredTransactions.length === 0 ? (
         <Box px={3} pb={3}>
             <EmptyState
-            title="No transactions yet"
-            description="Your transactions will appear here once you start spending or earning."
+            title="No transactions found"
+            description="Try adjusting your filters or search query."
             icon={<ReceiptLongIcon sx={{ fontSize: 60, color: '#94a3b8', mb: 2 }} />}
             />
         </Box>
@@ -148,7 +217,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
             <Table sx={{ minWidth: 650 }} aria-label="transaction table">
               <TableHead className="transaction-table-head">
                 <TableRow>
-                  <TableCell>Date</TableCell>
+                  <TableCell>
+                      <TableSortLabel
+                        active={orderBy === 'date'}
+                        direction={orderBy === 'date' ? order : 'asc'}
+                        onClick={createSortHandler('date')}
+                      >
+                        Date
+                      </TableSortLabel>
+                  </TableCell>
                   <TableCell>Merchant</TableCell>
                   <TableCell>Category</TableCell>
                   <TableCell align="right">Amount</TableCell>
@@ -156,7 +233,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
                 </TableRow>
               </TableHead>
               <TableBody>
-                {transactions
+                {filteredTransactions
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <TableRow
@@ -218,7 +295,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger, onE
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={transactions.length}
+            count={filteredTransactions.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

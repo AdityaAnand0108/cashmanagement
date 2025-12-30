@@ -11,7 +11,6 @@ import {
     InputLabel, 
     FormControl,
     Box,
-    Grid,
     IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -100,8 +99,8 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ open, trans
                             variant="outlined"
                         />
 
-                        <Grid container spacing={2}>
-                            <Grid item xs={6}>
+                        <Box display="flex" gap={2} sx={{ mt: 2 }}>
+                            <Box flex={1}>
                                 <TextField
                                     label="Amount"
                                     type="number"
@@ -110,8 +109,8 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ open, trans
                                     fullWidth
                                     variant="outlined"
                                 />
-                            </Grid>
-                            <Grid item xs={6}>
+                            </Box>
+                            <Box flex={1}>
                                 <FormControl fullWidth>
                                     <InputLabel>Category</InputLabel>
                                     <Select
@@ -135,11 +134,11 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ open, trans
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                        </Grid>
+                            </Box>
+                        </Box>
 
-                        <Grid container spacing={2}>
-                            <Grid item xs={6}>
+                        <Box display="flex" gap={2} sx={{ mt: 2 }}>
+                            <Box flex={1}>
                                  <FormControl fullWidth>
                                     <InputLabel>Type</InputLabel>
                                     <Select
@@ -151,8 +150,8 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ open, trans
                                         <MenuItem value="INCOME">Income</MenuItem>
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
+                            </Box>
+                            <Box flex={1}>
                                 <TextField
                                     label="Date"
                                     type="date"
@@ -161,8 +160,8 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ open, trans
                                     fullWidth
                                     InputLabelProps={{ shrink: true }}
                                 />
-                            </Grid>
-                        </Grid>
+                            </Box>
+                        </Box>
                         
                          <TextField
                             label="Payment Source"

@@ -1,33 +1,17 @@
-import { useState, useEffect } from 'react';
+import type { TransactionDTO } from '../../../models/Transaction';
 import './RecentTransactions.css';
-import TransactionService from '../../../services/TransactionService';
-import { type TransactionDTO } from '../../../models/Transaction';
 
-const RecentTransactions = () => {
-  const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
-  const [loading, setLoading] = useState(true);
+interface RecentTransactionsProps {
+    transactions?: TransactionDTO[]; // Optional to handle if parent doesn't pass it yet, but we will pass it
+}
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const data = await TransactionService.getAllTransactions();
-        // Sort by date descending (newest first)
-        const sortedData = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        setTransactions(sortedData);
-      } catch (error) {
-        console.error("Failed to load transactions", error);
-        // Optionally handle error state
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTransactions();
-  }, []);
-
-  if (loading) {
-      return <div className="recent-transactions-container">Loading transactions...</div>;
-  }
+const RecentTransactions: React.FC<RecentTransactionsProps> = ({ transactions = [] }) => {
+    // Transactions are already sorted descending by date in Dashboard logic or we should sort here? 
+    // Dashboard fetched all. Let's sort here to be safe or assuming parent passed sorted.
+    // Let's sort here to be safe to show most recent.
+    
+    const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const displayTransactions = sortedTransactions.slice(0, 5);
 
   return (
     <div className="recent-transactions-container">
@@ -47,13 +31,13 @@ const RecentTransactions = () => {
             </tr>
           </thead>
           <tbody>
-            {transactions.length === 0 ? (
+            {displayTransactions.length === 0 ? (
                 <tr>
-                    <td colSpan={4} style={{ textAlign: 'center', padding: '20px' }}>No recent transactions found.</td>
+                    <td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>No recent transactions found.</td>
                 </tr>
             ) : (
-                transactions.slice(0, 5).map((transaction, index) => (
-                  <tr key={index}>
+                displayTransactions.map((transaction, index) => (
+                  <tr key={transaction.id || index}>
                     <td>{transaction.date}</td>
                     <td>{transaction.description}</td>
                     <td className="transaction-merchant">{transaction.paymentSource}</td>

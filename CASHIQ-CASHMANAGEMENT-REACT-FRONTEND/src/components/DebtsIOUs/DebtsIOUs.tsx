@@ -12,7 +12,7 @@ import AddDebtModal from './AddDebtModal/AddDebtModal';
 import { toast } from 'react-toastify';
 import { formatCurrency } from '../../utils/CurrencyUtils';
 import { formatReadableDate } from '../../utils/DateUtils';
-import EmptyState from '../Common/EmptyState/EmptyState';
+import EmptyState from '../common/EmptyState/EmptyState';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 

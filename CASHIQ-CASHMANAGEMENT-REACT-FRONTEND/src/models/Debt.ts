@@ -3,19 +3,23 @@
  * OWED_BY_USER: Money the user owes (Liabilities).
  * OWED_TO_USER: Money owed to the user (Assets).
  */
-export enum DebtType {
-    OWED_BY_USER = 'OWED_BY_USER',
-    OWED_TO_USER = 'OWED_TO_USER'
-}
+export const DebtType = {
+    OWED_BY_USER: 'OWED_BY_USER',
+    OWED_TO_USER: 'OWED_TO_USER'
+} as const;
+
+export type DebtType = typeof DebtType[keyof typeof DebtType];
 
 /**
  * Enum representing the status of the debt.
  */
-export enum DebtStatus {
-    ACTIVE = 'ACTIVE',
-    SETTLED = 'SETTLED',
-    PENDING = 'PENDING'
-}
+export const DebtStatus = {
+    ACTIVE: 'ACTIVE',
+    SETTLED: 'SETTLED',
+    PENDING: 'PENDING'
+} as const;
+
+export type DebtStatus = typeof DebtStatus[keyof typeof DebtStatus];
 
 /**
  * Interface representing a Debt or IOU entry.

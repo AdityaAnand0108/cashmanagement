@@ -91,6 +91,7 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 350px)); /* Constrain width and auto-fill */
     gap: 24px;
     justify-content: start; /* Force left alignment */
+    margin-bottom: 48px;
 }
 
 .section-title {
@@ -110,4 +111,11 @@
     gap: 12px;
     font-weight: 500;
     color: #0f172a;
+}
+
+.completed-goals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 16px;
 }

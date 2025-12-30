@@ -16,9 +16,14 @@ import TransactionTable from './TransactionTable/TransactionTable';
 import './Transactions.css';
 import type { SelectChangeEvent } from '@mui/material/Select';
 
+import { Dialog, DialogContent } from '@mui/material';
+import QuickAddTransaction from '../QuickAddTransaction/QuickAddTransaction';
+
 const Transactions: React.FC = () => {
     const [dateRange, setDateRange] = useState('This Month');
     const [category, setCategory] = useState('All Categories');
+    const [openAddModal, setOpenAddModal] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(false);
 
     const handleDateRangeChange = (event: SelectChangeEvent) => {
         setDateRange(event.target.value as string);
@@ -26,6 +31,11 @@ const Transactions: React.FC = () => {
 
     const handleCategoryChange = (event: SelectChangeEvent) => {
         setCategory(event.target.value as string);
+    };
+
+    const handleAddTransactionSuccess = () => {
+        setOpenAddModal(false);
+        setRefreshTrigger(prev => !prev);
     };
 
     return (
@@ -93,13 +103,34 @@ const Transactions: React.FC = () => {
                         variant="contained" 
                         startIcon={<AddIcon />}
                         className="add-transaction-btn"
+                        onClick={() => setOpenAddModal(true)}
                     >
                         Add Transaction
                     </Button>
                 </Box>
 
                 {/* Transactions Table */}
-                <TransactionTable />
+                <TransactionTable refreshTrigger={refreshTrigger} />
+
+                {/* Add Transaction Modal */}
+                <Dialog 
+                    open={openAddModal} 
+                    onClose={() => setOpenAddModal(false)}
+                    fullWidth
+                    maxWidth="sm"
+                    PaperProps={{
+                        style: {
+                            borderRadius: '16px',
+                            background: 'rgba(20, 20, 20, 0.95)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                        }
+                    }}
+                >
+                    <DialogContent sx={{ p: 0 }}>
+                        <QuickAddTransaction onSuccess={handleAddTransactionSuccess} />
+                    </DialogContent>
+                </Dialog>
             </main>
         </div>
     );

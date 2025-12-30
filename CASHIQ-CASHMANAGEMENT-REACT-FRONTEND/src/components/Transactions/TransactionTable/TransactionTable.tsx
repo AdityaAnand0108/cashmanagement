@@ -33,7 +33,11 @@ interface TransactionUI {
   type: "income" | "expense";
 }
 
-const TransactionTable: React.FC = () => {
+interface TransactionTableProps {
+  refreshTrigger?: boolean;
+}
+
+const TransactionTable: React.FC<TransactionTableProps> = ({ refreshTrigger }) => {
   const [transactions, setTransactions] = useState<TransactionUI[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState(0);
@@ -66,7 +70,7 @@ const TransactionTable: React.FC = () => {
     };
 
     fetchTransactions();
-  }, []);
+  }, [refreshTrigger]);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);

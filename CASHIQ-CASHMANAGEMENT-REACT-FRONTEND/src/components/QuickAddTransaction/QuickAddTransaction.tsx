@@ -13,7 +13,11 @@ interface AnalyzedData {
     payment_source: string;
 }
 
-const QuickAddTransaction: React.FC = () => {
+interface QuickAddTransactionProps {
+    onSuccess?: () => void;
+}
+
+const QuickAddTransaction: React.FC<QuickAddTransactionProps> = ({ onSuccess }) => {
     const [description, setDescription] = useState('');
     const [analyzedData, setAnalyzedData] = useState<AnalyzedData | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -79,6 +83,9 @@ const QuickAddTransaction: React.FC = () => {
             toast.success('Transaction logged successfully!');
             setDescription('');
             setAnalyzedData(null);
+            if (onSuccess) {
+                onSuccess();
+            }
         } catch (error) {
             console.error(error); // Log error to fix unused variable
             toast.error('Failed to log transaction. Check backend connection.');

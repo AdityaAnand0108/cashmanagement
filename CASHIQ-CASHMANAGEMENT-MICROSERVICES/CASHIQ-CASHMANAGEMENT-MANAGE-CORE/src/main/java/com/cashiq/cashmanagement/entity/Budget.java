@@ -1,6 +1,7 @@
 package com.cashiq.cashmanagement.entity;
 
 import com.cashiq.cashmanagement.enums.CategoryType;
+import com.cashiq.cashmanagement.enums.PeriodType;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
@@ -30,6 +31,10 @@ public class Budget {
 
     @Column(name = "end_date")
     private LocalDate endDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "period_type")
+    private PeriodType periodType;
 
     @Column(name = "created_at")
     private LocalDate createdAt;

@@ -7,6 +7,7 @@ import com.cashiq.cashmanagement.enums.TransactionType;
 import com.cashiq.cashmanagement.repository.IncomeRepository;
 import com.cashiq.cashmanagement.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,15 +17,17 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class IncomeScheduler {
 
     private final IncomeRepository incomeRepository;
     private final TransactionRepository transactionRepository;
 
-    // Runs every day at 12:00 AM
-    @Scheduled(cron = "0 0 0 * * ?")
+    // Runs every minute
+    @Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void processScheduledIncomes() {
+        log.info("Income Scheduler triggered at: {}", java.time.LocalDateTime.now());
         LocalDate today = LocalDate.now();
         List<Income> allIncomes = incomeRepository.findAll();
 

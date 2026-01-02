@@ -21,7 +21,7 @@ public class BudgetValidator {
             throw new RuntimeException("Limit amount must be greater than zero");
         }
 
-        if ("CUSTOM".equalsIgnoreCase(budgetDTO.getPeriodType())) {
+        if ("CUSTOM".equalsIgnoreCase(String.valueOf(budgetDTO.getPeriodType()))) {
             if (budgetDTO.getStartDate() == null) {
                 throw new RuntimeException("Start date is required for custom period");
             }

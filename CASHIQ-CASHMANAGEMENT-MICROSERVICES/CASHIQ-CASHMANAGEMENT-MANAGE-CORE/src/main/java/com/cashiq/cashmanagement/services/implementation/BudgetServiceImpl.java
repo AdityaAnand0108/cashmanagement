@@ -4,6 +4,28 @@ import com.cashiq.cashmanagement.dto.BudgetDTO;
 import com.cashiq.cashmanagement.entity.Budget;
 import com.cashiq.cashmanagement.entity.Transaction;
 import com.cashiq.cashmanagement.entity.Users;
+import com.cashiq.cashmanagement.enums.PeriodType;
+import com.cashiq.cashmanagement.repository.BudgetRepository;
+import com.cashiq.cashmanagement.repository.TransactionRepository;
+import com.cashiq.cashmanagement.repository.UserRepository;
+import com.cashiq.cashmanagement.services.BudgetService;
+import com.cashiq.cashmanagement.exception.BudgetNotFoundException;
+import com.cashiq.cashmanagement.exception.UserNotFoundException;
+import com.cashiq.cashmanagement.util.StringUtils;
+import com.cashiq.cashmanagement.validation.BudgetValidator;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import com.cashiq.cashmanagement.entity.Budget;
+import com.cashiq.cashmanagement.entity.Transaction;
+import com.cashiq.cashmanagement.entity.Users;
 import com.cashiq.cashmanagement.repository.BudgetRepository;
 import com.cashiq.cashmanagement.repository.TransactionRepository;
 import com.cashiq.cashmanagement.repository.UserRepository;
@@ -69,9 +91,10 @@ public class BudgetServiceImpl implements BudgetService {
         }
 
         budget.setLimitAmount(budgetDTO.getLimitAmount());
+        budget.setPeriodType(budgetDTO.getPeriodType());
 
         LocalDate start, end;
-        if ("CUSTOM".equalsIgnoreCase(budgetDTO.getPeriodType())) {
+        if ("CUSTOM".equalsIgnoreCase(String.valueOf(budgetDTO.getPeriodType()))) {
             start = budgetDTO.getStartDate();
             end = budgetDTO.getEndDate();
         } else {
@@ -110,6 +133,7 @@ public class BudgetServiceImpl implements BudgetService {
         }
 
         budget.setLimitAmount(budgetDTO.getLimitAmount());
+        budget.setPeriodType(budgetDTO.getPeriodType());
         // Potential update to dates if needed
         budgetRepository.save(budget);
         log.info("Budget updated successfully: {}", budgetId);
@@ -164,13 +188,27 @@ public class BudgetServiceImpl implements BudgetService {
             dto.setUserId(userId);
             dto.setCategory(b.getCategory());
             dto.setLimitAmount(b.getLimitAmount());
-            dto.setStartDate(b.getStartDate());
-            dto.setEndDate(b.getEndDate());
+            LocalDate queryStart, queryEnd;
+            // Check period type - if null, assume MONTHLY
+            PeriodType periodType = b.getPeriodType() != null ? b.getPeriodType() : PeriodType.MONTHLY;
+
+            if (PeriodType.CUSTOM == periodType) {
+                queryStart = b.getStartDate();
+                queryEnd = b.getEndDate();
+            } else {
+                // Dynamic calculation for Monthly budgets
+                LocalDate now = LocalDate.now();
+                queryStart = now.with(TemporalAdjusters.firstDayOfMonth());
+                queryEnd = now.with(TemporalAdjusters.lastDayOfMonth());
+            }
+
+            dto.setStartDate(queryStart);
+            dto.setEndDate(queryEnd);
 
             String searchCategory = StringUtils.toTitleCase(b.getCategory().name());
 
             List<Transaction> txs = transactionRepository.findByUserAndCategoryAndDateBetween(
-                    user, searchCategory, b.getStartDate(), b.getEndDate());
+                    user, searchCategory, queryStart, queryEnd);
 
             double spent = txs.stream().mapToDouble(Transaction::getAmount).sum();
             dto.setSpentAmount(spent);

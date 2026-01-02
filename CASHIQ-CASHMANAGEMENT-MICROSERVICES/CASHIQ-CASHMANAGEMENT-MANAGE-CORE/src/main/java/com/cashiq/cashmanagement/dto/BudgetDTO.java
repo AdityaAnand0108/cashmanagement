@@ -1,6 +1,7 @@
 package com.cashiq.cashmanagement.dto;
 
 import com.cashiq.cashmanagement.enums.CategoryType;
+import com.cashiq.cashmanagement.enums.PeriodType;
 import lombok.Data;
 import java.time.LocalDate;
 
@@ -12,9 +13,8 @@ public class BudgetDTO {
     private Double limitAmount;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String periodType; // "MONTHLY" or "CUSTOM"
-    // For response, we might add:
+    private PeriodType periodType;
     private Double spentAmount;
     private Double remainingAmount;
-    private String status; // "On Track", "At Risk" etc.
+    private String status;
 }

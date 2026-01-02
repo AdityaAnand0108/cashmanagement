@@ -121,9 +121,9 @@ const Dashboard: React.FC = () => {
                             accentColor="#f97316" 
                         />
                         <MetricCard 
-                            title="Current Safe-to-Spend Balance" 
-                            amount={formatCurrency(safeToSpend)} 
-                            accentColor="#3b82f6" 
+                            title={safeToSpend < 0 ? "Over Budget By" : "Current Safe-to-Spend Balance"} 
+                            amount={formatCurrency(Math.abs(safeToSpend))} 
+                            accentColor={safeToSpend < 0 ? "#dc2626" : "#3b82f6"} 
                         />
                          <MetricCard 
                             title="Outstanding Debts" 

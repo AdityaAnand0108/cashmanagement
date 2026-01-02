@@ -81,3 +81,38 @@ export const formatReadableDate = (dateStr: string): string => {
         day: 'numeric'
     });
 };
+
+/**
+ * Formats a date string into a relative or friendly format.
+ * - "Today"
+ * - "Yesterday"
+ * - "{N} Days Ago" (up to 7 days)
+ * - "MMM D" (e.g., "Dec 30") for older dates
+ * 
+ * @param dateString - The date string to format (e.g., ISO string or "YYYY-MM-DD")
+ * @returns The formatted date string
+ */
+export const formatRelativeDate = (dateString: string): string => {
+    if (!dateString) return 'N/A';
+
+    const date = new Date(dateString);
+    const now = new Date();
+    
+    // Reset time components for accurate day comparison
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const diffTime = today.getTime() - targetDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+        return 'Today';
+    } else if (diffDays === 1) {
+        return 'Yesterday';
+    } else if (diffDays > 1 && diffDays <= 7) {
+        return `${diffDays} Days Ago`;
+    } else {
+        // Format as "MMM D" (e.g., "Dec 30")
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+};

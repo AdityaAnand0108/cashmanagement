@@ -1,62 +1,77 @@
 .recent-transactions-container {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    font-family: 'Inter', sans-serif;
-    height: 100%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  font-family: "Inter", sans-serif;
+  height: 100%;
 }
 
 .recent-transactions-header {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .recent-transactions-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
 }
 
 .transactions-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 12px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
 }
 
 .transactions-table th {
-    text-align: left;
-    font-size: 0.85rem;
-    color: #6b7280;
-    font-weight: 600;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f3f4f6;
+  text-align: left;
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .transactions-table td {
-    padding: 8px 0;
-    font-size: 0.95rem;
-    color: #374151;
+  padding: 8px 0;
+  font-size: 0.95rem;
+  color: #374151;
 }
 
 .transaction-merchant {
-    font-weight: 500;
-    color: #111827;
+  font-weight: 500;
+  color: #111827;
 }
 
 .category-tag {
-    color: #4b5563;
+  color: #4b5563;
 }
 
 .amount-cell {
-    text-align: right;
-    font-weight: 600;
+  text-align: right;
+  font-weight: 600;
 }
 
 .amount-cell.negative {
-    color: #ef4444;
+  color: #ef4444;
 }
 
 .amount-cell.positive {
-    color: #16a34a;
+  color: #16a34a;
+}
+
+.source-chip {
+  height: 20px !important;
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  color: #1565c0 !important;
+  border-color: transparent !important;
+  background-color: #e3f2fd !important;
+}
+
+.description-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

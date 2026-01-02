@@ -1,4 +1,7 @@
+import { Chip, Avatar } from "@mui/material"; 
 import type { TransactionDTO } from '../../../models/Transaction';
+import { getCategoryIcon, getCategoryColor } from '../../../utils/CategoryIconUtils';
+import { formatRelativeDate } from '../../../utils/DateUtils';
 import './RecentTransactions.css';
 
 interface RecentTransactionsProps {
@@ -24,9 +27,8 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({ transactions = 
           <thead>
             <tr>
               <th>Date</th>
-              <th>Description</th>
-              <th>Merchant</th>
-              <th>Category</th>
+              <th>Transaction Details</th>
+              <th>Source</th>
               <th className="amount-header">Amount</th>
             </tr>
           </thead>
@@ -36,19 +38,46 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({ transactions = 
                     <td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>No recent transactions found.</td>
                 </tr>
             ) : (
-                displayTransactions.map((transaction, index) => (
+                displayTransactions.map((transaction, index) => {
+                    const categoryColor = getCategoryColor(transaction.category);
+                    return (
                   <tr key={transaction.id || index}>
-                    <td>{transaction.date}</td>
-                    <td>{transaction.description}</td>
-                    <td className="transaction-merchant">{transaction.paymentSource}</td>
+                    <td>{formatRelativeDate(transaction.date)}</td>
                     <td>
-                      <span className="category-tag">{transaction.category}</span>
+                        <div className="transaction-details-wrapper">
+                             <div className="transaction-category-row">
+                                <Avatar 
+                                    sx={{ 
+                                        bgcolor: categoryColor.bg, 
+                                        color: categoryColor.text, 
+                                        width: 32, 
+                                        height: 32,
+                                        '& .MuiSvgIcon-root': { fontSize: '1.2rem' }
+                                    }}
+                                >
+                                    {getCategoryIcon(transaction.category)}
+                                </Avatar>
+                                <span className="category-name">{transaction.category}</span>
+                             </div>
+                             <div className="transaction-description-subtext">
+                                {transaction.description}
+                             </div>
+                        </div>
+                    </td>
+                    <td className="transaction-merchant">
+                        <Chip 
+                            label={transaction.paymentSource ? transaction.paymentSource.toUpperCase() : "UNKNOWN"} 
+                            size="small" 
+                            variant="outlined"
+                            className="source-chip"
+                        />
                     </td>
                     <td className={`amount-cell ${transaction.type === 'INCOME' ? 'positive' : 'negative'}`}>
                       {transaction.type === 'INCOME' ? '+' : '-'}₹{Math.abs(transaction.amount).toLocaleString()}
                     </td>
                   </tr>
-                ))
+                );
+            })
             )}
           </tbody>
         </table>

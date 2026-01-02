@@ -3,6 +3,8 @@ import './AtRiskBudgets.css';
 import type { BudgetDTO } from '../../../models/Budget';
 import type { TransactionDTO } from '../../../models/Transaction';
 import { formatCurrency } from '../../../utils/CurrencyUtils';
+import { Avatar } from '@mui/material';
+import { getCategoryIcon, getCategoryColor } from '../../../utils/CategoryIconUtils';
 
 interface AtRiskBudgetsProps {
     budgets: BudgetDTO[];
@@ -66,10 +68,32 @@ const AtRiskBudgets: React.FC<AtRiskBudgetsProps> = ({ budgets, transactions }) 
                     if (percent > 80) color = '#dc2626'; // Red
                     else if (percent > 50) color = '#f59e0b'; // Yellow
 
+                    // Fix: Normalize category to Title Case (e.g. "FOOD" -> "Food") to match utils expectations
+                    const formattedCategory = budget.category 
+                        ? budget.category.charAt(0).toUpperCase() + budget.category.slice(1).toLowerCase()
+                        : '';
+
+                    const categoryColor = getCategoryColor(formattedCategory);
+
                     return (
                         <div key={index} className="budget-item">
                             <div className="budget-info-row">
-                                <span className="budget-name">{budget.category}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Avatar 
+                                        sx={{ 
+                                            bgcolor: categoryColor.bg, 
+                                            color: categoryColor.text, 
+                                            width: 28, 
+                                            height: 28,
+                                            '& .MuiSvgIcon-root': { fontSize: '1rem' }
+                                        }}
+                                    >
+                                        {getCategoryIcon(formattedCategory)}
+                                    </Avatar>
+                                    <span className="budget-name">
+                                        {formattedCategory}
+                                    </span>
+                                </div>
                                 <span className="budget-percent">{percent}%</span>
                             </div>
                             <div className="progress-bar-bg">

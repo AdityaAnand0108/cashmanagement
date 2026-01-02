@@ -56,7 +56,16 @@ const Goals: React.FC<GoalsProps> = ({ goals }) => {
                                     <text x="18" y="20.35" className="percentage">{percentage}%</text>
                                 </svg>
                                 <div className="goal-name">{goal.goalName}</div>
-                                <div className="goal-amounts">{formatCurrency(saved)} / {formatCurrency(target)}</div>
+                                {percentage === 100 ? (
+                                    <button className="redeem-button" onClick={() => alert(`Redeeming goal: ${goal.goalName}`)}>Redeem 🎉</button>
+                                ) : (
+                                    <>
+                                        <div className="goal-amounts">{formatCurrency(saved)} / {formatCurrency(target)}</div>
+                                        {percentage === 0 && (
+                                            <div className="nudge-link" onClick={() => alert(`Adding funds to: ${goal.goalName}`)}>Add ₹500 now?</div>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         );
                     })}

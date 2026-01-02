@@ -43,15 +43,15 @@
 .circular-chart {
     display: block;
     margin: 0 auto;
-    max-width: 120px;
-    max-height: 120px;
+    width: 100px;
+    height: 100px;
     margin-bottom: 12px;
 }
 
 .circle-bg {
     fill: none;
-    stroke: #f3f4f6;
-    stroke-width: 2.5; /* thinner stroke */
+    stroke: #e5e7eb; /* Darker grey for better visibility */
+    stroke-width: 2.5; 
 }
 
 .circle {
@@ -81,4 +81,35 @@
     font-size: 0.8rem;
     color: #6b7280;
     font-weight: 500;
+}
+
+.redeem-button {
+    background-color: #ecfccb;
+    color: #4d7c0f;
+    border: 1px solid #bef264;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.2s;
+}
+
+.redeem-button:hover {
+    background-color: #d9f99d;
+    transform: translateY(-1px);
+}
+
+.nudge-link {
+    font-size: 0.75rem;
+    color: #3b82f6;
+    margin-top: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.nudge-link:hover {
+    text-decoration: underline;
 }

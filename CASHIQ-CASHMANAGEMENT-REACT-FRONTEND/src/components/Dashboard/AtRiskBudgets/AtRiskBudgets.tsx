@@ -23,7 +23,10 @@ const AtRiskBudgets: React.FC<AtRiskBudgetsProps> = ({ budgets, transactions }) 
             const now = new Date();
             const currentMonthTransactions = transactions.filter(t => {
                 const tDate = new Date(t.date);
-                return t.category === budget.category && 
+                // Case-insensitive comparison for category
+                const isCategoryMatch = t.category?.toUpperCase() === budget.category?.toUpperCase();
+                
+                return isCategoryMatch && 
                        t.type === 'EXPENSE' &&
                        tDate.getMonth() === now.getMonth() &&
                        tDate.getFullYear() === now.getFullYear();

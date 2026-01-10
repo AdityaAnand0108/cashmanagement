@@ -13,6 +13,7 @@ import {
   TablePagination,
   CircularProgress,
   TableSortLabel,
+  Avatar,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -23,7 +24,7 @@ import TransactionService from "../../../services/TransactionService";
 import type { TransactionDTO } from "../../../models/Transaction";
 import BudgetService from "../../../services/BudgetService";
 import type { BudgetDTO } from "../../../models/Budget";
-import { getCategoryIcon } from "../../../utils/CategoryIconUtils";
+import { getCategoryIcon, getCategoryColor } from "../../../utils/CategoryIconUtils";
 import { extractMerchant } from "../../../utils/SmartParser";
 import ConfirmationModal from "../../common/ConfirmationModal/ConfirmationModal";
 import { toast } from "react-toastify";
@@ -289,9 +290,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                                             height: '20px', 
                                             fontSize: '0.7rem', 
                                             fontWeight: '600',
-                                            color: '#64748b',
-                                            borderColor: '#e2e8f0',
-                                            backgroundColor: '#f8fafc'
+                                            color: '#1565c0',
+                                            borderColor: 'transparent',
+                                            backgroundColor: '#e3f2fd'
                                         }} 
                                     />
                                 </Box>
@@ -299,10 +300,20 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                         </Box>
                       </TableCell>
                       <TableCell align="left">
-                        <Box className="category-chip" mb={0.5}>
-                          {row.category}
-                          {row.categoryIcon}
-                        </Box>
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Avatar
+                                sx={{
+                                    bgcolor: getCategoryColor(row.category).bg,
+                                    color: getCategoryColor(row.category).text,
+                                    width: 28,
+                                    height: 28,
+                                    '& .MuiSvgIcon-root': { fontSize: '1rem' }
+                                }}
+                            >
+                                {row.categoryIcon}
+                            </Avatar>
+                            <Typography variant="body2">{row.category}</Typography>
+                          </Box>
                         {(() => {
                            // Find budget for this category
                            const budget = budgets.find(b => b.category === row.category);
@@ -310,7 +321,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                                const spent = budget.spentAmount || 0;
                                const percent = Math.min(Math.round((spent / budget.limitAmount) * 100), 100);
                                return (
-                                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5, ml: 4.5 }}>
                                        {percent}% of {row.category} Budget
                                    </Typography>
                                );

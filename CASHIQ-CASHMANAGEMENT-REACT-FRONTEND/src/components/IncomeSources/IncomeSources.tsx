@@ -113,6 +113,40 @@ const IncomeSources: React.FC = () => {
     // Calculate total income
     const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
 
+    // Calculate growth (placeholder logic assuming comparison to previous month - requires history we may not have fully)
+    // Ideally we'd sum up *last month's* transactions vs *this month's*. 
+    // Using recentTransactions:
+    const calculateGrowth = () => {
+        if (!recentTransactions.length) return 0;
+        
+        const now = new Date();
+        const thisMonth = now.getMonth();
+        const thisYear = now.getFullYear();
+        
+        const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lastMonth = lastMonthDate.getMonth();
+        const lastMonthYear = lastMonthDate.getFullYear();
+
+        const thisMonthIncome = recentTransactions
+            .filter(tx => {
+                const d = new Date(tx.date!);
+                return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+            })
+            .reduce((sum, tx) => sum + tx.amount, 0);
+
+        const lastMonthIncome = recentTransactions
+            .filter(tx => {
+                const d = new Date(tx.date!);
+                return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
+            })
+            .reduce((sum, tx) => sum + tx.amount, 0);
+
+        if (lastMonthIncome === 0) return thisMonthIncome > 0 ? 100 : 0;
+        return ((thisMonthIncome - lastMonthIncome) / lastMonthIncome) * 100;
+    };
+    
+    const growth = calculateGrowth();
+
     return (
         <div className="income-sources-container">
             <Sidebar />
@@ -123,7 +157,19 @@ const IncomeSources: React.FC = () => {
                     <div className="total-income-banner">
                         <div className="banner-content">
                             <h3>Total Monthly Income</h3>
-                            <div className="total-amount">{formatCurrency(totalIncome)}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div className="total-amount">{formatCurrency(totalIncome)}</div>
+                                <Chip 
+                                    label={`${growth >= 0 ? '+' : ''}${growth.toFixed(0)}%`}
+                                    size="small"
+                                    style={{ 
+                                        backgroundColor: growth >= 0 ? '#dcfce7' : '#fee2e2', 
+                                        color: growth >= 0 ? '#166534' : '#991b1b',
+                                        fontWeight: 'bold',
+                                        height: '24px'
+                                    }}
+                                />
+                            </div>
                             <p className="banner-subtext">Based on {incomes.length} active sources.</p>
                         </div>
                         <div className="banner-chart">

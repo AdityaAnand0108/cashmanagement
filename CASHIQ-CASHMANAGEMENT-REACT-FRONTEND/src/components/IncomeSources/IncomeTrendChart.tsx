@@ -9,55 +9,96 @@ interface IncomeTrendChartProps {
 const IncomeTrendChart: React.FC<IncomeTrendChartProps> = ({ transactions }) => {
     
     const data = useMemo(() => {
-        // Group transactions by month
-        // Assuming transactions usually come in "YYYY-MM-DD" or similar format
-        // We'll map them to a localized month string
-        
-        const monthlyData: Record<string, number> = {};
-        // Initialize last 12 months with 0 to ensure continuous line
+        const monthlyData: Record<string, { value: number; sources: Set<string>; date: Date }> = {};
         const today = new Date();
-        for (let i = 11; i >= 0; i--) {
-            const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-            const monthKey = d.toLocaleString('default', { month: 'short' });
-            monthlyData[monthKey] = 0; 
+        
+        // Helper to get month key
+        const getMonthKey = (date: Date) => date.toLocaleString('default', { month: 'short' });
+
+        // Process transactions
+        if (transactions.length === 0) {
+            // Default to last 6 months empty if no data
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                monthlyData[getMonthKey(d)] = { value: 0, sources: new Set(), date: d };
+            }
+        } else {
+             // Find the earliest date in transactions
+             // Filter out future transactions just in case
+             const validTx = transactions.filter(tx => tx.date && new Date(tx.date) <= today);
+             
+             if (validTx.length === 0) {
+                 // Fallback if all are future or invalid
+                 for (let i = 5; i >= 0; i--) {
+                    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                    monthlyData[getMonthKey(d)] = { value: 0, sources: new Set(), date: d };
+                }
+             } else {
+                 const dates = validTx.map(tx => new Date(tx.date!).getTime());
+                 const minDate = new Date(Math.min(...dates));
+                 
+                 // Determine start date: 
+                 // If minDate is within last 3 months, show at least last 6 months for context?
+                 // Or just show from minDate (clamped to start of that year) to now?
+                 // User wants "If just started in Jan, do not show previous 12 months".
+                 // Let's show from the earlier of (minDate) or (Jan 1st of current year)
+                 // But ensuring at least a few months for a chart look.
+                 
+                 const startDate = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+                 // If start date is very recent (this month), go back a bit to show "growth" or lack thereof
+                 if (today.getMonth() === startDate.getMonth() && today.getFullYear() === startDate.getFullYear()) {
+                     startDate.setMonth(startDate.getMonth() - 2); 
+                 }
+                 
+                 // Generate months from startDate to today + 1 month (to include Feb/next month)
+                 const targetEnd = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                 
+                 const current = new Date(startDate);
+                 while (current <= targetEnd) {
+                     monthlyData[getMonthKey(current)] = { value: 0, sources: new Set(), date: new Date(current) };
+                     current.setMonth(current.getMonth() + 1);
+                 }
+             }
+
+             // Populate data
+             validTx.forEach(tx => {
+                if (!tx.date) return;
+                const date = new Date(tx.date);
+                const monthKey = getMonthKey(date);
+                
+                // Only track if it's in our generated range (or should we expand range?)
+                // For simplicity, we only mapped from minDate. 
+                // Any transaction older than minDate shouldn't exist because we found minDate.
+                // But we constructed the range based on minDate.
+                
+                if (monthlyData[monthKey]) {
+                    monthlyData[monthKey].value += tx.amount;
+                    if (tx.paymentSource) monthlyData[monthKey].sources.add(tx.paymentSource);
+                }
+             });
         }
 
-        transactions.forEach(tx => {
-            if (!tx.date) return;
-            const date = new Date(tx.date);
-            const monthKey = date.toLocaleString('default', { month: 'short' });
-            
-            // Only add if it falls within our range (already initialized keys)
-            // Or just accum all and filter later? 
-            // Simplest: Just sum up everything. If distinct years matter, we should use 'MMM YY' or verify year.
-            // For now, let's assume "Monthly Income" context implies implied yearly cycle or we just show what we have.
-            // But to match the "green line go up" intent for *trends*, we usually want chronological order.
-
-            // Better approach: Check if date is within last 12 months? 
-            // Let's stick to simple "Month" grouping for now, assuming the user filters for "This Year" or similar elsewhere?
-            // Actually, let's just use the month of the transaction.
-            
-            if (monthlyData[monthKey] !== undefined) {
-                 monthlyData[monthKey] += tx.amount;
-            }
-        });
-
-        // Convert to array
-        return Object.entries(monthlyData).map(([name, value]) => ({
+        return Object.entries(monthlyData).map(([name, data]) => ({
             name,
-            value
+            value: data.value,
+            sources: Array.from(data.sources).join(', ')
         }));
     }, [transactions]);
 
+    const formatYAxis = (value: number) => {
+        if (value >= 100000) return `${(value / 100000).toFixed(1).replace(/\.0$/, '')}L`;
+        if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
+        return value.toString();
+    };
 
     return (
         <div style={{ width: '100%', height: '100%', minHeight: '100px' }}>
             <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data}>
+                <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#4caf50" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="#4caf50" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#22c55e" stopOpacity={0.4}/>
+                            <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
                         </linearGradient>
                     </defs>
                     <XAxis 
@@ -72,21 +113,22 @@ const IncomeTrendChart: React.FC<IncomeTrendChartProps> = ({ transactions }) => 
                         hide={false}
                         axisLine={false}
                         tickLine={false}
+                        width={30}
                         tick={{fontSize: 10, fill: '#666'}}
-                        tickFormatter={(value: number) => `₹${value.toLocaleString()}`}
+                        tickFormatter={formatYAxis}
                     />
                     <Tooltip 
-                        formatter={(value: number | undefined) => [
+                        formatter={(value: number | undefined, _name: any, props: any) => [
                             value !== undefined ? `₹${value.toLocaleString()}` : 'N/A', 
-                            'Income'
+                            props.payload.sources ? `${props.payload.sources}` : 'Income'
                         ] as [string, string]}
-                        labelStyle={{ color: '#333' }}
-                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                        labelStyle={{ color: '#333', fontWeight: 'bold' }}
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
                     />
                     <Area 
                         type="monotone" 
                         dataKey="value" 
-                        stroke="#4caf50" 
+                        stroke="#22c55e" 
                         strokeWidth={2}
                         fillOpacity={1} 
                         fill="url(#colorIncome)" 
@@ -96,5 +138,6 @@ const IncomeTrendChart: React.FC<IncomeTrendChartProps> = ({ transactions }) => 
         </div>
     );
 };
+
 
 export default IncomeTrendChart;

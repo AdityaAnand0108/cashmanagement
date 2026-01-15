@@ -30,9 +30,8 @@
   border-left: 6px solid #22c55e;
   margin-bottom: 24px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   min-height: 120px;
 }
 
@@ -43,7 +42,7 @@
 .banner-chart {
   flex-grow: 1;
   height: 100px;
-  max-width: 600px; /* Prevent it from stretching too wide on huge screens */
+  max-width: 90%; /* Allow full stretch */
 }
 
 .banner-content h3 {

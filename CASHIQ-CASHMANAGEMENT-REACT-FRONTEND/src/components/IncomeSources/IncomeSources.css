@@ -21,6 +21,22 @@
   margin: 0 auto;
 }
 
+.income-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+}
+
+/* Scrollable Content Area */
+.content-scrollable {
+  padding: 32px;
+  flex-grow: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
 /* Total Income Banner */
 .total-income-banner {
   background-color: #ffffff;

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import type { TransactionDTO } from '../../models/Transaction';
+import type { TransactionDTO } from '../../../models/Transaction';
+import './IncomeTrendChart.css';
 
 interface IncomeTrendChartProps {
     transactions: TransactionDTO[];
@@ -38,12 +39,6 @@ const IncomeTrendChart: React.FC<IncomeTrendChartProps> = ({ transactions }) => 
                  const minDate = new Date(Math.min(...dates));
                  
                  // Determine start date: 
-                 // If minDate is within last 3 months, show at least last 6 months for context?
-                 // Or just show from minDate (clamped to start of that year) to now?
-                 // User wants "If just started in Jan, do not show previous 12 months".
-                 // Let's show from the earlier of (minDate) or (Jan 1st of current year)
-                 // But ensuring at least a few months for a chart look.
-                 
                  const startDate = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
                  // If start date is very recent (this month), go back a bit to show "growth" or lack thereof
                  if (today.getMonth() === startDate.getMonth() && today.getFullYear() === startDate.getFullYear()) {
@@ -66,11 +61,6 @@ const IncomeTrendChart: React.FC<IncomeTrendChartProps> = ({ transactions }) => 
                 const date = new Date(tx.date);
                 const monthKey = getMonthKey(date);
                 
-                // Only track if it's in our generated range (or should we expand range?)
-                // For simplicity, we only mapped from minDate. 
-                // Any transaction older than minDate shouldn't exist because we found minDate.
-                // But we constructed the range based on minDate.
-                
                 if (monthlyData[monthKey]) {
                     monthlyData[monthKey].value += tx.amount;
                     if (tx.paymentSource) monthlyData[monthKey].sources.add(tx.paymentSource);
@@ -92,7 +82,7 @@ const IncomeTrendChart: React.FC<IncomeTrendChartProps> = ({ transactions }) => 
     };
 
     return (
-        <div style={{ width: '100%', height: '100%', minHeight: '100px' }}>
+        <div className="income-trend-chart-container">
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                     <defs>

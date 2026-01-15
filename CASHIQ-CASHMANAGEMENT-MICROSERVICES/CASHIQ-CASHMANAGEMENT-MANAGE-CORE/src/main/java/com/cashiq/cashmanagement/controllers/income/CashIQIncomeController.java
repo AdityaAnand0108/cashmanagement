@@ -1,7 +1,7 @@
 package com.cashiq.cashmanagement.controllers.income;
 
 import com.cashiq.cashmanagement.dto.IncomeDTO;
-import com.cashiq.cashmanagement.services.IncomeService;
+import com.cashiq.cashmanagement.services.income.CashIQIncomeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class CashIQIncomeController {
 
-    private final IncomeService incomeService;
+    private final CashIQIncomeService incomeService;
 
     /**
      * @method - addIncome

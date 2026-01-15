@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.services;
+package com.cashiq.cashmanagement.services.income;
 
 import com.cashiq.cashmanagement.dto.IncomeDTO;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import java.util.List;
  * @version - 1.0
  * @description - This interface is used to handle income-related operations.
  */
-public interface IncomeService {
+public interface CashIQIncomeService {
 
     /**
      * @method - addIncome

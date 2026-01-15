@@ -1,7 +1,7 @@
 package com.cashiq.cashmanagement.controllers.expense;
 
 import com.cashiq.cashmanagement.dto.ExpenseAnalysisResponseDTO;
-import com.cashiq.cashmanagement.services.AiCategorizationService;
+import com.cashiq.cashmanagement.services.expense.CashIQExpenseAnalysisAIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CashIQExpenseAnalysisController {
 
-    private final AiCategorizationService aiCategorizationService;
+    private final CashIQExpenseAnalysisAIService aiCategorizationService;
 
     @Autowired
-    public CashIQExpenseAnalysisController(AiCategorizationService aiCategorizationService) {
+    public CashIQExpenseAnalysisController(CashIQExpenseAnalysisAIService aiCategorizationService) {
         this.aiCategorizationService = aiCategorizationService;
     }
 

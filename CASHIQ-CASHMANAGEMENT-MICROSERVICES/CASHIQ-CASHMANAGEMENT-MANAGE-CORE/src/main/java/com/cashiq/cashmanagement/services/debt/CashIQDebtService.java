@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.services;
+package com.cashiq.cashmanagement.services.debt;
 
 import com.cashiq.cashmanagement.dto.DebtEntryDTO;
 import com.cashiq.cashmanagement.dto.DebtSummaryDTO;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Service interface for managing Debt and IOU logic.
  */
-public interface DebtService {
+public interface CashIQDebtService {
 
     /**
      * Retrieves all debts for a given user.

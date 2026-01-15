@@ -2,7 +2,7 @@ package com.cashiq.cashmanagement.controllers.debt;
 
 import com.cashiq.cashmanagement.dto.DebtEntryDTO;
 import com.cashiq.cashmanagement.dto.DebtSummaryDTO;
-import com.cashiq.cashmanagement.services.DebtService;
+import com.cashiq.cashmanagement.services.debt.CashIQDebtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class CashIQDebtController {
 
     @Autowired
-    private DebtService debtService;
+    private CashIQDebtService debtService;
 
     /**
      * Get summary of debts (Total Owed By vs Owed To) for a user.

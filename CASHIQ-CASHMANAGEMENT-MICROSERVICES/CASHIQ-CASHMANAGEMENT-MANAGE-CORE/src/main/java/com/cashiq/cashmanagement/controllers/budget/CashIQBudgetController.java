@@ -1,7 +1,7 @@
 package com.cashiq.cashmanagement.controllers.budget;
 
 import com.cashiq.cashmanagement.dto.BudgetDTO;
-import com.cashiq.cashmanagement.services.BudgetService;
+import com.cashiq.cashmanagement.services.budget.CashIQBudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CashIQBudgetController {
 
     @Autowired
-    private BudgetService budgetService;
+    private CashIQBudgetService budgetService;
 
     /**
      * Adds a new budget for the specified user.

@@ -1,7 +1,6 @@
-package com.cashiq.cashmanagement.services.implementation;
+package com.cashiq.cashmanagement.services.expense;
 
 import com.cashiq.cashmanagement.dto.ExpenseAnalysisResponseDTO;
-import com.cashiq.cashmanagement.services.AiCategorizationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,7 +10,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class AiCategorizationServiceImpl implements AiCategorizationService {
+public class CashIQExpenseAnalysisAIServiceImpl implements CashIQExpenseAnalysisAIService {
 
     // The URL of your running Python Server
     private final String PYTHON_API_URL = "http://127.0.0.1:5000/predict";

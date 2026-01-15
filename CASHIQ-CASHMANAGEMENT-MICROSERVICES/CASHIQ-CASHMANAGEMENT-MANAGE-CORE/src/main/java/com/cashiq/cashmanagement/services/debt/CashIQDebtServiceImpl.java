@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.services.implementation;
+package com.cashiq.cashmanagement.services.debt;
 
 import com.cashiq.cashmanagement.dto.DebtEntryDTO;
 import com.cashiq.cashmanagement.dto.DebtSummaryDTO;
@@ -9,7 +9,6 @@ import com.cashiq.cashmanagement.enums.DebtType;
 import com.cashiq.cashmanagement.exception.ResourceNotFoundException;
 import com.cashiq.cashmanagement.repository.DebtRepository;
 import com.cashiq.cashmanagement.repository.UserRepository;
-import com.cashiq.cashmanagement.services.DebtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
  * Implementation of the DebtService.
  */
 @Service
-public class DebtServiceImpl implements DebtService {
+public class CashIQDebtServiceImpl implements CashIQDebtService {
 
     @Autowired
     private DebtRepository debtRepository;

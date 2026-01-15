@@ -1,10 +1,11 @@
-package com.cashiq.cashmanagement.services;
+package com.cashiq.cashmanagement.services.savings;
 
 import com.cashiq.cashmanagement.dto.SavingGoalDTO;
 import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 
-public interface SavingGoalService {
+public interface CashIQSavingGoalService {
 
     ResponseEntity<?> createGoal(Long userId, SavingGoalDTO goalDTO);
 

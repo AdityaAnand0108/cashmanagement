@@ -1,8 +1,8 @@
-package com.cashiq.cashmanagement.services;
+package com.cashiq.cashmanagement.services.expense;
 
 import com.cashiq.cashmanagement.dto.ExpenseAnalysisResponseDTO;
 
-public interface AiCategorizationService {
+public interface CashIQExpenseAnalysisAIService {
 
     ExpenseAnalysisResponseDTO analyzeExpense(String userDescription);
 }

@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.services.implementation;
+package com.cashiq.cashmanagement.services.savings;
 
 import com.cashiq.cashmanagement.dto.SavingGoalDTO;
 import com.cashiq.cashmanagement.entity.SavingGoal;
@@ -7,7 +7,6 @@ import com.cashiq.cashmanagement.exception.ResourceNotFoundException;
 import com.cashiq.cashmanagement.exception.UserNotFoundException;
 import com.cashiq.cashmanagement.repository.SavingGoalRepository;
 import com.cashiq.cashmanagement.repository.UserRepository;
-import com.cashiq.cashmanagement.services.SavingGoalService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class SavingGoalServiceImpl implements SavingGoalService {
+public class CashIQSavingGoalServiceImpl implements CashIQSavingGoalService {
 
     @Autowired
     private SavingGoalRepository savingGoalRepository;

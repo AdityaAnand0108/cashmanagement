@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.services.implementation;
+package com.cashiq.cashmanagement.services.budget;
 
 import com.cashiq.cashmanagement.dto.BudgetDTO;
 import com.cashiq.cashmanagement.entity.Budget;
@@ -8,28 +8,6 @@ import com.cashiq.cashmanagement.enums.PeriodType;
 import com.cashiq.cashmanagement.repository.BudgetRepository;
 import com.cashiq.cashmanagement.repository.TransactionRepository;
 import com.cashiq.cashmanagement.repository.UserRepository;
-import com.cashiq.cashmanagement.services.BudgetService;
-import com.cashiq.cashmanagement.exception.BudgetNotFoundException;
-import com.cashiq.cashmanagement.exception.UserNotFoundException;
-import com.cashiq.cashmanagement.util.StringUtils;
-import com.cashiq.cashmanagement.validation.BudgetValidator;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import com.cashiq.cashmanagement.entity.Budget;
-import com.cashiq.cashmanagement.entity.Transaction;
-import com.cashiq.cashmanagement.entity.Users;
-import com.cashiq.cashmanagement.repository.BudgetRepository;
-import com.cashiq.cashmanagement.repository.TransactionRepository;
-import com.cashiq.cashmanagement.repository.UserRepository;
-import com.cashiq.cashmanagement.services.BudgetService;
 import com.cashiq.cashmanagement.exception.BudgetNotFoundException;
 import com.cashiq.cashmanagement.exception.UserNotFoundException;
 import com.cashiq.cashmanagement.util.StringUtils;
@@ -47,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class BudgetServiceImpl implements BudgetService {
+public class CashIQBudgetServiceImpl implements CashIQBudgetService {
 
     @Autowired
     private BudgetRepository budgetRepository;

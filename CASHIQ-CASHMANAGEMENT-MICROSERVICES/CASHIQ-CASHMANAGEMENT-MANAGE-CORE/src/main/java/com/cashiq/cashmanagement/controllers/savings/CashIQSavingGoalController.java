@@ -1,7 +1,7 @@
 package com.cashiq.cashmanagement.controllers.savings;
 
 import com.cashiq.cashmanagement.dto.SavingGoalDTO;
-import com.cashiq.cashmanagement.services.SavingGoalService;
+import com.cashiq.cashmanagement.services.savings.CashIQSavingGoalService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ import java.util.List;
 public class CashIQSavingGoalController {
 
     @Autowired
-    private SavingGoalService savingGoalService;
+    private CashIQSavingGoalService savingGoalService;
 
     /**
      * @method - createGoal

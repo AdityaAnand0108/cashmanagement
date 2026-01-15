@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.controllers;
+package com.cashiq.cashmanagement.controllers.debt;
 
 import com.cashiq.cashmanagement.dto.DebtEntryDTO;
 import com.cashiq.cashmanagement.dto.DebtSummaryDTO;
@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/debts")
 @CrossOrigin(origins = "*", maxAge = 3600)
-public class DebtController {
+public class CashIQDebtController {
 
     @Autowired
     private DebtService debtService;

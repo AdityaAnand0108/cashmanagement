@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.controllers;
+package com.cashiq.cashmanagement.controllers.budget;
 
 import com.cashiq.cashmanagement.dto.BudgetDTO;
 import com.cashiq.cashmanagement.services.BudgetService;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/budget")
 @CrossOrigin(origins = "http://localhost:3000") // Adjust for frontend port
 @Slf4j
-public class BudgetController {
+public class CashIQBudgetController {
 
     @Autowired
     private BudgetService budgetService;

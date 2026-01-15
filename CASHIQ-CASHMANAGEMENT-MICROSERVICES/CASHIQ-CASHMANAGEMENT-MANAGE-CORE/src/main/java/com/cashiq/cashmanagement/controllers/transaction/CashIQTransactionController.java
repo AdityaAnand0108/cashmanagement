@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.controllers;
+package com.cashiq.cashmanagement.controllers.transaction;
 
 import com.cashiq.cashmanagement.dto.TransactionDTO;
 import com.cashiq.cashmanagement.services.TransactionService;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 @Slf4j
-public class TransactionController {
+public class CashIQTransactionController {
 
     private final TransactionService transactionService;
 

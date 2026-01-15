@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.controllers;
+package com.cashiq.cashmanagement.controllers.expense;
 
 import com.cashiq.cashmanagement.dto.ExpenseAnalysisResponseDTO;
 import com.cashiq.cashmanagement.services.AiCategorizationService;
@@ -16,12 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/expenses")
 @CrossOrigin(origins = "http://localhost:5173") // Adjust port if needed, React usually runs on 5173 or 3000
 @Slf4j
-public class ExpenseAnalysisController {
+public class CashIQExpenseAnalysisController {
 
     private final AiCategorizationService aiCategorizationService;
 
     @Autowired
-    public ExpenseAnalysisController(AiCategorizationService aiCategorizationService) {
+    public CashIQExpenseAnalysisController(AiCategorizationService aiCategorizationService) {
         this.aiCategorizationService = aiCategorizationService;
     }
 

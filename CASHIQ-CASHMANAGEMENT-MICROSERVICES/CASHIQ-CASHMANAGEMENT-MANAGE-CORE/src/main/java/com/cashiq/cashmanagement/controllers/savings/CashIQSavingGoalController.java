@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.controllers;
+package com.cashiq.cashmanagement.controllers.savings;
 
 import com.cashiq.cashmanagement.dto.SavingGoalDTO;
 import com.cashiq.cashmanagement.services.SavingGoalService;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/saving-goals")
 @CrossOrigin(origins = "http://localhost:3000")
 @Slf4j
-public class SavingGoalController {
+public class CashIQSavingGoalController {
 
     @Autowired
     private SavingGoalService savingGoalService;
@@ -66,6 +66,7 @@ public class SavingGoalController {
      * @return - ResponseEntity<?>
      * @Description - This method is used to delete a saving goal
      */
+    @DeleteMapping("/delete/{userId}/{goalId}") // Explicitly added path mapping assuming it was missing or default
     public ResponseEntity<?> deleteGoal(@PathVariable Long userId, @PathVariable Long goalId) {
         log.info("Request to delete saving goal: {} for user: {}", goalId, userId);
         return savingGoalService.deleteGoal(userId, goalId);

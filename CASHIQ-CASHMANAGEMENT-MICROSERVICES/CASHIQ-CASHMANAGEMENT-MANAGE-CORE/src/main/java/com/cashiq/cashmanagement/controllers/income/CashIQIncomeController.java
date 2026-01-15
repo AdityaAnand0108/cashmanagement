@@ -1,4 +1,4 @@
-package com.cashiq.cashmanagement.controllers;
+package com.cashiq.cashmanagement.controllers.income;
 
 import com.cashiq.cashmanagement.dto.IncomeDTO;
 import com.cashiq.cashmanagement.services.IncomeService;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 @Slf4j
-public class IncomeController {
+public class CashIQIncomeController {
 
     private final IncomeService incomeService;
 

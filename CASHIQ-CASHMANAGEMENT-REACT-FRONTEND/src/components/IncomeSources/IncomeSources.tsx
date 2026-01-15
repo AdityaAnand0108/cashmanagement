@@ -18,6 +18,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import IncomeTrendChart from './IncomeTrendChart';
 
 const IncomeSources: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -118,13 +119,15 @@ const IncomeSources: React.FC = () => {
             <main className="income-main">
                 <div className="content-scrollable">
 
-
                     {/* Total Income Banner */}
                     <div className="total-income-banner">
                         <div className="banner-content">
                             <h3>Total Monthly Income</h3>
                             <div className="total-amount">{formatCurrency(totalIncome)}</div>
                             <p className="banner-subtext">Based on {incomes.length} active sources.</p>
+                        </div>
+                        <div className="banner-chart">
+                            <IncomeTrendChart transactions={recentTransactions} />
                         </div>
                     </div>
 

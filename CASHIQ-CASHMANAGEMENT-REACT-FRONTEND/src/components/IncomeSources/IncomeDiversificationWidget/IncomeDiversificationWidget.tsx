@@ -51,7 +51,7 @@ const IncomeDiversificationWidget: React.FC<
                   dataKey="value"
                   stroke="none"
                 >
-                  {data.map((entry, index) => (
+                  {data.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -59,7 +59,7 @@ const IncomeDiversificationWidget: React.FC<
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => `₹${value.toLocaleString()}`}
+                  formatter={(value: number | undefined) => value !== undefined ? `₹${value.toLocaleString()}` : ''}
                   contentStyle={{
                     borderRadius: "8px",
                     border: "none",

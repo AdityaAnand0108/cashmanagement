@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Typography } from '@mui/material';
 import Sidebar from '../Sidebar/Sidebar';
 import './IncomeSources.css';
@@ -11,14 +11,18 @@ import TransactionService from '../../services/TransactionService';
 import type { TransactionDTO } from '../../models/Transaction';
 import { formatCurrency } from '../../utils/CurrencyUtils';
 import { calculateSmartNextPayDay, daysAgo, formatReadableDate } from '../../utils/DateUtils';
-import { Chip } from '@mui/material'; // Importing Chip for the "Last paid" tag
+import { Chip, Menu, MenuItem, Button } from '@mui/material'; // Importing Chip for the "Last paid" tag
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 // Icons
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import LaptopMacIcon from '@mui/icons-material/LaptopMac';
 import IncomeTrendChart from './IncomeTrendChart';
+import { PaymentFrequency } from '../../models/PaymentFrequency';
 
 const IncomeSources: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -30,6 +34,11 @@ const IncomeSources: React.FC = () => {
     // Delete Modal State
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [incomeToDelete, setIncomeToDelete] = useState<number | null>(null);
+
+    // Filters State
+    const [categoryFilter, setCategoryFilter] = useState<'ALL' | 'FIXED' | 'VARIABLE'>('ALL');
+    const [frequencyFilter, setFrequencyFilter] = useState<PaymentFrequency | 'ALL'>('ALL');
+    const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
 
     const fetchIncomes = useCallback(async () => {
         try {
@@ -147,6 +156,41 @@ const IncomeSources: React.FC = () => {
     
     const growth = calculateGrowth();
 
+    // Filtering Logic
+    const handleFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setFilterAnchorEl(event.currentTarget);
+    };
+
+    const handleFilterClose = (frequency: PaymentFrequency | 'ALL' | null) => {
+        setFilterAnchorEl(null);
+        if (frequency) {
+            setFrequencyFilter(frequency);
+        }
+    };
+
+    const filteredTransactions = useMemo(() => {
+        // Create a map for quick access to income details by name (Assuming paymentSource matches income name)
+        const incomeMap = new Map(incomes.map(inc => [inc.name, inc]));
+
+        return recentTransactions.filter(tx => {
+            const income = incomeMap.get(tx.paymentSource);
+            
+            // Category Filter
+            if (categoryFilter === 'FIXED') {
+                if (!income || !income.isFixed) return false;
+            } else if (categoryFilter === 'VARIABLE') { // Freelance/Variable
+                if (!income || income.isFixed) return false;
+            }
+
+            // Frequency Filter
+            if (frequencyFilter !== 'ALL') {
+                if (!income || income.frequency !== frequencyFilter) return false;
+            }
+
+            return true;
+        });
+    }, [recentTransactions, incomes, categoryFilter, frequencyFilter]);
+
     return (
         <div className="income-sources-container">
             <Sidebar />
@@ -157,17 +201,12 @@ const IncomeSources: React.FC = () => {
                     <div className="total-income-banner">
                         <div className="banner-content">
                             <h3>Total Monthly Income</h3>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div className="growth-indicator-wrapper">
                                 <div className="total-amount">{formatCurrency(totalIncome)}</div>
                                 <Chip 
                                     label={`${growth >= 0 ? '+' : ''}${growth.toFixed(0)}%`}
                                     size="small"
-                                    style={{ 
-                                        backgroundColor: growth >= 0 ? '#dcfce7' : '#fee2e2', 
-                                        color: growth >= 0 ? '#166534' : '#991b1b',
-                                        fontWeight: 'bold',
-                                        height: '24px'
-                                    }}
+                                    className={growth >= 0 ? 'growth-chip-positive' : 'growth-chip-negative'}
                                 />
                             </div>
                             <p className="banner-subtext">Based on {incomes.length} active sources.</p>
@@ -178,7 +217,7 @@ const IncomeSources: React.FC = () => {
                     </div>
 
                     {/* Action Bar */}
-                    <div className="action-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <div className="action-bar">
                         <Typography variant="h5" fontWeight="bold">Your Income Sources</Typography>
                         <button className="add-source-btn" onClick={handleAddClick}>
                             <AddIcon fontSize="small" /> Add New Income Source
@@ -218,13 +257,13 @@ const IncomeSources: React.FC = () => {
                                         <div className="source-next-date">
                                             Next payday: {formatReadableDate(calculateSmartNextPayDay(source.nextPayDay, source.frequency))}
                                             {daysAgo(source.nextPayDay) > 0 && source.frequency !== 'ONE_TIME' && (
-                                                <div style={{ marginTop: '0.25rem' }}>
+                                                <div className="last-paid-wrapper">
                                                     <Chip 
                                                         label={`Last paid: ${daysAgo(source.nextPayDay)} days ago`} 
                                                         size="small" 
                                                         color="warning" 
                                                         variant="outlined"
-                                                        style={{ fontSize: '0.75rem', height: '20px' }}
+                                                        className="last-paid-chip"
                                                     />
                                                 </div>
                                             )}
@@ -243,7 +282,46 @@ const IncomeSources: React.FC = () => {
 
                     {/* Recent Transactions Table */}
                     <div className="recent-income-section">
-                        <h3>Recent Income Transactions</h3>
+                        <div className="recent-income-header">
+                            <h3>Recent Income Transactions</h3>
+                            <div className="income-filters">
+                                <span className="filter-label">Category:</span>
+                                <Chip 
+                                    label="Fixed" 
+                                    onClick={() => setCategoryFilter(categoryFilter === 'FIXED' ? 'ALL' : 'FIXED')}
+                                    icon={<BusinessCenterIcon className="filter-icon-fixed" />}
+                                    className={categoryFilter === 'FIXED' ? 'filter-chip-fixed-active' : 'filter-chip-fixed'}
+                                />
+                                <Chip 
+                                    label="Freelance" 
+                                    onClick={() => setCategoryFilter(categoryFilter === 'VARIABLE' ? 'ALL' : 'VARIABLE')}
+                                    icon={<LaptopMacIcon className="filter-icon-variable" />}
+                                    className={categoryFilter === 'VARIABLE' ? 'filter-chip-variable-active' : 'filter-chip-variable'}
+                                />
+                                
+                                <Button 
+                                    variant={frequencyFilter !== 'ALL' ? 'contained' : 'outlined'} 
+                                    size="small"
+                                    startIcon={<FilterListIcon />}
+                                    onClick={handleFilterClick}
+                                    className={frequencyFilter !== 'ALL' ? 'filter-button-active' : 'filter-button'}
+                                >
+                                    {frequencyFilter === 'ALL' ? 'Filter' : `Freq: ${frequencyFilter}`}
+                                </Button>
+                                <Menu
+                                    anchorEl={filterAnchorEl}
+                                    open={Boolean(filterAnchorEl)}
+                                    onClose={() => handleFilterClose(null)}
+                                >
+                                    <MenuItem onClick={() => handleFilterClose('ALL')}>All Frequencies</MenuItem>
+                                    {Object.values(PaymentFrequency).map(freq => (
+                                        <MenuItem key={freq} onClick={() => handleFilterClose(freq)}>
+                                            {freq}
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </div>
+                        </div>
                         <div className="table-container">
                             <table className="income-table">
                                 <thead>
@@ -254,19 +332,19 @@ const IncomeSources: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {recentTransactions.length === 0 ? (
+                                    {filteredTransactions.length === 0 ? (
                                         <tr>
                                             <td colSpan={3} className="transaction-empty-cell">
                                                 <div className="transaction-empty-wrapper">
                                                     <ReceiptLongIcon className="transaction-empty-icon" />
                                                     <Typography variant="body1" color="text.secondary">
-                                                        No recent income transactions found
+                                                        No transactions found for this filter
                                                     </Typography>
                                                 </div>
                                             </td>
                                         </tr>
                                     ) : (
-                                        recentTransactions.map((tx, idx) => (
+                                        filteredTransactions.map((tx: TransactionDTO, idx: number) => (
                                             <tr key={idx}>
                                                 <td>{tx.date}</td>
                                                 <td>{tx.paymentSource}</td>

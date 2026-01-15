@@ -206,10 +206,31 @@
   margin-bottom: 24px;
 }
 
-.recent-income-section h3 {
-  margin: 0 0 20px 0;
+.recent-income-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.recent-income-header h3 {
+  margin: 0;
   color: #111827;
   font-size: 1.1rem;
+}
+
+.income-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .income-table {
@@ -296,6 +317,110 @@
   opacity: 0.6;
 }
 
+/* Growth Indicator */
+.growth-indicator-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.growth-chip-positive {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+  font-weight: bold !important;
+  height: 24px !important;
+}
+
+.growth-chip-negative {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+  font-weight: bold !important;
+  height: 24px !important;
+}
+
+/* Last Paid Chip */
+.last-paid-wrapper {
+  margin-top: 0.25rem;
+}
+
+.last-paid-chip {
+  font-size: 0.75rem !important;
+  height: 20px !important;
+}
+
+/* Filter Chips */
+.filter-chip-fixed {
+  background-color: #f0fdf4 !important;
+  color: #15803d !important;
+  border: 1px solid #bbf7d0 !important;
+  font-weight: 600 !important;
+  opacity: 0.5;
+}
+
+.filter-chip-fixed:hover {
+  background-color: #dcfce7 !important;
+  border-color: #86efac !important;
+}
+
+.filter-chip-fixed-active {
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  border: 1px solid #bbf7d0 !important;
+  font-weight: 600 !important;
+  opacity: 1 !important;
+}
+
+.filter-chip-variable {
+  background-color: #fefce8 !important;
+  color: #a16207 !important;
+  border: 1px solid #fde047 !important;
+  font-weight: 600 !important;
+  opacity: 0.5;
+}
+
+.filter-chip-variable:hover {
+  background-color: #fef9c3 !important;
+  border-color: #facc15 !important;
+}
+
+.filter-chip-variable-active {
+  background-color: #fef9c3 !important;
+  color: #a16207 !important;
+  border: 1px solid #fde047 !important;
+  font-weight: 600 !important;
+  opacity: 1 !important;
+}
+
+.filter-icon-fixed {
+  color: #15803d !important;
+}
+
+.filter-icon-variable {
+  color: #a16207 !important;
+}
+
+/* Filter Button */
+.filter-button {
+  text-transform: none !important;
+  border-color: #d1d5db !important;
+}
+
+.filter-button:hover {
+  background-color: #f3f4f6 !important;
+}
+
+.filter-button-active {
+  color: #fff !important;
+  background-color: #374151 !important;
+  border-color: #d1d5db !important;
+  text-transform: none !important;
+}
+
+.filter-button-active:hover {
+  background-color: #1f2937 !important;
+}
+
+/* Overrides for specific MUI styles if class targeting fails */
 .transaction-empty-icon {
   font-size: 60px !important;
   margin-bottom: 1rem !important;

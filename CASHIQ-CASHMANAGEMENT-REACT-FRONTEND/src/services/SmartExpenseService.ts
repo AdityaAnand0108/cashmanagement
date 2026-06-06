@@ -1,35 +1,24 @@
-import axios from 'axios';
+import api from '../utils/AxiosConfig';
 import type { ExpenseAnalysisResponse } from '../models/Expense';
 
-const API_URL = 'http://localhost:8080/api/expenses';
+/**
+ * SmartExpenseService sends expense descriptions to the AI categorization endpoint.
+ * The backend uses Ollama to classify the expense and suggest a category.
+ * Uses the shared `api` instance so JWT auth and 401 handling are automatic.
+ */
 
+/**
+ * Analyzes a free-text expense description and returns an AI-suggested category and details.
+ * @param description - A plain-text description of the expense (e.g. "Netflix subscription").
+ * @returns An ExpenseAnalysisResponse with the suggested category and metadata.
+ */
 const analyzeExpense = async (description: string): Promise<ExpenseAnalysisResponse> => {
-  const token = localStorage.getItem('token');
-  
-  if (!token) {
-    throw new Error('No authentication token found. Please login.');
-  }
-
-  try {
-    const response = await axios.post(`${API_URL}/analyze`, 
-        { description }, 
-        { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const response = await api.post('/api/expenses/analyze', { description });
     return response.data;
-  } catch (error) {
-     if (axios.isAxiosError(error)) {
-        if (error.response?.status === 403) {
-            throw new Error('Session expired or unauthorized. Please login again.');
-        }
-        throw new Error(`Error: ${error.response?.statusText || 'Unknown error'}`);
-     }
-    console.error('Error analyzing expense:', error);
-    throw error;
-  }
 };
 
 const SmartExpenseService = {
-  analyzeExpense,
+    analyzeExpense,
 };
 
 export default SmartExpenseService;

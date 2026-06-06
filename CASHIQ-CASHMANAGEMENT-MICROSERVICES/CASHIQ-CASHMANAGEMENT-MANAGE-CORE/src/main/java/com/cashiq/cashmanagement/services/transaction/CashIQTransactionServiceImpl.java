@@ -3,20 +3,28 @@ package com.cashiq.cashmanagement.services.transaction;
 import com.cashiq.cashmanagement.dto.TransactionDTO;
 import com.cashiq.cashmanagement.entity.Transaction;
 import com.cashiq.cashmanagement.entity.Users;
+import com.cashiq.cashmanagement.exception.AccessDeniedException;
+import com.cashiq.cashmanagement.exception.ResourceNotFoundException;
+import com.cashiq.cashmanagement.exception.UserNotFoundException;
 import com.cashiq.cashmanagement.repository.TransactionRepository;
 import com.cashiq.cashmanagement.repository.UserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-/*
- * @author - Aditya
- * @version - 1.0
- * @description - 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Implementation of CashIQTransactionService.
+ * The authenticated user is resolved from the Spring Security context on every
+ * operation so the frontend never needs to send the userId explicitly.
+ *
+ * @author Aditya
+ * @version 1.0
  */
 @Service
 @RequiredArgsConstructor
@@ -27,19 +35,24 @@ public class CashIQTransactionServiceImpl implements CashIQTransactionService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
+    /**
+     * Resolves the currently authenticated user from the Spring Security context.
+     * Throws UserNotFoundException if the username is not found in the database.
+     */
+    private String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
     @Override
     public String addTransaction(TransactionDTO transactionDTO) {
         log.info("Adding transaction: {}", transactionDTO);
         Transaction transaction = modelMapper.map(transactionDTO, Transaction.class);
 
-        // Get current logged in user
-        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+        String username = getCurrentUsername();
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         transaction.setUser(user);
-
         transactionRepository.save(transaction);
         log.info("Transaction added successfully with ID: {}", transaction.getId());
         return "Transaction added successfully";
@@ -48,34 +61,24 @@ public class CashIQTransactionServiceImpl implements CashIQTransactionService {
     @Override
     public String updateTransaction(TransactionDTO transactionDTO) {
         log.info("Updating transaction: {}", transactionDTO);
-
-        // Get current logged in user to verify ownership
-        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+        String username = getCurrentUsername();
 
         Transaction transaction = transactionRepository.findById(transactionDTO.getId())
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
 
+        // Ownership check — users may only edit their own transactions
         if (!transaction.getUser().getUsername().equals(username)) {
-            throw new RuntimeException("Unauthorized to update this transaction");
+            throw new AccessDeniedException("Access Denied: You cannot update this transaction");
         }
 
-        // Update fields
         transaction.setAmount(transactionDTO.getAmount());
         transaction.setCategory(transactionDTO.getCategory());
         transaction.setDescription(transactionDTO.getDescription());
         transaction.setPaymentSource(transactionDTO.getPaymentSource());
 
-        // Handle Date mapping safely
         if (transactionDTO.getDate() != null) {
-            transaction.setDate(java.time.LocalDate.parse(transactionDTO.getDate().toString()));
+            transaction.setDate(LocalDate.parse(transactionDTO.getDate().toString()));
         }
-
-        // Handle Enum mapping if necessary or use ModelMapper smart mapping if
-        // configured
-        // For simplicity, assuming types match or ignoring complex enum mapping issues
-        // for now
-        // transaction.setType(transactionDTO.getType());
 
         transactionRepository.save(transaction);
         log.info("Transaction updated successfully with ID: {}", transaction.getId());
@@ -84,34 +87,31 @@ public class CashIQTransactionServiceImpl implements CashIQTransactionService {
 
     @Override
     public List<TransactionDTO> getAllTransactions() {
-        // Get current logged in user
-        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+        String username = getCurrentUsername();
         log.info("Fetching transactions for user: {}", username);
+
         Users user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         List<Transaction> transactions = transactionRepository.findAllByUser(user);
         log.info("Found {} transactions for user: {}", transactions.size(), username);
 
         return transactions.stream()
-                .map(transaction -> modelMapper.map(transaction, TransactionDTO.class))
+                .map(t -> modelMapper.map(t, TransactionDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public String deleteTransaction(Long id) {
         log.info("Deleting transaction with ID: {}", id);
-
-        // Get current logged in user to verify ownership
-        String username = org.springframework.security.core.context.SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+        String username = getCurrentUsername();
 
         Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
 
+        // Ownership check — users may only delete their own transactions
         if (!transaction.getUser().getUsername().equals(username)) {
-            throw new RuntimeException("Unauthorized to delete this transaction");
+            throw new AccessDeniedException("Access Denied: You cannot delete this transaction");
         }
 
         transactionRepository.delete(transaction);

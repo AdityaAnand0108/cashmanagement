@@ -1,91 +1,51 @@
-import axios from 'axios';
+import api from '../utils/AxiosConfig';
 import type { TransactionDTO } from '../models/Transaction';
 
-const BASE_URL = 'http://localhost:8080';
-
-const getAuthHeader = () => {
-    const token = localStorage.getItem('token');
-    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-};
-
 /**
- * Handles authentication errors.
- * @param error The error to handle.
+ * TransactionService handles all CRUD operations for transactions.
+ * Uses the shared `api` instance so JWT auth and 401 handling are automatic.
  */
-const handleAuthError = (error: unknown) => {
-    if (axios.isAxiosError(error) && error.response?.status === 403) {
-        // Optional: Redirect or just throw
-         throw new Error('Unauthorized. Please login.');
-    }
-    throw error;
-};
 
 /**
- * Adds a transaction for a user.
- * @param transaction The transaction data to add.
- * @returns A promise that resolves to a string.
+ * Adds a new transaction for the currently authenticated user.
+ * @param transaction - The transaction data to save.
+ * @returns A confirmation message from the server.
  */
 const addTransaction = async (transaction: TransactionDTO): Promise<string> => {
-    try {
-        const response = await axios.post(`${BASE_URL}/add-transaction`, transaction, getAuthHeader());
-        return response.data;
-    } catch (error) {
-        console.error('Error adding transaction:', error);
-        handleAuthError(error);
-        throw error;
-    }
+    const response = await api.post('/add-transaction', transaction);
+    return response.data;
 };
 
 /**
- * Gets all transactions for a user.
- * @returns A promise that resolves to an array of TransactionDTO.
+ * Retrieves all transactions for the currently authenticated user.
+ * @returns An array of TransactionDTO objects.
  */
 const getAllTransactions = async (): Promise<TransactionDTO[]> => {
-    try {
-        const response = await axios.get(`${BASE_URL}/get-all-transaction`, getAuthHeader());
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching transactions:', error);
-        handleAuthError(error);
-        throw error;
-    }
+    const response = await api.get('/get-all-transaction');
+    return response.data;
 };
 
 /**
  * Updates an existing transaction.
- * @param transaction The transaction data to update.
- * @returns A promise that resolves to a string.
+ * The transaction ID must be included in the TransactionDTO.
+ * @param transaction - The updated transaction data.
+ * @returns A confirmation message from the server.
  */
 const updateTransaction = async (transaction: TransactionDTO): Promise<string> => {
-    try {
-        const response = await axios.put(`${BASE_URL}/update-transaction`, transaction, getAuthHeader());
-        return response.data;
-    } catch (error) {
-        console.error('Error updating transaction:', error);
-        handleAuthError(error);
-        throw error;
-    }
-}
-
-/**
- * Deletes a transaction by ID.
- * @param id The ID of the transaction to delete.
- * @returns A promise that resolves to a string.
- */
-const deleteTransaction = async (id: number): Promise<string> => {
-    try {
-        const response = await axios.delete(`${BASE_URL}/delete-transaction/${id}`, getAuthHeader());
-        return response.data;
-    } catch (error) {
-        console.error('Error deleting transaction:', error);
-        handleAuthError(error);
-        throw error;
-    }
+    const response = await api.put('/update-transaction', transaction);
+    return response.data;
 };
 
 /**
- * TransactionService class for handling transaction operations.
+ * Deletes a transaction by its ID.
+ * @param id - The ID of the transaction to delete.
+ * @returns A confirmation message from the server.
  */
+const deleteTransaction = async (id: number): Promise<string> => {
+    const response = await api.delete(`/delete-transaction/${id}`);
+    return response.data;
+};
+
 const TransactionService = {
     addTransaction,
     getAllTransactions,

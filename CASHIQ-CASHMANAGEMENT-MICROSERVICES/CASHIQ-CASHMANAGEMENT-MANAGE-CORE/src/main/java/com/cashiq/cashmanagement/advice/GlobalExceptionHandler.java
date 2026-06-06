@@ -2,6 +2,7 @@ package com.cashiq.cashmanagement.advice;
 
 import java.util.Date;
 
+import com.cashiq.cashmanagement.exception.AccessDeniedException;
 import com.cashiq.cashmanagement.exception.ErrorDetails;
 import com.cashiq.cashmanagement.exception.ResourceNotFoundException;
 import com.cashiq.cashmanagement.exception.IncomeNotFoundException;
@@ -54,6 +55,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> budgetNotFoundException(BudgetNotFoundException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> accessDeniedException(AccessDeniedException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 
     /*------------------------------Income----------------------------------- */

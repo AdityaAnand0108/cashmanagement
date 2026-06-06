@@ -2,75 +2,81 @@ package com.cashiq.cashmanagement.controllers.budget;
 
 import com.cashiq.cashmanagement.dto.BudgetDTO;
 import com.cashiq.cashmanagement.services.budget.CashIQBudgetService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 /**
- * Controller class for handling budget operations.
+ * REST controller for budget cap operations.
+ * CORS is handled globally by SecurityConfig — no @CrossOrigin needed here.
+ * ResponseEntity wrapping lives in the controller so the service layer stays
+ * free of HTTP concerns.
  */
 @RestController
 @RequestMapping("/api/budget")
-@CrossOrigin(origins = "http://localhost:3000") // Adjust for frontend port
+@RequiredArgsConstructor
 @Slf4j
 public class CashIQBudgetController {
 
-    @Autowired
-    private CashIQBudgetService budgetService;
+    private final CashIQBudgetService budgetService;
 
     /**
-     * Adds a new budget for the specified user.
+     * Creates or updates a budget cap for the given user.
+     * If a budget for the same category already exists it is overwritten.
      *
      * @param userId    The ID of the user.
-     * @param budgetDTO The budget details.
-     * @return The response from the budget service.
+     * @param budgetDTO The budget details (category, limit amount, period type).
+     * @return 200 OK with a confirmation message.
      */
     @PostMapping("/add/{userId}")
-    public ResponseEntity<?> addBudget(@PathVariable Long userId, @RequestBody BudgetDTO budgetDTO) {
-        log.info("Request to add budget for user: {} with details: {}", userId, budgetDTO);
-        return budgetService.createBudget(userId, budgetDTO);
+    public ResponseEntity<String> addBudget(@PathVariable Long userId, @RequestBody BudgetDTO budgetDTO) {
+        log.info("Request to add budget for user: {}", userId);
+        budgetService.createBudget(userId, budgetDTO);
+        return ResponseEntity.ok("Budget saved successfully");
     }
 
     /**
-     * Updates an existing budget for the specified user.
+     * Updates the limit and period of an existing budget.
      *
-     * @param userId    The ID of the user.
+     * @param userId    The ID of the user who owns the budget.
      * @param budgetId  The ID of the budget to update.
      * @param budgetDTO The updated budget details.
-     * @return The response from the budget service.
+     * @return 200 OK with a confirmation message.
      */
     @PutMapping("/update/{userId}/{budgetId}")
-    public ResponseEntity<?> updateBudget(@PathVariable Long userId, @PathVariable Long budgetId,
+    public ResponseEntity<String> updateBudget(@PathVariable Long userId, @PathVariable Long budgetId,
             @RequestBody BudgetDTO budgetDTO) {
-        log.info("Request to update budget: {} for user: {} with details: {}", budgetId, userId, budgetDTO);
-        return budgetService.updateBudget(userId, budgetId, budgetDTO);
+        log.info("Request to update budget: {} for user: {}", budgetId, userId);
+        budgetService.updateBudget(userId, budgetId, budgetDTO);
+        return ResponseEntity.ok("Budget updated");
     }
 
     /**
-     * Deletes an existing budget for the specified user.
+     * Deletes a budget cap.
      *
-     * @param userId   The ID of the user.
+     * @param userId   The ID of the user who owns the budget.
      * @param budgetId The ID of the budget to delete.
-     * @return The response from the budget service.
+     * @return 200 OK with a confirmation message.
      */
     @DeleteMapping("/delete/{userId}/{budgetId}")
-    public ResponseEntity<?> deleteBudget(@PathVariable Long userId, @PathVariable Long budgetId) {
+    public ResponseEntity<String> deleteBudget(@PathVariable Long userId, @PathVariable Long budgetId) {
         log.info("Request to delete budget: {} for user: {}", budgetId, userId);
-        return budgetService.deleteBudget(userId, budgetId);
+        budgetService.deleteBudget(userId, budgetId);
+        return ResponseEntity.ok("Budget deleted successfully");
     }
 
     /**
-     * Retrieves all budgets for the specified user.
+     * Returns all budgets for a user with live spend and status included.
      *
      * @param userId The ID of the user.
-     * @return The list of budgets for the user.
+     * @return 200 OK with a list of BudgetDTO objects.
      */
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<BudgetDTO>> getUserBudgets(@PathVariable Long userId) {
         log.info("Fetching budgets for user: {}", userId);
-        return budgetService.getUserBudgets(userId);
+        return ResponseEntity.ok(budgetService.getUserBudgets(userId));
     }
 }

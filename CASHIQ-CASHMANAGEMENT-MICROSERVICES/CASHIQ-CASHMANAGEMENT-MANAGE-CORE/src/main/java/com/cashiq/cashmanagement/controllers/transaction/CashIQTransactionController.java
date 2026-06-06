@@ -4,31 +4,29 @@ import com.cashiq.cashmanagement.dto.TransactionDTO;
 import com.cashiq.cashmanagement.services.transaction.CashIQTransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-/*
- * @author - Aditya
- * @version - 1.0
- * @description - TransactionController class is used to handle the transaction related requests
+/**
+ * REST controller for transaction operations.
+ * CORS is handled globally by SecurityConfig — no @CrossOrigin needed here.
+ *
+ * @author Aditya
+ * @version 1.0
  */
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Slf4j
 public class CashIQTransactionController {
 
     private final CashIQTransactionService transactionService;
 
     /**
-     * @method - addTransaction
-     * @param - TransactionDTO
-     * @return - String
-     * @Description - This method is used to add a transaction
+     * Adds a new transaction for the currently authenticated user.
+     *
+     * @param transactionDTO The transaction data to save.
+     * @return A confirmation message string.
      */
     @PostMapping("/add-transaction")
     public String addTransaction(@RequestBody TransactionDTO transactionDTO) {
@@ -37,22 +35,21 @@ public class CashIQTransactionController {
     }
 
     /**
-     * @method - updateTransaction
-     * @param - TransactionDTO
-     * @return - String
-     * @Description - This method is used to update a transaction
+     * Updates an existing transaction. The transaction ID must be set in the DTO.
+     *
+     * @param transactionDTO The updated transaction data.
+     * @return A confirmation message string.
      */
-    @org.springframework.web.bind.annotation.PutMapping("/update-transaction")
+    @PutMapping("/update-transaction")
     public String updateTransaction(@RequestBody TransactionDTO transactionDTO) {
         log.info("Request to update transaction: {}", transactionDTO);
         return transactionService.updateTransaction(transactionDTO);
     }
 
     /**
-     * @method - getAllTransactions
-     * @param - None
-     * @return - List<TransactionDTO>
-     * @Description - This method is used to get all transactions
+     * Returns all transactions for the currently authenticated user.
+     *
+     * @return A list of TransactionDTO objects.
      */
     @GetMapping("/get-all-transaction")
     public List<TransactionDTO> getAllTransactions() {
@@ -61,15 +58,14 @@ public class CashIQTransactionController {
     }
 
     /**
-     * @method - deleteTransaction
-     * @param - id
-     * @return - String
-     * @Description - This method is used to delete a transaction
+     * Deletes a transaction by its ID.
+     *
+     * @param id The ID of the transaction to delete.
+     * @return A confirmation message string.
      */
-    @org.springframework.web.bind.annotation.DeleteMapping("/delete-transaction/{id}")
-    public String deleteTransaction(@org.springframework.web.bind.annotation.PathVariable Long id) {
+    @DeleteMapping("/delete-transaction/{id}")
+    public String deleteTransaction(@PathVariable Long id) {
         log.info("Request to delete transaction with ID: {}", id);
         return transactionService.deleteTransaction(id);
     }
-
 }

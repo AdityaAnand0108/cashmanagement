@@ -2,81 +2,72 @@ package com.cashiq.cashmanagement.services.budget;
 
 import com.cashiq.cashmanagement.dto.BudgetDTO;
 import com.cashiq.cashmanagement.entity.Budget;
-import com.cashiq.cashmanagement.entity.Transaction;
 import com.cashiq.cashmanagement.entity.Users;
 import com.cashiq.cashmanagement.enums.PeriodType;
+import com.cashiq.cashmanagement.exception.AccessDeniedException;
+import com.cashiq.cashmanagement.exception.BudgetNotFoundException;
+import com.cashiq.cashmanagement.exception.UserNotFoundException;
 import com.cashiq.cashmanagement.repository.BudgetRepository;
 import com.cashiq.cashmanagement.repository.TransactionRepository;
 import com.cashiq.cashmanagement.repository.UserRepository;
-import com.cashiq.cashmanagement.exception.BudgetNotFoundException;
-import com.cashiq.cashmanagement.exception.UserNotFoundException;
 import com.cashiq.cashmanagement.util.StringUtils;
 import com.cashiq.cashmanagement.validation.BudgetValidator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of CashIQBudgetService.
+ *
+ * Key design decisions:
+ * - getUserBudgets uses a single GROUP BY aggregation query to get spend per category,
+ *   avoiding an N+1 database hit (one query per budget) that existed before.
+ * - Custom-period budgets fall back to individual queries because they have
+ *   different date ranges and are uncommon — batching them adds complexity for little gain.
+ */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class CashIQBudgetServiceImpl implements CashIQBudgetService {
 
-    @Autowired
-    private BudgetRepository budgetRepository;
+    private final BudgetRepository budgetRepository;
+    private final UserRepository userRepository;
+    private final BudgetValidator budgetValidator;
+    private final TransactionRepository transactionRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private BudgetValidator budgetValidator;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
-
-    /**
-     * Creates a new budget for a user.
-     * 
-     * @param userId    The ID of the user.
-     * @param budgetDTO The budget data to create.
-     * @returns A ResponseEntity containing a string message.
-     */
     @Override
-    public ResponseEntity<?> createBudget(Long userId, BudgetDTO budgetDTO) {
+    public void createBudget(Long userId, BudgetDTO budgetDTO) {
         log.info("Creating budget for user: {} with category: {}", userId, budgetDTO.getCategory());
         budgetValidator.validateBudget(budgetDTO);
 
-        Optional<Users> userOpt = userRepository.findById(userId);
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id :: " + userId));
 
-        if (userOpt.isEmpty()) {
-            throw new UserNotFoundException("User not found with id :: " + userId);
-        }
+        // Upsert: reuse the existing budget for the same category if one exists
         Optional<Budget> existing = budgetRepository.findByUsersIdAndCategory(userId, budgetDTO.getCategory());
-        Budget budget;
-        if (existing.isPresent()) {
-            budget = existing.get();
-            log.info("Updating existing budget for user: {} category: {}", userId, budgetDTO.getCategory());
-        } else {
-            budget = new Budget();
-            budget.setUsers(userOpt.get());
-            budget.setCategory(budgetDTO.getCategory());
-            log.info("Creating new budget entity for user: {} category: {}", userId, budgetDTO.getCategory());
-        }
+        Budget budget = existing.orElseGet(() -> {
+            Budget b = new Budget();
+            b.setUsers(user);
+            b.setCategory(budgetDTO.getCategory());
+            return b;
+        });
 
         budget.setLimitAmount(budgetDTO.getLimitAmount());
         budget.setPeriodType(budgetDTO.getPeriodType());
 
         LocalDate start, end;
-        if ("CUSTOM".equalsIgnoreCase(String.valueOf(budgetDTO.getPeriodType()))) {
+        if (PeriodType.CUSTOM == budgetDTO.getPeriodType()) {
             start = budgetDTO.getStartDate();
             end = budgetDTO.getEndDate();
         } else {
-            // Default Monthly: First day to last day of current month
+            // Default to the current calendar month for MONTHLY budgets
             LocalDate now = LocalDate.now();
             start = now.with(TemporalAdjusters.firstDayOfMonth());
             end = now.with(TemporalAdjusters.lastDayOfMonth());
@@ -86,114 +77,95 @@ public class CashIQBudgetServiceImpl implements CashIQBudgetService {
 
         budgetRepository.save(budget);
         log.info("Budget saved successfully with ID: {}", budget.getId());
-        return ResponseEntity.ok("Budget saved successfully");
     }
 
-    /**
-     * Updates an existing budget for a user.
-     * 
-     * @param userId    The ID of the user.
-     * @param budgetId  The ID of the budget to update.
-     * @param budgetDTO The budget data to update.
-     * @returns A ResponseEntity containing a string message.
-     */
     @Override
-    public ResponseEntity<?> updateBudget(Long userId, Long budgetId, BudgetDTO budgetDTO) {
+    public void updateBudget(Long userId, Long budgetId, BudgetDTO budgetDTO) {
         log.info("Updating budget ID: {} for user: {}", budgetId, userId);
-        Optional<Budget> budgetOpt = budgetRepository.findById(budgetId);
-        if (budgetOpt.isEmpty()) {
-            throw new BudgetNotFoundException("Budget not found with id :: " + budgetId);
-        }
-        Budget budget = budgetOpt.get();
+        Budget budget = budgetRepository.findById(budgetId)
+                .orElseThrow(() -> new BudgetNotFoundException("Budget not found with id :: " + budgetId));
+
+        // Ownership check — a user must not be able to modify another user's budget
         if (!budget.getUsers().getId().equals(userId)) {
             log.warn("Access denied for user: {} to update budget: {}", userId, budgetId);
-            throw new RuntimeException("Access Denied: You cannot update this budget");
+            throw new AccessDeniedException("Access Denied: You cannot update this budget");
         }
 
         budget.setLimitAmount(budgetDTO.getLimitAmount());
         budget.setPeriodType(budgetDTO.getPeriodType());
-        // Potential update to dates if needed
         budgetRepository.save(budget);
         log.info("Budget updated successfully: {}", budgetId);
-        return ResponseEntity.ok("Budget updated");
     }
 
-    /**
-     * Deletes an existing budget for a user.
-     * 
-     * @param userId   The ID of the user.
-     * @param budgetId The ID of the budget to delete.
-     * @returns A ResponseEntity containing a string message.
-     */
     @Override
-    public ResponseEntity<?> deleteBudget(Long userId, Long budgetId) {
+    public void deleteBudget(Long userId, Long budgetId) {
         log.info("Deleting budget ID: {} for user: {}", budgetId, userId);
-        Optional<Budget> budgetOpt = budgetRepository.findById(budgetId);
-        if (budgetOpt.isEmpty()) {
-            throw new BudgetNotFoundException("Budget not found with id :: " + budgetId);
-        }
-        Budget budget = budgetOpt.get();
+        Budget budget = budgetRepository.findById(budgetId)
+                .orElseThrow(() -> new BudgetNotFoundException("Budget not found with id :: " + budgetId));
+
+        // Ownership check — a user must not be able to delete another user's budget
         if (!budget.getUsers().getId().equals(userId)) {
             log.warn("Access denied for user: {} to delete budget: {}", userId, budgetId);
-            throw new RuntimeException("Access Denied: You cannot delete this budget");
+            throw new AccessDeniedException("Access Denied: You cannot delete this budget");
         }
 
         budgetRepository.delete(budget);
         log.info("Budget deleted successfully: {}", budgetId);
-        return ResponseEntity.ok("Budget deleted successfully");
     }
 
-    /**
-     * Retrieves all budgets for a user.
-     * 
-     * @param userId The ID of the user.
-     * @returns A ResponseEntity containing a list of BudgetDTO objects.
-     */
     @Override
-    public ResponseEntity<List<BudgetDTO>> getUserBudgets(Long userId) {
+    public List<BudgetDTO> getUserBudgets(Long userId) {
         log.info("Fetching budgets for user: {}", userId);
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id :: " + userId));
+
         List<Budget> budgets = budgetRepository.findByUsersId(userId);
-        Optional<Users> userOpt = userRepository.findById(userId);
 
-        if (userOpt.isEmpty()) {
-            throw new UserNotFoundException("User not found with id :: " + userId);
-        }
-        Users user = userOpt.get();
+        // Calculate the current month date range once — shared by all MONTHLY budgets
+        LocalDate now = LocalDate.now();
+        LocalDate monthStart = now.with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate monthEnd = now.with(TemporalAdjusters.lastDayOfMonth());
 
-        List<BudgetDTO> dtos = budgets.stream().map(b -> {
+        // Single aggregation query to get total spend per category for this month.
+        // This replaces the old approach of firing one query per budget (N+1 problem).
+        Map<String, Double> spendByCategory = transactionRepository
+                .sumAmountByCategoryForUserAndDateBetween(user, monthStart, monthEnd)
+                .stream()
+                .collect(Collectors.toMap(row -> (String) row[0], row -> (Double) row[1]));
+
+        return budgets.stream().map(b -> {
             BudgetDTO dto = new BudgetDTO();
             dto.setId(b.getId());
             dto.setUserId(userId);
             dto.setCategory(b.getCategory());
             dto.setLimitAmount(b.getLimitAmount());
-            LocalDate queryStart, queryEnd;
-            // Check period type - if null, assume MONTHLY
+
             PeriodType periodType = b.getPeriodType() != null ? b.getPeriodType() : PeriodType.MONTHLY;
 
+            LocalDate queryStart, queryEnd;
             if (PeriodType.CUSTOM == periodType) {
+                // Custom budgets have their own unique date range — query individually
                 queryStart = b.getStartDate();
                 queryEnd = b.getEndDate();
+                String searchCategory = StringUtils.toTitleCase(b.getCategory().name());
+                double spent = transactionRepository
+                        .findByUserAndCategoryAndDateBetween(user, searchCategory, queryStart, queryEnd)
+                        .stream().mapToDouble(t -> t.getAmount()).sum();
+                dto.setSpentAmount(spent);
             } else {
-                // Dynamic calculation for Monthly budgets
-                LocalDate now = LocalDate.now();
-                queryStart = now.with(TemporalAdjusters.firstDayOfMonth());
-                queryEnd = now.with(TemporalAdjusters.lastDayOfMonth());
+                // MONTHLY budgets — use the pre-fetched aggregation map
+                queryStart = monthStart;
+                queryEnd = monthEnd;
+                String searchCategory = StringUtils.toTitleCase(b.getCategory().name());
+                dto.setSpentAmount(spendByCategory.getOrDefault(searchCategory, 0.0));
             }
 
             dto.setStartDate(queryStart);
             dto.setEndDate(queryEnd);
+            dto.setRemainingAmount(b.getLimitAmount() - dto.getSpentAmount());
 
-            String searchCategory = StringUtils.toTitleCase(b.getCategory().name());
-
-            List<Transaction> txs = transactionRepository.findByUserAndCategoryAndDateBetween(
-                    user, searchCategory, queryStart, queryEnd);
-
-            double spent = txs.stream().mapToDouble(Transaction::getAmount).sum();
-            dto.setSpentAmount(spent);
-            dto.setRemainingAmount(b.getLimitAmount() - spent);
-
-            // Status Logic
-            double percent = (spent / b.getLimitAmount()) * 100;
+            // Status thresholds: >100% = Exceeded, >85% = At Risk, otherwise On Track
+            double percent = (dto.getSpentAmount() / b.getLimitAmount()) * 100;
             if (percent > 100) {
                 dto.setStatus("Exceeded");
             } else if (percent > 85) {
@@ -204,8 +176,5 @@ public class CashIQBudgetServiceImpl implements CashIQBudgetService {
 
             return dto;
         }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(dtos);
     }
-
 }

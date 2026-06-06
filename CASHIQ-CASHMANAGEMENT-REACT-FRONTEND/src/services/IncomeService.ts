@@ -1,93 +1,51 @@
-import axios from 'axios';
+import api from '../utils/AxiosConfig';
 import type { IncomeDTO } from '../models/Income';
 
-const BASE_URL = 'http://localhost:8080';
-
-const getAuthHeader = () => {
-    const token = localStorage.getItem('token');
-    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-};
-
 /**
- * Handles authentication errors.
- * @param error The error to handle.
+ * IncomeService handles all CRUD operations for income sources.
+ * Uses the shared `api` instance so JWT auth and 401 handling are automatic.
  */
-const handleAuthError = (error: unknown) => {
-    if (axios.isAxiosError(error) && error.response?.status === 403) {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-        throw new Error('Unauthorized. Please login.');
-    }
-    throw error;
-};
 
 /**
- * Adds an income source for a user.
- * @param income The income data to add.
- * @returns A promise that resolves to a string.
+ * Adds a new income source for the currently authenticated user.
+ * @param income - The income data to save.
+ * @returns A confirmation message from the server.
  */
 const addIncome = async (income: IncomeDTO): Promise<string> => {
-    try {
-        const response = await axios.post(`${BASE_URL}/add-income`, income, getAuthHeader());
-        return response.data;
-    } catch (error) {
-        console.error('Error adding income source:', error);
-        handleAuthError(error);
-        throw error;
-    }
+    const response = await api.post('/add-income', income);
+    return response.data;
 };
 
 /**
- * Updates an income source for a user.
- * @param id The ID of the income source to update.
- * @param income The income data to update.
- * @returns A promise that resolves to a string.
+ * Updates an existing income source.
+ * @param id - The ID of the income source to update.
+ * @param income - The updated income data.
+ * @returns A confirmation message from the server.
  */
 const updateIncome = async (id: number, income: IncomeDTO): Promise<string> => {
-    try {
-        const response = await axios.put(`${BASE_URL}/update-income/${id}`, income, getAuthHeader());
-        return response.data;
-    } catch (error) {
-        console.error('Error updating income source:', error);
-         handleAuthError(error);
-         throw error;
-    }
+    const response = await api.put(`/update-income/${id}`, income);
+    return response.data;
 };
 
 /**
- * Gets all income sources for a user.
- * @returns A promise that resolves to an array of IncomeDTO.
+ * Retrieves all income sources for the currently authenticated user.
+ * @returns An array of IncomeDTO objects.
  */
 const getAllIncomes = async (): Promise<IncomeDTO[]> => {
-    try {
-        const response = await axios.get(`${BASE_URL}/get-all-income`, getAuthHeader());
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching income sources:', error);
-         handleAuthError(error);
-         throw error;
-    }
+    const response = await api.get('/get-all-income');
+    return response.data;
 };
 
 /**
- * Deletes an income source for a user.
- * @param id The ID of the income source to delete.
- * @returns A promise that resolves to a string.
+ * Deletes an income source by its ID.
+ * @param id - The ID of the income source to delete.
+ * @returns A confirmation message from the server.
  */
 const deleteIncome = async (id: number): Promise<string> => {
-    try {
-        const response = await axios.delete(`${BASE_URL}/delete-income/${id}`, getAuthHeader());
-        return response.data;
-    } catch (error) {
-        console.error('Error deleting income source:', error);
-         handleAuthError(error);
-         throw error;
-    }
+    const response = await api.delete(`/delete-income/${id}`);
+    return response.data;
 };
 
-/**
- * IncomeService class for handling income operations.
- */
 const IncomeService = {
     addIncome,
     updateIncome,

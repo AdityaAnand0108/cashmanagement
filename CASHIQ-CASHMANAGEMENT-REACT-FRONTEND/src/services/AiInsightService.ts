@@ -1,34 +1,22 @@
-import axios from 'axios';
+import api from '../utils/AxiosConfig';
 
-const API_URL = 'http://localhost:8080/api/ai/insights';
+/**
+ * AiInsightService communicates with the Ollama-backed AI insight endpoint.
+ * Uses the shared `api` instance so JWT auth and 401 handling are automatic.
+ */
 
+/**
+ * Sends a natural-language query to the AI insight engine and returns its response.
+ * @param query - The user's question or prompt (e.g. "How am I spending this month?").
+ * @returns The AI-generated response string.
+ */
 const analyze = async (query: string): Promise<string> => {
-  const token = localStorage.getItem('token');
-  
-  if (!token) {
-    throw new Error('No authentication token found. Please login.');
-  }
-
-  try {
-    const response = await axios.post(`${API_URL}/analyze`, 
-        { query }, 
-        { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const response = await api.post('/api/ai/insights/analyze', { query });
     return response.data.response;
-  } catch (error) {
-     if (axios.isAxiosError(error)) {
-        if (error.response?.status === 403) {
-            throw new Error('Session expired or unauthorized. Please login again.');
-        }
-        throw new Error(`Error: ${error.response?.statusText || 'Unknown error'}`);
-     }
-    console.error('Error getting AI insights:', error);
-    throw error;
-  }
 };
 
 const AiInsightService = {
-  analyze,
+    analyze,
 };
 
 export default AiInsightService;

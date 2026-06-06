@@ -1,46 +1,45 @@
 package com.cashiq.cashmanagement.services.income;
 
 import com.cashiq.cashmanagement.dto.IncomeDTO;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 /**
- * @author - Aditya
- * @version - 1.0
- * @description - This interface is used to handle income-related operations.
+ * Service interface for income source operations.
+ * Implementations must not return ResponseEntity — HTTP concerns belong in the controller layer.
+ *
+ * @author Aditya
+ * @version 1.0
  */
 public interface CashIQIncomeService {
 
     /**
-     * @method - addIncome
-     * @param - IncomeDTO
-     * @return - String
-     * @Description - This method is used to add the income
+     * Adds a new income source for the currently authenticated user.
+     *
+     * @param incomeDTO The income details (name, amount, frequency, next pay day).
      */
-    ResponseEntity<String> addIncome(IncomeDTO incomeDTO);
+    void addIncome(IncomeDTO incomeDTO);
 
     /**
-     * @method - updateIncome
-     * @param - IncomeDTO
-     * @return - String
-     * @Description - This method is used to update the income
+     * Updates an existing income source by ID.
+     *
+     * @param id        The ID of the income source to update.
+     * @param incomeDTO The updated income details.
      */
-    ResponseEntity<String> updateIncome(Long id, IncomeDTO incomeDTO);
+    void updateIncome(Long id, IncomeDTO incomeDTO);
 
     /**
-     * @method - getAllIncomes
-     * @param - None
-     * @return - List<IncomeDTO>
-     * @Description - This method is used to get all the incomes
+     * Returns all income sources for the currently authenticated user.
+     *
+     * @return List of IncomeDTO objects.
      */
-    ResponseEntity<List<IncomeDTO>> getAllIncomes();
+    List<IncomeDTO> getAllIncomes();
 
     /**
-     * @method - deleteIncome
-     * @param - id
-     * @return - String
-     * @Description - This method is used to delete the income
+     * Deletes an income source by ID.
+     * Throws AccessDeniedException if the income does not belong to the authenticated user.
+     *
+     * @param id The ID of the income source to delete.
      */
-    ResponseEntity<String> deleteIncome(Long id);
+    void deleteIncome(Long id);
 }

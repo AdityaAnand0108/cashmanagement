@@ -1,63 +1,54 @@
-import axios from 'axios';
-import type {BudgetDTO} from '../models/Budget';
-
-const API_URL = 'http://localhost:8080/api/budget';
+import api from '../utils/AxiosConfig';
+import type { BudgetDTO } from '../models/Budget';
 
 /**
- * BudgetService class for handling budget operations.
+ * BudgetService handles all CRUD operations for budget caps.
+ * Uses the shared `api` instance so JWT auth and 401 handling are automatic.
  */
 class BudgetService {
-    
-    /**
-     * Gets the authorization header.
-     * @returns The authorization header.
-     */
-    private getAuthHeader() {
-        const token = localStorage.getItem('token');
-        return { headers: { Authorization: `Bearer ${token}` } };
-    }
 
     /**
-     * Adds a budget for a user.
-     * @param userId The ID of the user.
-     * @param budget The budget data to add.
-     * @returns A promise that resolves to a string.
+     * Creates a new budget cap for a user.
+     * If a budget for the same category already exists it will be overwritten on the server.
+     * @param userId - The ID of the user.
+     * @param budget - The budget data to save.
+     * @returns A confirmation message from the server.
      */
     async addBudget(userId: number, budget: BudgetDTO): Promise<string> {
-        const response = await axios.post(`${API_URL}/add/${userId}`, budget, this.getAuthHeader());
+        const response = await api.post(`/api/budget/add/${userId}`, budget);
         return response.data;
     }
 
     /**
-     * Updates a budget for a user.
-     * @param userId The ID of the user.
-     * @param budgetId The ID of the budget to update.
-     * @param budget The budget data to update.
-     * @returns A promise that resolves to a string.
+     * Updates an existing budget cap.
+     * @param userId - The ID of the user who owns the budget.
+     * @param budgetId - The ID of the budget to update.
+     * @param budget - The updated budget data.
+     * @returns A confirmation message from the server.
      */
     async updateBudget(userId: number, budgetId: number, budget: BudgetDTO): Promise<string> {
-        const response = await axios.put(`${API_URL}/update/${userId}/${budgetId}`, budget, this.getAuthHeader());
+        const response = await api.put(`/api/budget/update/${userId}/${budgetId}`, budget);
         return response.data;
     }
 
     /**
-     * Deletes a budget for a user.
-     * @param userId The ID of the user.
-     * @param budgetId The ID of the budget to delete.
-     * @returns A promise that resolves to a string.
+     * Deletes a budget cap by its ID.
+     * @param userId - The ID of the user who owns the budget.
+     * @param budgetId - The ID of the budget to delete.
+     * @returns A confirmation message from the server.
      */
     async deleteBudget(userId: number, budgetId: number): Promise<string> {
-        const response = await axios.delete(`${API_URL}/delete/${userId}/${budgetId}`, this.getAuthHeader());
+        const response = await api.delete(`/api/budget/delete/${userId}/${budgetId}`);
         return response.data;
     }
 
     /**
-     * Gets the budgets for a user.
-     * @param userId The ID of the user.
-     * @returns A promise that resolves to an array of BudgetDTO.
+     * Retrieves all budgets for a user, including calculated spend and status.
+     * @param userId - The ID of the user.
+     * @returns An array of BudgetDTO objects with live spend data.
      */
     async getUserBudgets(userId: number): Promise<BudgetDTO[]> {
-        const response = await axios.get(`${API_URL}/user/${userId}`, this.getAuthHeader());
+        const response = await api.get(`/api/budget/user/${userId}`);
         return response.data;
     }
 }

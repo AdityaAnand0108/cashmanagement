@@ -1,147 +1,122 @@
-# 💰 Cash Management
+# CashIQ — Personal Finance Manager
 
-A **Spring Boot + React.js** based application to manage personal finances by tracking **daily income and expenses**. The system helps users maintain budgets, analyze spending habits, and improve financial planning.
-
----
-
-## 🚀 Features
-
-* **Daily Expense Tracking**
-
-  * Add, update, and delete expenses.
-  * Track cash flow for a specific date.
-
-* **Budget Management**
-
-  * Set monthly budgets.
-  * Compare actual vs. planned spending.
-
-* **Analytics & Reports**
-
-  * Get daily, weekly, and monthly spending summaries.
-  * Visualize data with charts and tables.
-
-* **User-Friendly UI**
-
-  * Built with **React.js + Material UI** for a responsive and clean interface.
+A full-stack personal finance application for tracking income, expenses, budgets, debts, and savings goals — with an AI-powered insight engine backed by a locally running LLM.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-**Backend (API Layer):**
-
-* Java 17
-* Spring Boot
-* Spring Data JPA (Hibernate)
-* MySQL (or PostgreSQL)
-
-**Frontend:**
-
-* React.js
-* Material UI
-* Axios (for API calls)
-
-**Build & Tools:**
-
-* Maven (Backend)
-* npm / yarn (Frontend)
+| Layer | Technology |
+|---|---|
+| Frontend | React 19 + TypeScript, Vite, Material UI v7, Recharts |
+| Backend | Spring Boot 3.3.5, Java 21, Spring Security + JWT |
+| Database | MySQL |
+| AI | Spring AI + Ollama (local LLM — llama3.2) |
+| AI Categorizer | Python (separate microservice) |
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
-cash-management/
-│── backend/                # Spring Boot backend
-│   ├── src/main/java/com/cash_management
-│   │   ├── entity/         # JPA entities
-│   │   ├── repository/     # JPA repositories
-│   │   ├── service/        # Business logic
-│   │   ├── controller/     # REST controllers
-│   │   └── dto/            # Data transfer objects
-│   └── resources/          # application.properties / YAML
-│
-│── frontend/               # React frontend
-│   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── pages/          # Screens (Dashboard, ExpenseForm, etc.)
-│   │   ├── services/       # Axios API calls
-│   │   └── App.js          # Main app entry
-│   └── public/
-│
-└── README.md
+cashmanagement/
+├── CASHIQ-CASHMANAGEMENT-REACT-FRONTEND/   # React + TypeScript SPA
+├── CASHIQ-CASHMANAGEMENT-MICROSERVICES/
+│   ├── CASHIQ-CASHMANAGEMENT-MANAGE-CORE/  # Spring Boot REST API
+│   └── CASHIQ-CASHMANAGEMENT-AI-CATEGORIZER/ # Python ML categorizer
+├── CASHIQ-CASHMANAGEMENT-UI-UX-WIREFRAME/  # Design mockups
+└── CASHIQ-CASHMANAGEMENT-UML-DIAGRAM/      # Architecture diagrams
 ```
 
 ---
 
-## ⚙️ Setup Instructions
+## Features
 
-### Backend Setup
-
-1. Navigate to the backend folder:
-
-   ```bash
-   cd backend
-   ```
-2. Configure **application.properties**:
-
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/cashdb
-   spring.datasource.username=root
-   spring.datasource.password=yourpassword
-   spring.jpa.hibernate.ddl-auto=update
-   ```
-3. Run the backend:
-
-   ```bash
-   mvn spring-boot:run
-   ```
-
-### Frontend Setup
-
-1. Navigate to the frontend folder:
-
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-3. Start the React app:
-
-   ```bash
-   npm start
-   ```
+- **Dashboard** — overview metrics, recent transactions, at-risk budgets, goal progress
+- **Transactions** — add, edit, delete with category tagging
+- **Income Sources** — track multiple income streams with frequency and trend charts
+- **Budget Caps** — monthly or custom-period limits per category with live spend tracking
+- **Savings Goals** — create goals, add funds, track completion
+- **Debts & IOUs** — manage money owed and money lent
+- **AI Insights** — ask natural-language questions about your finances (Ollama/llama3.2)
 
 ---
 
-## 📌 API Endpoints
+## Running Locally
 
-### Expense Management
+### Prerequisites
 
-| Method | Endpoint                        | Description                  |
-| ------ | ------------------------------- | ---------------------------- |
-| GET    | `/api/spending?date=yyyy-MM-dd` | Get total spending for a day |
-| POST   | `/api/spending`                 | Add new expense              |
-| PUT    | `/api/spending/{id}`            | Update an expense            |
-| DELETE | `/api/spending/{id}`            | Delete an expense            |
+- Java 21, Maven
+- Node.js 18+
+- MySQL running on port `3306`
+- [Ollama](https://ollama.com) running with `llama3.2` model pulled
+
+### Backend
+
+```bash
+cd CASHIQ-CASHMANAGEMENT-MICROSERVICES/CASHIQ-CASHMANAGEMENT-MANAGE-CORE
+
+# Edit src/main/resources/application.properties:
+# spring.datasource.url=jdbc:mysql://localhost:3306/cashiq_db
+# spring.datasource.username=root
+# spring.datasource.password=your_password
+
+mvn spring-boot:run
+# Runs on http://localhost:8080
+# Swagger UI: http://localhost:8080/swagger-ui.html
+```
+
+### Frontend
+
+```bash
+cd CASHIQ-CASHMANAGEMENT-REACT-FRONTEND
+
+# Create .env file:
+# VITE_API_BASE_URL=http://localhost:8080
+
+npm install
+npm run dev
+# Runs on http://localhost:5173
+```
+
+### Ollama (AI features)
+
+```bash
+ollama pull llama3.2
+ollama serve
+# Runs on http://localhost:11434
+```
 
 ---
 
-## 📊 Future Enhancements
+## API Overview
 
-* ✅ Multi-user authentication (JWT)
-* ✅ Category-based spending analytics
-* ✅ Export reports to Excel/PDF
-* ✅ Mobile-friendly PWA support
+All endpoints (except `/auth/**`) require a `Bearer <JWT>` header.
+
+| Domain | Base Path |
+|---|---|
+| Auth | `/auth/register-user`, `/auth/login` |
+| Transactions | `/add-transaction`, `/get-all-transaction`, `/update-transaction`, `/delete-transaction/{id}` |
+| Income | `/add-income`, `/get-all-income`, `/update-income/{id}`, `/delete-income/{id}` |
+| Budgets | `/api/budget/add/{userId}`, `/api/budget/user/{userId}` |
+| Savings Goals | `/api/saving-goals/{userId}` |
+| Debts | `/api/debts` |
+| AI Insights | `/api/ai/insights/analyze` |
+
+Full API docs available at `http://localhost:8080/swagger-ui.html` when the backend is running.
 
 ---
 
-## 👨‍💻 Author
+## Environment Variables
+
+| Variable | Where | Description |
+|---|---|---|
+| `VITE_API_BASE_URL` | Frontend `.env` | Backend base URL |
+| `app.cors.allowed-origins` | `application.properties` | Allowed frontend origins (comma-separated) |
+| `spring.ai.ollama.base-url` | `application.properties` | Ollama server URL |
+
+---
+
+## Author
 
 **Aditya Anand Mishra**
-
----
